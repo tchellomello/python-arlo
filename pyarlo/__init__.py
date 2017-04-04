@@ -86,16 +86,17 @@ class PyArlo(object):
                 response = req.json()
         return response
 
-    # pylint: disable=fixme
-    # FIXME: needs to create an deviceType object to abstract methods
     @property
     def devices(self):
         """Return all devices on Arlo account."""
-        devices = []
+        devices = {}
+        devices['cameras'] = []
+
         url = API_URL + DEVICES_ENDPOINT
         data = self._query(url)
 
         for device in data.get('data'):
             name = device.get('deviceName')
-            devices.append(ArloCamera(name, device, self))
+            if device.get('deviceType') == 'camera':
+                devices['cameras'].append(ArloCamera(name, device, self))
         return devices
