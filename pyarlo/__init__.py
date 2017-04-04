@@ -1,25 +1,16 @@
 # coding: utf-8
 # vim:sw=4:ts=4:et:
 """Base Python Class file for Netgear Arlo camera module."""
-import os
-import json
 import requests
 
-try:
-    from urllib.parse import urlencode
-except ImportError:
-    from urllib import urlencode
-
-
 from pyarlo.const import (
-        API_URL, DEFAULT_HEADERS, LOGIN_ENDPOINT, DEVICES_ENDPOINT, PARAMS)
+    API_URL, HEADERS, DEVICES_ENDPOINT, LOGIN_ENDPOINT, PARAMS)
 
 
 class PyArlo(object):
     """Base object for Netgar Arlo camera."""
 
-
-    def __init__(self, username=None, password=None, headers=DEFAULT_HEADERS):
+    def __init__(self, username=None, password=None):
         """Initialize the PyArlo object."""
         self.authenticated = None
         self.country_code = None
@@ -32,7 +23,7 @@ class PyArlo(object):
         self.username = username
 
         # initialize connection parameters
-        self._headers = headers
+        self._headers = HEADERS
         self._params = PARAMS
         self._params['email'] = self.username
         self._params['password'] = self.password
@@ -97,8 +88,8 @@ class PyArlo(object):
                 response = req.json()
         return response
 
-
-    #FIXME: needs to create an deviceType object to abstract methods
+    # pylint: disable=fixme
+    # FIXME: needs to create an deviceType object to abstract methods
     @property
     def devices(self):
         """Return all devices on Arlo account."""

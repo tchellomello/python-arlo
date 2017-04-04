@@ -7,7 +7,7 @@ setup(
     packages=['pyarlo'],
     version='0.1.1',
     description='Python Arlo is a library written in Python 2.7/3x ' +
-                'that exposes the Netgear Arlo cameras as Python objects.'
+                'that exposes the Netgear Arlo cameras as Python objects.',
     author='Marcelo Moreira de Mello',
     author_email='tchello.mello@gmail.com',
     url='https://github.com/tchellomello/python-arlo',
