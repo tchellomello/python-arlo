@@ -3,6 +3,7 @@
 """Base Python Class file for Netgear Arlo camera module."""
 import requests
 
+from pyarlo.arlo_camera import ArloCamera
 from pyarlo.const import (
     API_URL, HEADERS, DEVICES_ENDPOINT, LOGIN_ENDPOINT, PARAMS)
 
@@ -42,20 +43,17 @@ class PyArlo(object):
         data = self._query(url, method='POST')
 
         if isinstance(data, dict) and data.get('success'):
-            self.authenticated = data.get('data').get('authenticated')
-            self.country_code = data.get('data').get('countryCode')
-            self.date_created = data.get('data').get('dateCreated')
-            self.token = data.get('data').get('token')
-            self.userid = data.get('data').get('userId')
+            data = data.get('data')
+            self.authenticated = data.get('authenticated')
+            self.country_code = data.get('countryCode')
+            self.date_created = data.get('dateCreated')
+            self.token = data.get('token')
+            self.userid = data.get('userId')
 
             # update header with the generated token
             self._headers['Authorization'] = self.token
 
-    def _query(self,
-               url,
-               method='GET',
-               extra_params=None,
-               extra_headers=None,
+    def _query(self, url, method='GET', extra_params=None, extra_headers=None,
                raw=False):
         """Return a JSON object or raw session."""
         response = None
@@ -98,5 +96,6 @@ class PyArlo(object):
         data = self._query(url)
 
         for device in data.get('data'):
-            devices.append(device.get('deviceName'))
+            name = device.get('deviceName')
+            devices.append(ArloCamera(name, device, self))
         return devices
