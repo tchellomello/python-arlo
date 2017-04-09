@@ -100,3 +100,8 @@ class PyArlo(object):
             if device.get('deviceType') == 'camera':
                 devices['cameras'].append(ArloCamera(name, device, self))
         return devices
+
+    @property
+    def cameras(self):
+        """Return all cameras linked on Arlo account."""
+        return self.devices['cameras']

@@ -14,8 +14,14 @@ class ArloCamera(ArloGeneric):
 
     def download_snapshot(self, filename=None):
         """Download JPEG snapshot."""
+        ret = self._arlo.session.get(self.snapshot_url)
+
+        if ret.status_code != 200:
+            return False
+
         if filename is None:
-            ret = self._arlo.session.get(self.snapshot_url)
-            if ret.status_code == 200:
-                return ret.content
-        return False
+            return ret.content
+        else:
+            with open(filename, 'wb') as snapshot:
+                snapshot.write(ret.content)
+        return True
