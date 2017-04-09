@@ -1,6 +1,19 @@
 Python Arlo
 -----------
 
+.. image:: https://badge.fury.io/py/pyarlo.svg
+    :target: https://badge.fury.io/py/pyarlo
+
+.. image:: https://travis-ci.org/tchellomello/python-arlo.svg?branch=master
+    :target: https://travis-ci.org/tchellomello/python-arlo
+
+.. image:: https://coveralls.io/repos/github/tchellomello/python-arlo/badge.svg
+    :target: https://coveralls.io/github/tchellomello/python-arlo
+
+.. image:: https://img.shields.io/pypi/pyversions/pyarlo.svg
+    :target: https://pypi.python.org/pypi/pyarlo
+
+
 Python Arlo  is a library written in Python 2.7/3x that exposes the Netgear Arlo cameras as Python objects.
 
 Installation
