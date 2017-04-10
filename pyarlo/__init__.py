@@ -5,7 +5,8 @@ import requests
 
 from pyarlo.arlo_camera import ArloCamera
 from pyarlo.const import (
-    API_URL, HEADERS, DEVICES_ENDPOINT, LOGIN_ENDPOINT, PARAMS)
+    API_URL, HEADERS, DEVICES_ENDPOINT, LOGIN_ENDPOINT,
+    LOGOUT_ENDPOINT, PARAMS)
 
 
 class PyArlo(object):
@@ -30,17 +31,33 @@ class PyArlo(object):
         self._params['password'] = self.password
         self.session = requests.Session()
 
-        # authenticate user
-        self._authenticate()
+        # login user
+        self.login()
 
     def __repr__(self):
         """Object representation."""
         return "<{0}: {1}>".format(self.__class__.__name__, self.userid)
 
+    def login(self):
+        """Login to the Arlo account."""
+        self._authenticate()
+
+    def logout(self):
+        """Logout from the Arlo account."""
+        url = API_URL + LOGOUT_ENDPOINT
+        if self.authenticated:
+            ret = self.query(url, method='PUT', raw=True)
+            if ret.ok:
+                self.authenticated = None
+                return True
+            else:
+                ret.raise_for_status()
+        return False
+
     def _authenticate(self):
         """Authenticate user and generate token."""
         url = API_URL + LOGIN_ENDPOINT
-        data = self._query(url, method='POST')
+        data = self.query(url, method='POST')
 
         if isinstance(data, dict) and data.get('success'):
             data = data.get('data')
@@ -53,8 +70,12 @@ class PyArlo(object):
             # update header with the generated token
             self._headers['Authorization'] = self.token
 
-    def _query(self, url, method='GET', extra_params=None, extra_headers=None,
-               raw=False):
+    def query(self,
+              url,
+              method='GET',
+              extra_params=None,
+              extra_headers=None,
+              raw=False):
         """Return a JSON object or raw session."""
         response = None
 
@@ -93,7 +114,7 @@ class PyArlo(object):
         devices['cameras'] = []
 
         url = API_URL + DEVICES_ENDPOINT
-        data = self._query(url)
+        data = self.query(url)
 
         for device in data.get('data'):
             name = device.get('deviceName')
@@ -106,3 +127,8 @@ class PyArlo(object):
     def cameras(self):
         """Return all cameras linked on Arlo account."""
         return self.devices['cameras']
+
+    @property
+    def is_connected(self):
+        """Return connection status."""
+        return bool(self.authenticated)
