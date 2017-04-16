@@ -31,32 +31,36 @@ class ArloGeneric(object):
     @property
     def hw_version(self):
         """Return hardware version."""
-        return self._attrs['properties']['hwVersion']
+        return self._attrs.get('properties').get('hwVersion')
 
     @property
     def timezone(self):
         """Return timezone."""
-        return self._attrs['properties']['olsonTimeZone']
+        return self._attrs.get('properties').get('olsonTimeZone')
 
     @property
     def unique_id(self):
         """Return unique_id."""
-        return self._attrs['uniqueId']
+        return self._attrs.get('uniqueId')
 
     @property
     def serial_number(self):
         """Return serial number."""
-        return self._attrs['properties']['serialNumber']
+        return self._attrs.get('properties').get('serialNumber')
 
     @property
     def user_id(self):
         """Return userID."""
-        return self._attrs['userId']
+        return self._attrs.get('userId')
 
     @property
     def xcloud_id(self):
         """Return X-Cloud-ID attribute."""
-        return self._attrs['xCloudId']
+        return self._attrs('xCloudId')
+
+    def get_last_update(self):
+        """Return when camera got updated."""
+        return self._attrs('lastModified')
 
     def _run_action(self, action):
         """Run action."""
@@ -77,3 +81,7 @@ class ArloGeneric(object):
     def disarm(self):
         """Disarm camera."""
         return print(self._run_action('disarm'))
+
+    def update(self):
+        """Update object properties."""
+        return None

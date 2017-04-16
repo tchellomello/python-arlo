@@ -7,6 +7,13 @@ from pyarlo.arlo_generic import ArloGeneric
 class ArloCamera(ArloGeneric):
     """Arlo Camera module implementation."""
 
+    def __init__(self, name, attrs, arlo):
+        """Initialize Arlo generic object."""
+        self._attrs = attrs
+        self._arlo = arlo
+        self.name = name
+        self.updated_at = self.get_last_update()
+
     @property
     def snapshot_url(self):
         """Return snapshot url."""
