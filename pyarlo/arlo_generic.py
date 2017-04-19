@@ -56,11 +56,12 @@ class ArloGeneric(object):
     @property
     def xcloud_id(self):
         """Return X-Cloud-ID attribute."""
-        return self._attrs('xCloudId')
+        return self._attrs.get('xCloudId')
 
-    def get_last_update(self):
+    @property
+    def updated_at(self):
         """Return when camera got updated."""
-        return self._attrs('lastModified')
+        return self._attrs.get('lastModified')
 
     def _run_action(self, action):
         """Run action."""
@@ -84,4 +85,4 @@ class ArloGeneric(object):
 
     def update(self):
         """Update object properties."""
-        return None
+        self._attrs = self._arlo.refresh_attributes(self.name)

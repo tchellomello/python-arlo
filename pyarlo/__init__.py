@@ -123,6 +123,15 @@ class PyArlo(object):
                 devices['cameras'].append(ArloCamera(name, device, self))
         return devices
 
+    def refresh_attributes(self, name):
+        """Refresh attributes from a given Arlo object."""
+        url = API_URL + DEVICES_ENDPOINT
+        data = self.query(url).get('data')
+        for device in data:
+            if device.get('deviceName') == name:
+                return device
+        return None
+
     @property
     def cameras(self):
         """Return all cameras linked on Arlo account."""

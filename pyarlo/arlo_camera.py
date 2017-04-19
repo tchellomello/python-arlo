@@ -12,7 +12,6 @@ class ArloCamera(ArloGeneric):
         self._attrs = attrs
         self._arlo = arlo
         self.name = name
-        self.updated_at = self.get_last_update()
 
     @property
     def snapshot_url(self):
