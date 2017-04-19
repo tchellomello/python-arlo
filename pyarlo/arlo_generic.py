@@ -1,7 +1,7 @@
 # coding: utf-8
 # vim:sw=4:ts=4:et:
 """Generic Python Class file for Netgear Arlo camera module."""
-from pyarlo.const import ACTION_MODES, ACTION_STRUCT, API_URL, NOTIFY_ENDPOINT
+from pyarlo.const import ACTION_MODES, ACTION_STRUCT, NOTIFY_ENDPOINT
 
 
 class ArloGeneric(object):
@@ -65,7 +65,7 @@ class ArloGeneric(object):
 
     def _run_action(self, action):
         """Run action."""
-        url = API_URL + NOTIFY_ENDPOINT.format(self.device_id)
+        url = NOTIFY_ENDPOINT.format(self.device_id)
         json = ACTION_STRUCT
         json['from'] = "{0}_web".format(self.user_id)
         json['to'] = self.device_id

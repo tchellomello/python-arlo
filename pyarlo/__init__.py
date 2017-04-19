@@ -5,8 +5,9 @@ import requests
 
 from pyarlo.arlo_camera import ArloCamera
 from pyarlo.const import (
-    API_URL, HEADERS, DEVICES_ENDPOINT, LOGIN_ENDPOINT,
-    LOGOUT_ENDPOINT, PARAMS)
+    HEADERS, BILLING_ENDPOINT, DEVICES_ENDPOINT,
+    FRIENDS_ENDPOINT, LOGIN_ENDPOINT, LOGOUT_ENDPOINT,
+    PROFILE_ENDPOINT, PARAMS)
 
 
 class PyArlo(object):
@@ -44,7 +45,7 @@ class PyArlo(object):
 
     def logout(self):
         """Logout from the Arlo account."""
-        url = API_URL + LOGOUT_ENDPOINT
+        url = LOGOUT_ENDPOINT
         if self.authenticated:
             ret = self.query(url, method='PUT', raw=True)
             if ret.ok:
@@ -56,7 +57,7 @@ class PyArlo(object):
 
     def _authenticate(self):
         """Authenticate user and generate token."""
-        url = API_URL + LOGIN_ENDPOINT
+        url = LOGIN_ENDPOINT
         data = self.query(url, method='POST')
 
         if isinstance(data, dict) and data.get('success'):
@@ -113,7 +114,7 @@ class PyArlo(object):
         devices = {}
         devices['cameras'] = []
 
-        url = API_URL + DEVICES_ENDPOINT
+        url = DEVICES_ENDPOINT
         data = self.query(url)
 
         for device in data.get('data'):
@@ -125,12 +126,30 @@ class PyArlo(object):
 
     def refresh_attributes(self, name):
         """Refresh attributes from a given Arlo object."""
-        url = API_URL + DEVICES_ENDPOINT
+        url = DEVICES_ENDPOINT
         data = self.query(url).get('data')
         for device in data:
             if device.get('deviceName') == name:
                 return device
         return None
+
+    @property
+    def billing_information(self):
+        """Return billing json."""
+        url = BILLING_ENDPOINT
+        return self.query(url)
+
+    @property
+    def shared_users(self):
+        """Return shared users json."""
+        url = FRIENDS_ENDPOINT
+        return self.query(url)
+
+    @property
+    def profile(self):
+        """Return user profile json."""
+        url = PROFILE_ENDPOINT
+        return self.query(url)
 
     @property
     def cameras(self):
