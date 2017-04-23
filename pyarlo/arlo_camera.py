@@ -9,7 +9,7 @@ class ArloCamera(ArloGeneric):
 
     def __init__(self, name, attrs, arlo):
         """Initialize Arlo generic object."""
-        super(ArloCamera, self).__init__()
+        super(ArloGeneric, self).__init__()
         self._attrs = attrs
         self._arlo = arlo
         self.name = name
