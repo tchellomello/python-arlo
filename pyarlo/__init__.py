@@ -119,8 +119,9 @@ class PyArlo(object):
 
         for device in data.get('data'):
             name = device.get('deviceName')
-            if device.get('deviceType') == 'camera' or \
-               device.get('deviceType') == 'arloqs':
+            if (device.get('deviceType') == 'camera' or \
+                device.get('deviceType') == 'arloqs') and \
+               (device.get('state') == 'provisioned'):
                 devices['cameras'].append(ArloCamera(name, device, self))
         return devices
 
