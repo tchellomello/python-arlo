@@ -1,7 +1,6 @@
 # coding: utf-8
-# vim:sw=4:ts=4:et:
 """Generic Python Class file for Netgear Arlo camera module."""
-from pyarlo.const import ACTION_MODES, ACTION_STRUCT, NOTIFY_ENDPOINT
+from pyarlo.const import ACTION_MODES, NOTIFY_ENDPOINT, RUN_ACTION_BODY
 
 
 class ArloGeneric(object):
@@ -54,6 +53,11 @@ class ArloGeneric(object):
         return self._attrs.get('userId')
 
     @property
+    def user_role(self):
+        """Return userRole."""
+        return self._attrs.get('userRole')
+
+    @property
     def xcloud_id(self):
         """Return X-Cloud-ID attribute."""
         return self._attrs.get('xCloudId')
@@ -66,23 +70,26 @@ class ArloGeneric(object):
     def _run_action(self, action):
         """Run action."""
         url = NOTIFY_ENDPOINT.format(self.device_id)
-        json = ACTION_STRUCT
-        json['from'] = "{0}_web".format(self.user_id)
-        json['to'] = self.device_id
-        json['properties'] = {'active': ACTION_MODES.get(action)}
-        self._arlo.query(url, method='POST',
-                         extra_headers={"xCloudId": self.xcloud_id})
+        body = RUN_ACTION_BODY
+        body['from'] = "{0}_web".format(self.user_id)
+        body['to'] = self.device_id
+        body['properties'] = {'active': ACTION_MODES.get(action)}
 
-    @property
-    def arm(self):
-        """Arm camera."""
-        return print(self._run_action('arm'))
+        ret = \
+            self._arlo.query(url, method='POST', extra_params=body,
+                             extra_headers={"xCloudId": self.xcloud_id})
+        return ret.get('success')
 
-    @property
-    def disarm(self):
-        """Disarm camera."""
-        return print(self._run_action('disarm'))
+    def set_mode(self, mode):
+        """Set Arlo camera mode.
+
+        :param mode: arm, disarm
+        """
+        if mode in ACTION_MODES.keys():
+            return self._run_action(mode)
 
     def update(self):
         """Update object properties."""
-        self._attrs = self._arlo.refresh_attributes(self.name)
+        self._attrs = self._arlo._refresh_attributes(self.name)
+
+# vim:sw=4:ts=4:et:

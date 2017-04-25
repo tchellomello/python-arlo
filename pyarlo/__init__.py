@@ -1,20 +1,26 @@
 # coding: utf-8
-# vim:sw=4:ts=4:et:
 """Base Python Class file for Netgear Arlo camera module."""
 import requests
 
-from pyarlo.arlo_camera import ArloCamera
+from pyarlo.camera import ArloCamera
 from pyarlo.const import (
     HEADERS, BILLING_ENDPOINT, DEVICES_ENDPOINT,
-    FRIENDS_ENDPOINT, LOGIN_ENDPOINT, LOGOUT_ENDPOINT,
-    PROFILE_ENDPOINT, PARAMS)
+    DISPLAY_ORDER_ENDPOINT,
+    FRIENDS_ENDPOINT, LIBRARY_ENDPOINT, LOGIN_ENDPOINT,
+    LOGOUT_ENDPOINT, PROFILE_ENDPOINT, PARAMS)
 
 
 class PyArlo(object):
     """Base object for Netgar Arlo camera."""
 
     def __init__(self, username=None, password=None):
-        """Initialize the PyArlo object."""
+        """Create a PyArlo object.
+
+        :param username: Arlo user email
+        :param password: Arlo user password
+
+        :returns PyArlo base object
+        """
         self.authenticated = None
         self.country_code = None
         self.date_created = None
@@ -125,7 +131,7 @@ class PyArlo(object):
                 devices['cameras'].append(ArloCamera(name, device, self))
         return devices
 
-    def refresh_attributes(self, name):
+    def _refresh_attributes(self, name):
         """Refresh attributes from a given Arlo object."""
         url = DEVICES_ENDPOINT
         data = self.query(url).get('data')
@@ -133,6 +139,12 @@ class PyArlo(object):
             if device.get('deviceName') == name:
                 return device
         return None
+
+    @property
+    def device_order(self):
+        """Return device order json."""
+        url = DISPLAY_ORDER__ENDPOINT
+        return self.query(url)
 
     @property
     def billing_information(self):
@@ -152,6 +164,19 @@ class PyArlo(object):
         url = PROFILE_ENDPOINT
         return self.query(url)
 
+    # TODO: handle parameters on this function to filter results
+    # Create new object ArloMediaLibrary
+    def library(self, limit=None, date_from=None, date_to=None):
+        """Return library json.
+        
+        :param limit: define number of items returned
+        :param date_from: refine from initial date
+        :param date_to: refine final date
+        """
+        url = LIBRARY_ENDPOINT
+        params = {'dateFrom': '20170201', 'dateTo': '20170428'}
+        return self.query(url, method='POST', extra_params=params)
+
     @property
     def cameras(self):
         """Return all cameras linked on Arlo account."""
@@ -161,3 +186,5 @@ class PyArlo(object):
     def is_connected(self):
         """Return connection status."""
         return bool(self.authenticated)
+
+# vim:sw=4:ts=4:et:
