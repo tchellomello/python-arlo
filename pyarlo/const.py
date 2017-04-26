@@ -16,6 +16,9 @@ PROFILE_ENDPOINT = API_URL + "/users/profile"
 # default headers
 HEADERS = {'Content-Type': 'application/json'}
 
+# number of days to preload video
+PRELOAD_DAYS = 30
+
 # connection parameters
 PARAMS = {'email': None, 'password': None}
 

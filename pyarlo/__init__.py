@@ -1,23 +1,29 @@
 # coding: utf-8
 """Base Python Class file for Netgear Arlo camera module."""
+import logging
 import requests
 
 from pyarlo.camera import ArloCamera
+from pyarlo.media import ArloMediaLibrary
 from pyarlo.const import (
     HEADERS, BILLING_ENDPOINT, DEVICES_ENDPOINT,
-    DISPLAY_ORDER_ENDPOINT,
-    FRIENDS_ENDPOINT, LIBRARY_ENDPOINT, LOGIN_ENDPOINT,
-    LOGOUT_ENDPOINT, PROFILE_ENDPOINT, PARAMS)
+    DISPLAY_ORDER_ENDPOINT, FRIENDS_ENDPOINT, LOGIN_ENDPOINT,
+    PROFILE_ENDPOINT, PARAMS, PRELOAD_DAYS)
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class PyArlo(object):
     """Base object for Netgar Arlo camera."""
 
-    def __init__(self, username=None, password=None):
+    def __init__(self, username=None, password=None,
+                 preload=True, days=PRELOAD_DAYS):
         """Create a PyArlo object.
 
         :param username: Arlo user email
         :param password: Arlo user password
+        :param preload: Boolean to preload video library.
+        :param days: If preload, number of days to lookup.
 
         :returns PyArlo base object
         """
@@ -32,14 +38,19 @@ class PyArlo(object):
         self.username = username
 
         # initialize connection parameters
-        self._headers = HEADERS
-        self._params = PARAMS
-        self._params['email'] = self.username
-        self._params['password'] = self.password
+        self.__headers = HEADERS
+        self.__params = PARAMS
+        self.__params['email'] = self.username
+        self.__params['password'] = self.password
         self.session = requests.Session()
 
         # login user
         self.login()
+
+        # pylint: disable=invalid-name
+        self.ArloMediaLibrary = ArloMediaLibrary(self,
+                                                 preload=preload,
+                                                 days=days)
 
     def __repr__(self):
         """Object representation."""
@@ -47,19 +58,8 @@ class PyArlo(object):
 
     def login(self):
         """Login to the Arlo account."""
+        _LOGGER.debug("Creating Arlo session")
         self._authenticate()
-
-    def logout(self):
-        """Logout from the Arlo account."""
-        url = LOGOUT_ENDPOINT
-        if self.authenticated:
-            ret = self.query(url, method='PUT', raw=True)
-            if ret.ok:
-                self.authenticated = None
-                return True
-            else:
-                ret.raise_for_status()
-        return False
 
     def _authenticate(self):
         """Authenticate user and generate token."""
@@ -75,44 +75,72 @@ class PyArlo(object):
             self.userid = data.get('userId')
 
             # update header with the generated token
-            self._headers['Authorization'] = self.token
+            self.__headers['Authorization'] = self.token
 
     def query(self,
               url,
               method='GET',
               extra_params=None,
               extra_headers=None,
+              retry=3,
               raw=False):
-        """Return a JSON object or raw session."""
+        """
+        Return a JSON object or raw session.
+
+        :param url:  Arlo API URL
+        :param method: Specify the method GET, POST or PUT. Default is GET.
+        :param extra_params: Dictionary to be appended on request.body
+        :param extra_headers: Dictionary to be apppended on request.headers
+        :param retry: Attempts to retry a query. Default is 3.
+        :param raw: Boolean if query() will return request object instead JSON.
+        """
         response = None
+        loop = 0
 
-        # extend params
-        if extra_params:
-            params = self._params
-            params.update(extra_params)
-        else:
-            params = self._params
+        while loop <= retry:
 
-        # extend headers
-        if extra_headers:
-            headers = self._headers
-            headers.update(extra_headers)
-        else:
-            headers = self._headers
-
-        if method == 'GET':
-            req = self.session.get(url, headers=headers)
-        elif method == 'PUT':
-            req = self.session.put(url, json=params, headers=headers)
-        elif method == 'POST':
-            req = self.session.post(url, json=params, headers=headers)
-
-        if req.status_code == 200:
-            if raw:
-                response = req
+            # override request.body or request.headers dictionary
+            if extra_params:
+                params = self.__params
+                params.update(extra_params)
             else:
-                response = req.json()
+                params = self.__params
+            _LOGGER.debug("Params: %s", params)
+
+            if extra_headers:
+                headers = self.__headers
+                headers.update(extra_headers)
+            else:
+                headers = self.__headers
+            _LOGGER.debug("Headers: %s", headers)
+
+            loop += 1
+            _LOGGER.debug("Querying %s on attempt: %s/%s", url, loop, retry)
+            try:
+                if method == 'GET':
+                    req = self.session.get(url, headers=headers)
+                elif method == 'PUT':
+                    req = self.session.put(url, json=params, headers=headers)
+                elif method == 'POST':
+                    req = self.session.post(url, json=params, headers=headers)
+            except:
+                raise
+
+            if req.status_code == 200:
+                if raw:
+                    _LOGGER.debug("Required raw object.")
+                    response = req
+                else:
+                    response = req.json()
+
+                # leave if everything worked fine
+                break
         return response
+
+    @property
+    def cameras(self):
+        """Return all cameras linked on Arlo account."""
+        return self.devices['cameras']
 
     @property
     def devices(self):
@@ -131,19 +159,25 @@ class PyArlo(object):
                 devices['cameras'].append(ArloCamera(name, device, self))
         return devices
 
-    def _refresh_attributes(self, name):
+    def lookup_camera_by_id(self, device_id):
+        """Return camera object by device_id."""
+        camera = list(filter(
+            lambda cam: cam.device_id == device_id, self.cameras))[0]
+        if camera:
+            return camera
+
+    def refresh_attributes(self, name):
         """Refresh attributes from a given Arlo object."""
         url = DEVICES_ENDPOINT
         data = self.query(url).get('data')
         for device in data:
             if device.get('deviceName') == name:
                 return device
-        return None
 
     @property
     def device_order(self):
         """Return device order json."""
-        url = DISPLAY_ORDER__ENDPOINT
+        url = DISPLAY_ORDER_ENDPOINT
         return self.query(url)
 
     @property
@@ -163,24 +197,6 @@ class PyArlo(object):
         """Return user profile json."""
         url = PROFILE_ENDPOINT
         return self.query(url)
-
-    # TODO: handle parameters on this function to filter results
-    # Create new object ArloMediaLibrary
-    def library(self, limit=None, date_from=None, date_to=None):
-        """Return library json.
-        
-        :param limit: define number of items returned
-        :param date_from: refine from initial date
-        :param date_to: refine final date
-        """
-        url = LIBRARY_ENDPOINT
-        params = {'dateFrom': '20170201', 'dateTo': '20170428'}
-        return self.query(url, method='POST', extra_params=params)
-
-    @property
-    def cameras(self):
-        """Return all cameras linked on Arlo account."""
-        return self.devices['cameras']
 
     @property
     def is_connected(self):
