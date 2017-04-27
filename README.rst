@@ -51,7 +51,17 @@ Usage
     <ArloMediaLibrary: 235-1496386>
 
     arlo.ArloMediaLibrary.videos
-    [<ArloVideo: Garage_1493171207448: 00:01:00>,
+    [<ArloVideo: Garage_1493262125792: 00:01:00>,
+     <ArloVideo: Garage_1493252480334: 00:01:00>,
+     <ArloVideo: Front Door_1493250408464: 00:00:55>,
+     <ArloVideo: Garage_1493250374496: 00:01:00>,
+     <ArloVideo: Front Door_1493250162591: 00:01:00>,
+     <ArloVideo: Garage_1493224918537: 00:00:35>,
+     <ArloVideo: Garage_1493224835637: 00:01:00>,
+     <ArloVideo: Garage_1493223888822: 00:01:00>,
+     <ArloVideo: Garage_1493206976812: 00:01:00>,
+     <ArloVideo: Garage_1493205632983: 00:01:00>,
+     <ArloVideo: Garage_1493171207448: 00:01:00>,
      <ArloVideo: Garage_1493171017009: 00:01:00>,
      <ArloVideo: Garage_1493160064553: 00:01:00>,
      <ArloVideo: Garage_1493159912748: 00:01:00>,
@@ -61,7 +71,6 @@ Usage
      <ArloVideo: Garage_1492565105936: 00:01:00>,
      <ArloVideo: Garage_1492565031836: 00:01:00>]
 
-
     # showing a video properties
     vdo = arlo.ArloMediaLibrary.videos[0]
     vdo.camera
@@ -70,3 +79,7 @@ Usage
     # downloading video
     vdo.download_video('/home/user/garage.mp4')
     True
+
+    # getting the URL for live streaming
+    vdo.live_streaming()
+    rtmps://vzwow72-z2-prod.vz.netgear.com:80/vzmodulelive?egressToken=b723a7bb_abb2XXXXXXXX&userAgent=web&cameraId=48AAAAAAAAF_149999999999
