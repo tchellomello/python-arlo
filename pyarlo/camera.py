@@ -4,7 +4,6 @@ import logging
 from pyarlo.const import (
     ACTION_MODES, NOTIFY_ENDPOINT, RUN_ACTION_BODY,
     STREAM_ENDPOINT, STREAMING_BODY)
-from pyarlo.utils import http_stream
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -133,9 +132,7 @@ class ArloCamera(object):
 
         _LOGGER.debug("Streaming results %s", ret)
         if ret.get('success'):
-            streaming_url = ret.get('data').get('url')
-            for data in http_stream(streaming_url):
-                yield data
+            return ret.get('data').get('url')
         return ret.get('data')
 
     def update(self):
