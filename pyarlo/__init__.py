@@ -6,9 +6,9 @@ import requests
 from pyarlo.camera import ArloCamera
 from pyarlo.media import ArloMediaLibrary
 from pyarlo.const import (
-    HEADERS, BILLING_ENDPOINT, DEVICES_ENDPOINT,
-    DISPLAY_ORDER_ENDPOINT, FRIENDS_ENDPOINT, LOGIN_ENDPOINT,
-    PROFILE_ENDPOINT, PARAMS, PRELOAD_DAYS)
+    BILLING_ENDPOINT, DEVICES_ENDPOINT,
+    FRIENDS_ENDPOINT, LOGIN_ENDPOINT,
+    PROFILE_ENDPOINT, PRELOAD_DAYS)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,18 +30,14 @@ class PyArlo(object):
         self.authenticated = None
         self.country_code = None
         self.date_created = None
-        self.token = None
         self.userid = None
+        self.__token = None
+        self._headers = None
+        self._params = None
 
         # set username and password
         self.password = password
         self.username = username
-
-        # initialize connection parameters
-        self.__headers = HEADERS
-        self.__params = PARAMS
-        self.__params['email'] = self.username
-        self.__params['password'] = self.password
         self.session = requests.Session()
 
         # login user
@@ -63,6 +59,7 @@ class PyArlo(object):
 
     def _authenticate(self):
         """Authenticate user and generate token."""
+        self.cleanup_headers()
         url = LOGIN_ENDPOINT
         data = self.query(url, method='POST')
 
@@ -71,11 +68,20 @@ class PyArlo(object):
             self.authenticated = data.get('authenticated')
             self.country_code = data.get('countryCode')
             self.date_created = data.get('dateCreated')
-            self.token = data.get('token')
+            self.__token = data.get('token')
             self.userid = data.get('userId')
 
             # update header with the generated token
-            self.__headers['Authorization'] = self.token
+            self._headers['Authorization'] = self.__token
+
+    def cleanup_headers(self):
+        """Reset the headers and params."""
+        headers = {'Content-Type': 'application/json'}
+        headers['Authorization'] = self.__token
+        self._headers = headers
+
+        params = {'email': self.username, 'password': self.password}
+        self._params = params
 
     def query(self,
               url,
@@ -97,35 +103,38 @@ class PyArlo(object):
         response = None
         loop = 0
 
+        # always make sure the headers and params are clean
+        self.cleanup_headers()
+
         while loop <= retry:
 
             # override request.body or request.headers dictionary
             if extra_params:
-                params = self.__params
+                params = self._params
                 params.update(extra_params)
             else:
-                params = self.__params
+                params = self._params
             _LOGGER.debug("Params: %s", params)
 
             if extra_headers:
-                headers = self.__headers
+                headers = self._headers
                 headers.update(extra_headers)
             else:
-                headers = self.__headers
+                headers = self._headers
             _LOGGER.debug("Headers: %s", headers)
 
-            loop += 1
             _LOGGER.debug("Querying %s on attempt: %s/%s", url, loop, retry)
-            try:
-                if method == 'GET':
-                    req = self.session.get(url, headers=headers)
-                elif method == 'PUT':
-                    req = self.session.put(url, json=params, headers=headers)
-                elif method == 'POST':
-                    req = self.session.post(url, json=params, headers=headers)
-            except:
-                raise
+            loop += 1
 
+            # define connection method
+            if method == 'GET':
+                req = self.session.get(url, headers=headers)
+            elif method == 'PUT':
+                req = self.session.put(url, json=params, headers=headers)
+            elif method == 'POST':
+                req = self.session.post(url, json=params, headers=headers)
+
+            req.raise_for_status()
             if req.status_code == 200:
                 if raw:
                     _LOGGER.debug("Required raw object.")
@@ -173,12 +182,6 @@ class PyArlo(object):
         for device in data:
             if device.get('deviceName') == name:
                 return device
-
-    @property
-    def device_order(self):
-        """Return device order json."""
-        url = DISPLAY_ORDER_ENDPOINT
-        return self.query(url)
 
     @property
     def billing_information(self):

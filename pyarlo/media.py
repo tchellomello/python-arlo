@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 from datetime import timedelta
 from pyarlo.const import LIBRARY_ENDPOINT, PRELOAD_DAYS
-from pyarlo.utils import http_get, http_stream
+from pyarlo.utils import http_get
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -140,10 +140,5 @@ class ArloVideo(object):
         :param filename: File to save video. Default: stdout
         """
         return http_get(self.video_url, filename)
-
-    def stream_video(self, chunk=4096):
-        """Generate stream for a given record video."""
-        return http_stream(self.video_url)
-
 
 # vim:sw=4:ts=4:et:

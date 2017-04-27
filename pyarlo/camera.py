@@ -1,7 +1,10 @@
 # coding: utf-8
 """Generic Python Class file for Netgear Arlo camera module."""
 import logging
-from pyarlo.const import ACTION_MODES, NOTIFY_ENDPOINT, RUN_ACTION_BODY
+from pyarlo.const import (
+    ACTION_MODES, NOTIFY_ENDPOINT, RUN_ACTION_BODY,
+    STREAM_ENDPOINT, STREAMING_BODY)
+from pyarlo.utils import http_stream
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -90,7 +93,6 @@ class ArloCamera(object):
         """Return list of available modes."""
         return ACTION_MODES.keys()
 
-    # TODO determine a way to capture current mode
     @property
     def mode(self):
         """Return current mode."""
@@ -105,6 +107,36 @@ class ArloCamera(object):
         if mode not in ACTION_MODES.keys():
             return "Invalid mode"
         return self.__run_action(mode)
+
+    def live_streaming(self):
+        """Return live streaming generator."""
+        url = STREAM_ENDPOINT
+
+        # override params
+        params = STREAMING_BODY
+        params['from'] = "{0}_web".format(self.user_id)
+        params['to'] = self.device_id
+        params['resource'] = "cameras/{0}".format(self.device_id)
+        params['transId'] = "web!{0}".format(self.xcloud_id)
+
+        # override headers
+        headers = {'xCloudId': self.xcloud_id}
+
+        _LOGGER.debug("Streaming device %s", self.name)
+        _LOGGER.debug("Device params %s", params)
+        _LOGGER.debug("Device headers %s", headers)
+
+        ret = self._session.query(url,
+                                  method='POST',
+                                  extra_params=params,
+                                  extra_headers=headers)
+
+        _LOGGER.debug("Streaming results %s", ret)
+        if ret.get('success'):
+            streaming_url = ret.get('data').get('url')
+            for data in http_stream(streaming_url):
+                yield data
+        return ret.get('data')
 
     def update(self):
         """Update object properties."""
