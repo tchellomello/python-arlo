@@ -32,12 +32,12 @@ class PyArlo(object):
         self.date_created = None
         self.userid = None
         self.__token = None
-        self._headers = None
-        self._params = None
+        self.__headers = None
+        self.__params = None
 
         # set username and password
-        self.password = password
-        self.username = username
+        self.__password = password
+        self.__username = username
         self.session = requests.Session()
 
         # login user
@@ -72,16 +72,16 @@ class PyArlo(object):
             self.userid = data.get('userId')
 
             # update header with the generated token
-            self._headers['Authorization'] = self.__token
+            self.__headers['Authorization'] = self.__token
 
     def cleanup_headers(self):
         """Reset the headers and params."""
         headers = {'Content-Type': 'application/json'}
         headers['Authorization'] = self.__token
-        self._headers = headers
+        self.__headers = headers
 
-        params = {'email': self.username, 'password': self.password}
-        self._params = params
+        params = {'email': self.__username, 'password': self.__password}
+        self.__params = params
 
     def query(self,
               url,
@@ -110,17 +110,17 @@ class PyArlo(object):
 
             # override request.body or request.headers dictionary
             if extra_params:
-                params = self._params
+                params = self.__params
                 params.update(extra_params)
             else:
-                params = self._params
+                params = self.__params
             _LOGGER.debug("Params: %s", params)
 
             if extra_headers:
-                headers = self._headers
+                headers = self.__headers
                 headers.update(extra_headers)
             else:
-                headers = self._headers
+                headers = self.__headers
             _LOGGER.debug("Headers: %s", headers)
 
             _LOGGER.debug("Querying %s on attempt: %s/%s", url, loop, retry)
