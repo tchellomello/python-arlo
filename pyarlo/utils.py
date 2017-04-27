@@ -16,4 +16,16 @@ def http_get(url, filename=None):
             data.write(ret.content)
     return True
 
+
+def http_stream(url, chunk=4096):
+    """Generate stream for a given record video.
+
+    :param chunk: chunk bytes to read per time
+    :returns generator object
+    """
+    ret = requests.get(url, stream=True)
+    ret.raise_for_status()
+    for data in ret.iter_content(chunk):
+        yield data
+
 # vim:sw=4:ts=4:et:

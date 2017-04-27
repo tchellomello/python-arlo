@@ -1,9 +1,12 @@
 # coding: utf-8
 """Implementation of Arlo Media object."""
+import logging
 from datetime import datetime
 from datetime import timedelta
 from pyarlo.const import LIBRARY_ENDPOINT, PRELOAD_DAYS
-from pyarlo.utils import http_get
+from pyarlo.utils import http_get, http_stream
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class ArloMediaLibrary(object):
@@ -58,6 +61,7 @@ class ArloMediaLibrary(object):
                     lambda cam: cam.device_id == video.get('deviceId'),
                     cameras))[0]
             videos.append(ArloVideo(video, srccam, self._session))
+        _LOGGER.debug("Total loaded videos (%s) - %s", len(videos), videos)
         return videos
 
 
@@ -136,5 +140,10 @@ class ArloVideo(object):
         :param filename: File to save video. Default: stdout
         """
         return http_get(self.video_url, filename)
+
+    def stream_video(self, chunk=4096):
+        """Generate stream for a given record video."""
+        return http_stream(self.video_url)
+
 
 # vim:sw=4:ts=4:et:

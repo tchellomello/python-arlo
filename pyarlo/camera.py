@@ -1,6 +1,9 @@
 # coding: utf-8
 """Generic Python Class file for Netgear Arlo camera module."""
+import logging
 from pyarlo.const import ACTION_MODES, NOTIFY_ENDPOINT, RUN_ACTION_BODY
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class ArloCamera(object):
@@ -67,7 +70,7 @@ class ArloCamera(object):
         """Return X-Cloud-ID attribute."""
         return self._attrs.get('xCloudId')
 
-    def _run_action(self, action):
+    def __run_action(self, action):
         """Run action."""
         url = NOTIFY_ENDPOINT.format(self.device_id)
         body = RUN_ACTION_BODY
@@ -75,18 +78,33 @@ class ArloCamera(object):
         body['to'] = self.device_id
         body['properties'] = {'active': ACTION_MODES.get(action)}
 
+        _LOGGER.debug("Action body: %s", body)
+
         ret = \
             self._session.query(url, method='POST', extra_params=body,
                                 extra_headers={"xCloudId": self.xcloud_id})
         return ret.get('success')
 
-    def set_mode(self, mode):
+    @property
+    def available_modes(self):
+        """Return list of available modes."""
+        return ACTION_MODES.keys()
+
+    # TODO determine a way to capture current mode
+    @property
+    def mode(self):
+        """Return current mode."""
+        return None
+
+    @mode.setter
+    def mode(self, mode):
         """Set Arlo camera mode.
 
         :param mode: arm, disarm
         """
-        if mode in ACTION_MODES.keys():
-            return self._run_action(mode)
+        if mode not in ACTION_MODES.keys():
+            return "Invalid mode"
+        return self.__run_action(mode)
 
     def update(self):
         """Update object properties."""
