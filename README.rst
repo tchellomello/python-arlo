@@ -32,18 +32,43 @@ Usage
 
 .. code-block:: python
 
-    # list devices
+    # connecting
     from pyarlo import PyArlo
     arlo  = PyArlo('foo@bar', 'secret')
 
+    # listing devices
     arlo.devices
-    {'cameras': [<ArloCamera: Garage>,  <ArloCamera: Patio>,
+    {'base_station': [<ArloBaseStation: Home>],
+     'cameras': [<ArloCamera: Garage>,  <ArloCamera: Patio>,
       <ArloCamera: Front Door>, <ArloCamera: Patio Gate>]}
 
-    # list all cameras
+    # listing base stations
+    arlo.base_stations
+    [<ArloBaseStation: Home>]
+
+    # listing all cameras
     arlo.cameras
     [<ArloCamera: Garage>, <ArloCamera: Patio>,
      <ArloCamera: Front Door>, <ArloCamera: Patio Gate>]
+
+    # showing camera preferences
+    garage_cam = arlo.cameras[3]
+    garage_cam
+    <ArloCamera: Garage>
+
+    # printing camera attributes
+    garage_cam.serial_number
+    garage_cam.model_id
+
+    # refreshing camera properties
+    garage_cam.update()
+
+    # setting camera mode
+    garage_cam.mode = 'arm'
+
+    # gathering live_streaming URL
+    garage_cam.live_streaming()
+    rtmps://vzwow72-z2-prod.vz.netgear.com:80/vzmodulelive?egressToken=b723a7bb_abbXX&userAgent=web&cameraId=48AAAAA
 
     # by default, all videos recorded within
     # the last 30 days will be pre-loaded
@@ -59,27 +84,27 @@ Usage
      <ArloVideo: Garage_1493224918537: 00:00:35>,
      <ArloVideo: Garage_1493224835637: 00:01:00>,
      <ArloVideo: Garage_1493223888822: 00:01:00>,
-     <ArloVideo: Garage_1493206976812: 00:01:00>,
-     <ArloVideo: Garage_1493205632983: 00:01:00>,
-     <ArloVideo: Garage_1493171207448: 00:01:00>,
-     <ArloVideo: Garage_1493171017009: 00:01:00>,
-     <ArloVideo: Garage_1493160064553: 00:01:00>,
-     <ArloVideo: Garage_1493159912748: 00:01:00>,
-     <ArloVideo: Garage_1493159122023: 00:01:00>,
      <ArloVideo: Garage_1493153854245: 00:01:00>,
      <ArloVideo: Garage_1493120234227: 00:01:00>,
      <ArloVideo: Garage_1492565105936: 00:01:00>,
      <ArloVideo: Garage_1492565031836: 00:01:00>]
 
     # showing a video properties
-    vdo = arlo.ArloMediaLibrary.videos[0]
-    vdo.camera
+    media = arlo.ArloMediaLibrary.videos[0]
+    media.camera
     <ArloCamera: Garage>
 
-    # downloading video
-    vdo.download_video('/home/user/garage.mp4')
-    True
+    # media content type
+    media.content_type
+    'video/mp4'
 
-    # getting the URL for live streaming
-    vdo.live_streaming()
-    rtmps://vzwow72-z2-prod.vz.netgear.com:80/vzmodulelive?egressToken=b723a7bb_abb2XXXXXXXX&userAgent=web&cameraId=48AAAAAAAAF_149999999999
+    # media lenght in seconds
+    media.media_duration_seconds
+    60
+
+    # displaying thumbnail to stdout
+    media.download_thumbnail()
+
+    # downloading video
+    media.download_video('/home/user/garage.mp4')
+    True

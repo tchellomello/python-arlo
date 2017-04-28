@@ -3,6 +3,7 @@
 import logging
 import requests
 
+from pyarlo.base_station import ArloBaseStation
 from pyarlo.camera import ArloCamera
 from pyarlo.media import ArloMediaLibrary
 from pyarlo.const import (
@@ -152,10 +153,16 @@ class PyArlo(object):
         return self.devices['cameras']
 
     @property
+    def base_stations(self):
+        """Return all base stations linked on Arlo account."""
+        return self.devices['base_station']
+
+    @property
     def devices(self):
         """Return all devices on Arlo account."""
         devices = {}
         devices['cameras'] = []
+        devices['base_station'] = []
 
         url = DEVICES_ENDPOINT
         data = self.query(url)
@@ -166,6 +173,12 @@ class PyArlo(object):
                  device.get('deviceType') == 'arloqs') and
                     device.get('state') == 'provisioned'):
                 devices['cameras'].append(ArloCamera(name, device, self))
+
+            if device.get('deviceType') == 'basestation' and \
+               device.get('state') == 'provisioned':
+                devices['base_station'].append(ArloBaseStation(name,
+                                                               device,
+                                                               self))
         return devices
 
     def lookup_camera_by_id(self, device_id):
