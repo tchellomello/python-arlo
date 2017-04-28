@@ -24,8 +24,7 @@ Installation
     $ pip install pyarlo
 
     # Install latest development
-    $ pip install \
-        git+https://github.com/tchellomello/python-arlo@dev
+    $ pip install git+https://github.com/tchellomello/python-arlo@dev
 
 Usage
 -----
