@@ -18,8 +18,10 @@ PRELOAD_DAYS = 30
 
 # define action modes
 ACTION_MODES = {
-    'arm': 'mode1',
-    'disarm': 'mode0',
+    'armed': 'mode1',
+    'disarmed': 'mode0',
+    'custom': 'mode2',
+    'schedule': 'true',
 }
 
 # define body used when executing an action

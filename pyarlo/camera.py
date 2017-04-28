@@ -1,9 +1,7 @@
 # coding: utf-8
 """Generic Python Class file for Netgear Arlo camera module."""
 import logging
-from pyarlo.const import (
-    ACTION_MODES, NOTIFY_ENDPOINT, RUN_ACTION_BODY,
-    STREAM_ENDPOINT, STREAMING_BODY)
+from pyarlo.const import STREAM_ENDPOINT, STREAMING_BODY
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -76,41 +74,6 @@ class ArloCamera(object):
     def xcloud_id(self):
         """Return X-Cloud-ID attribute."""
         return self._attrs.get('xCloudId')
-
-    def __run_action(self, action):
-        """Run action."""
-        url = NOTIFY_ENDPOINT.format(self.device_id)
-        body = RUN_ACTION_BODY
-        body['from'] = "{0}_web".format(self.user_id)
-        body['to'] = self.device_id
-        body['properties'] = {'active': ACTION_MODES.get(action)}
-
-        _LOGGER.debug("Action body: %s", body)
-
-        ret = \
-            self._session.query(url, method='POST', extra_params=body,
-                                extra_headers={"xCloudId": self.xcloud_id})
-        return ret.get('success')
-
-    @property
-    def available_modes(self):
-        """Return list of available modes."""
-        return ACTION_MODES.keys()
-
-    @property
-    def mode(self):
-        """Return current mode."""
-        return None
-
-    @mode.setter
-    def mode(self, mode):
-        """Set Arlo camera mode.
-
-        :param mode: arm, disarm
-        """
-        if mode not in ACTION_MODES.keys():
-            return "Invalid mode"
-        return self.__run_action(mode)
 
     def live_streaming(self):
         """Return live streaming generator."""

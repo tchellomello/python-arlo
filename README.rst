@@ -44,6 +44,14 @@ Usage
     # listing base stations
     arlo.base_stations
     [<ArloBaseStation: Home>]
+    base = arlo.base_stations[0]
+
+    # listing Arlo modes
+    base.available_modes
+    ['armed', 'disarmed', 'schedule', 'custom']
+
+    # setting a mode
+    garage_cam.mode = 'armed'
 
     # listing all cameras
     arlo.cameras
@@ -61,9 +69,6 @@ Usage
 
     # refreshing camera properties
     garage_cam.update()
-
-    # setting camera mode
-    garage_cam.mode = 'arm'
 
     # gathering live_streaming URL
     garage_cam.live_streaming()
