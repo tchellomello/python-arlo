@@ -65,7 +65,12 @@ Usage
 
     # printing camera attributes
     garage_cam.serial_number
+    4AAAAAAA
+
     garage_cam.model_id
+    VMC3030
+    garage_cam.unseen_videos
+    29
 
     # refreshing camera properties
     garage_cam.update()

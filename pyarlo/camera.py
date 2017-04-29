@@ -66,6 +66,11 @@ class ArloCamera(object):
         return self._attrs.get('userId')
 
     @property
+    def unseen_videos(self):
+        """Return number of unseen videos."""
+        return self._attrs.get('mediaObjectCount')
+
+    @property
     def user_role(self):
         """Return userRole."""
         return self._attrs.get('userRole')
