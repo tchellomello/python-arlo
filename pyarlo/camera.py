@@ -1,7 +1,8 @@
 # coding: utf-8
 """Generic Python Class file for Netgear Arlo camera module."""
 import logging
-from pyarlo.const import STREAM_ENDPOINT, STREAMING_BODY
+from pyarlo.const import (
+    RESET_CAM_ENDPOINT, STREAM_ENDPOINT, STREAMING_BODY)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -69,6 +70,14 @@ class ArloCamera(object):
     def unseen_videos(self):
         """Return number of unseen videos."""
         return self._attrs.get('mediaObjectCount')
+
+    @property
+    def unseen_videos_reset(self):
+        """Reset the unseen videos counter."""
+        url = RESET_CAM_ENDPOINT.format(self.unique_id)
+        ret = self._session.query(url).get('success')
+        self.update()
+        return ret
 
     @property
     def user_role(self):
