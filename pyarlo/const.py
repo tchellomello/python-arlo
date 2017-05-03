@@ -11,6 +11,8 @@ LOGIN_ENDPOINT = API_URL + "/login"
 LOGOUT_ENDPOINT = API_URL + "/logout"
 NOTIFY_ENDPOINT = API_URL + "/users/devices/notify/{0}"
 PROFILE_ENDPOINT = API_URL + "/users/profile"
+RESET_ENDPOINT = LIBRARY_ENDPOINT + "/reset"
+RESET_CAM_ENDPOINT = RESET_ENDPOINT + "/?uniqueId={0}"
 STREAM_ENDPOINT = API_URL + "/users/devices/startStream"
 
 # number of days to preload video

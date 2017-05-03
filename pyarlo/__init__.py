@@ -7,9 +7,9 @@ from pyarlo.base_station import ArloBaseStation
 from pyarlo.camera import ArloCamera
 from pyarlo.media import ArloMediaLibrary
 from pyarlo.const import (
-    BILLING_ENDPOINT, DEVICES_ENDPOINT,
-    FRIENDS_ENDPOINT, LOGIN_ENDPOINT,
-    PROFILE_ENDPOINT, PRELOAD_DAYS)
+    BILLING_ENDPOINT, DEVICES_ENDPOINT, FRIENDS_ENDPOINT,
+    LOGIN_ENDPOINT, PROFILE_ENDPOINT, PRELOAD_DAYS,
+    RESET_ENDPOINT)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -196,6 +196,11 @@ class PyArlo(object):
         for device in data:
             if device.get('deviceName') == name:
                 return device
+
+    @property
+    def unseen_videos_reset(self):
+        """Reset the unseen videos counter for all cameras."""
+        return self.query(RESET_ENDPOINT).get('success')
 
     @property
     def billing_information(self):
