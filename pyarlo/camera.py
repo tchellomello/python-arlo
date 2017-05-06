@@ -98,6 +98,15 @@ class ArloCamera(object):
             return None
 
     @property
+    def captured_today(self):
+        """Return list of  <ArloVideo> object captured today."""
+        library = ArloMediaLibrary(self._session, preload=False)
+        try:
+            return library.load(only_cameras=[self], days=1)
+        except IndexError:
+            return []
+
+    @property
     def play_last_video(self):
         """Play last <ArloVideo> recorded from camera."""
         video = self.last_video
