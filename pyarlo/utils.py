@@ -23,9 +23,11 @@ def http_stream(url, chunk=4096):
     :param chunk: chunk bytes to read per time
     :returns generator object
     """
-    ret = requests.get(url, stream=True)
+    ret = requests.get(url, timeout=15)
+    #ret = requests.get(url, stream=True)
     ret.raise_for_status()
-    for data in ret.iter_content(chunk):
-        yield data
+    return ret.raw
+    #for data in ret.iter_content(chunk):
+    #    yield data
 
 # vim:sw=4:ts=4:et:

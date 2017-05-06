@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 from datetime import timedelta
 from pyarlo.const import LIBRARY_ENDPOINT, PRELOAD_DAYS
-from pyarlo.utils import http_get
+from pyarlo.utils import http_get, http_stream
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,11 +33,15 @@ class ArloMediaLibrary(object):
         return "<{0}: {1}>".format(self.__class__.__name__,
                                    self._session.userid)
 
-    def load(self, days, date_from=None, date_to=None):
+    def load(self, days=PRELOAD_DAYS, only_cameras=None,
+             date_from=None, date_to=None, limit=None):
         """Load  Arlo videos from the given criteria
 
+        :param days: number of days to retrieve
+        :param only_cameras: retrieve only <ArloCamera> on that list
         :param date_from: refine from initial date
         :param date_to: refine final date
+        :param limit: define number of objects to return
         """
         videos = []
         url = LIBRARY_ENDPOINT
@@ -52,16 +56,32 @@ class ArloMediaLibrary(object):
                                    extra_params=params).get('data')
 
         # get all cameras to append to create ArloVideo object
-        cameras = self._session.cameras
+        all_cameras = self._session.cameras
 
         for video in data:
             # pylint: disable=cell-var-from-loop
             srccam = \
                 list(filter(
                     lambda cam: cam.device_id == video.get('deviceId'),
-                    cameras))[0]
-            videos.append(ArloVideo(video, srccam, self._session))
-        _LOGGER.debug("Total loaded videos (%s) - %s", len(videos), videos)
+                    all_cameras)
+                    )[0]
+
+            # make sure only_cameras is a list
+            if only_cameras and \
+               not isinstance(only_cameras, list):
+                only_cameras = list(only_cameras)
+
+            # filter by camera only
+            if only_cameras:
+                if list(filter(lambda cam: cam.device_id == srccam.device_id,
+                               list(only_cameras))):
+                    videos.append(ArloVideo(video, srccam, self._session))
+            else:
+                videos.append(ArloVideo(video, srccam, self._session))
+
+        if limit:
+            return videos[:limit]
+
         return videos
 
 
@@ -140,5 +160,10 @@ class ArloVideo(object):
         :param filename: File to save video. Default: stdout
         """
         return http_get(self.video_url, filename)
+
+    @property
+    def stream_video(self):
+        """Stream video."""
+        return http_stream(self.video_url)
 
 # vim:sw=4:ts=4:et:

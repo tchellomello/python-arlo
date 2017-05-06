@@ -203,6 +203,11 @@ class PyArlo(object):
         return self.query(RESET_ENDPOINT).get('success')
 
     @property
+    def unseen_videos(self):
+        """Reset the unseen videos counter for all cameras."""
+        return self.query(RESET_ENDPOINT).get('success')
+
+    @property
     def billing_information(self):
         """Return billing json."""
         url = BILLING_ENDPOINT
