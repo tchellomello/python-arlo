@@ -52,22 +52,22 @@ Usage
     arlo.cameras
 
     # showing camera preferences
-    garage_cam = arlo.cameras[3]
+    cam = arlo.cameras[0]
 
     # printing camera attributes
-    garage_cam.serial_number
-    garage_cam.model_id
-    garage_cam.unseen_videos
+    cam.serial_number
+    cam.model_id
+    cam.unseen_videos
 
     # refreshing camera properties
-    garage_cam.update()
+    cam.update()
 
     # gathering live_streaming URL
-    garage_cam.live_streaming()
+    cam.live_streaming()
     rtmps://vzwow72-z2-prod.vz.netgear.com:80/vzmodulelive?egressToken=b723a7bb_abbXX&userAgent=web&cameraId=48AAAAA
 
     # gather last recorded video URL
-    garage_cam.last_video.video_url
+    cam.last_video.video_url
 
 Loading Videos
 --------------
