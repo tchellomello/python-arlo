@@ -203,11 +203,6 @@ class PyArlo(object):
         return self.query(RESET_ENDPOINT).get('success')
 
     @property
-    def unseen_videos(self):
-        """Reset the unseen videos counter for all cameras."""
-        return self.query(RESET_ENDPOINT).get('success')
-
-    @property
     def billing_information(self):
         """Return billing json."""
         url = BILLING_ENDPOINT
@@ -229,5 +224,9 @@ class PyArlo(object):
     def is_connected(self):
         """Return connection status."""
         return bool(self.authenticated)
+
+    def update(self):
+        """Refresh object."""
+        self._authenticate()
 
 # vim:sw=4:ts=4:et:

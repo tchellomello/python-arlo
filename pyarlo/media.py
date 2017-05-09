@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 from datetime import timedelta
 from pyarlo.const import LIBRARY_ENDPOINT, PRELOAD_DAYS
-from pyarlo.utils import http_get, http_stream
+from pyarlo.utils import http_get, http_stream, pretty_timestamp
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -106,9 +106,9 @@ class ArloVideo(object):
     @property
     def _name(self):
         """Define object name."""
-        return "{0}_{1}: {2}".format(
+        return "{0} {1} {2}".format(
             self._camera.name,
-            self.id,
+            pretty_timestamp(self.created_at),
             self._attrs.get('mediaDuration'))
 
     # pylint: disable=invalid-name
@@ -116,6 +116,11 @@ class ArloVideo(object):
     def id(self):
         """Return object id."""
         return self._attrs.get('name')
+
+    @property
+    def created_at(self):
+        """Return timestamp."""
+        return self._attrs.get('localCreatedDate')
 
     @property
     def content_type(self):

@@ -1,6 +1,13 @@
 # coding: utf-8
 """Implementation of Arlo utils."""
+import time
 import requests
+
+
+def pretty_timestamp(timestamp):
+    """Huminize timestamp."""
+    return time.strftime("%a-%m_%d_%y:%H:%M:%S",
+                         time.localtime(int(str(timestamp)[:10])))
 
 
 def http_get(url, filename=None):
@@ -23,11 +30,10 @@ def http_stream(url, chunk=4096):
     :param chunk: chunk bytes to read per time
     :returns generator object
     """
-    ret = requests.get(url, timeout=15)
-    #ret = requests.get(url, stream=True)
+    ret = requests.get(url, stream=True)
     ret.raise_for_status()
-    return ret.raw
-    #for data in ret.iter_content(chunk):
-    #    yield data
+    for data in ret.iter_content(chunk):
+        yield data
+
 
 # vim:sw=4:ts=4:et:
