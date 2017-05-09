@@ -96,3 +96,9 @@ Loading Videos
 
     # downloading video
     media.download_video('/home/user/demo.mp4')
+
+
+Contributing
+------------
+
+See more at CONTRIBUTING.rst
