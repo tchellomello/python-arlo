@@ -3,6 +3,8 @@
 import logging
 from pyarlo.const import (
     RESET_CAM_ENDPOINT, STREAM_ENDPOINT, STREAMING_BODY)
+from pyarlo.media import ArloMediaLibrary
+from pyarlo.utils import http_get
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -57,11 +59,6 @@ class ArloCamera(object):
         return self._attrs.get('uniqueId')
 
     @property
-    def serial_number(self):
-        """Return serial number."""
-        return self._attrs.get('properties').get('serialNumber')
-
-    @property
     def user_id(self):
         """Return userID."""
         return self._attrs.get('userId')
@@ -69,6 +66,7 @@ class ArloCamera(object):
     @property
     def unseen_videos(self):
         """Return number of unseen videos."""
+        self.update()
         return self._attrs.get('mediaObjectCount')
 
     @property
@@ -83,6 +81,36 @@ class ArloCamera(object):
     def user_role(self):
         """Return userRole."""
         return self._attrs.get('userRole')
+
+    @property
+    def last_image(self):
+        """Return last image capture by camera."""
+        self.update()
+        return http_get(self._attrs.get('presignedLastImageUrl'))
+
+    @property
+    def last_video(self):
+        """Return the last <ArloVideo> object from camera."""
+        library = ArloMediaLibrary(self._session, preload=False)
+        try:
+            return library.load(only_cameras=[self], limit=1)[0]
+        except IndexError:
+            return None
+
+    @property
+    def captured_today(self):
+        """Return list of  <ArloVideo> object captured today."""
+        library = ArloMediaLibrary(self._session, preload=False)
+        try:
+            return library.load(only_cameras=[self], days=1)
+        except IndexError:
+            return []
+
+    @property
+    def play_last_video(self):
+        """Play last <ArloVideo> recorded from camera."""
+        video = self.last_video
+        return video.download_video()
 
     @property
     def xcloud_id(self):

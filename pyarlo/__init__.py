@@ -225,4 +225,8 @@ class PyArlo(object):
         """Return connection status."""
         return bool(self.authenticated)
 
+    def update(self):
+        """Refresh object."""
+        self._authenticate()
+
 # vim:sw=4:ts=4:et:

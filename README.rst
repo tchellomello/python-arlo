@@ -37,14 +37,9 @@ Usage
 
     # listing devices
     arlo.devices
-    {'base_station': [<ArloBaseStation: Home>],
-     'cameras': [<ArloCamera: Garage>,  <ArloCamera: Patio>,
-      <ArloCamera: Front Door>, <ArloCamera: Patio Gate>]}
 
     # listing base stations
     arlo.base_stations
-    [<ArloBaseStation: Home>]
-    base = arlo.base_stations[0]
 
     # listing Arlo modes
     base.available_modes
@@ -55,22 +50,14 @@ Usage
 
     # listing all cameras
     arlo.cameras
-    [<ArloCamera: Garage>, <ArloCamera: Patio>,
-     <ArloCamera: Front Door>, <ArloCamera: Patio Gate>]
 
     # showing camera preferences
     garage_cam = arlo.cameras[3]
-    garage_cam
-    <ArloCamera: Garage>
 
     # printing camera attributes
     garage_cam.serial_number
-    4AAAAAAA
-
     garage_cam.model_id
-    VMC3030
     garage_cam.unseen_videos
-    29
 
     # refreshing camera properties
     garage_cam.update()
@@ -79,41 +66,33 @@ Usage
     garage_cam.live_streaming()
     rtmps://vzwow72-z2-prod.vz.netgear.com:80/vzmodulelive?egressToken=b723a7bb_abbXX&userAgent=web&cameraId=48AAAAA
 
+    # gather last recorded video URL
+    garage_cam.last_video.video_url
+
+Loading Videos
+--------------
+
+.. code-block:: python
+
     # by default, all videos recorded within
     # the last 30 days will be pre-loaded
-    arlo.ArloMediaLibrary
-    <ArloMediaLibrary: 235-1496386>
-
     arlo.ArloMediaLibrary.videos
-    [<ArloVideo: Garage_1493262125792: 00:01:00>,
-     <ArloVideo: Garage_1493252480334: 00:01:00>,
-     <ArloVideo: Front Door_1493250408464: 00:00:55>,
-     <ArloVideo: Garage_1493250374496: 00:01:00>,
-     <ArloVideo: Front Door_1493250162591: 00:01:00>,
-     <ArloVideo: Garage_1493224918537: 00:00:35>,
-     <ArloVideo: Garage_1493224835637: 00:01:00>,
-     <ArloVideo: Garage_1493223888822: 00:01:00>,
-     <ArloVideo: Garage_1493153854245: 00:01:00>,
-     <ArloVideo: Garage_1493120234227: 00:01:00>,
-     <ArloVideo: Garage_1492565105936: 00:01:00>,
-     <ArloVideo: Garage_1492565031836: 00:01:00>]
+
+    # Or you can load Arlo videos directly
+    from pyarlo.media import ArloMediaLibrary
+    library = ArloMediaLibrary(arlo, days=2)
+    len(library.videos)
 
     # showing a video properties
-    media = arlo.ArloMediaLibrary.videos[0]
+    media = library.videos[0]
+
+    # printing video attributes
     media.camera
-    <ArloCamera: Garage>
-
-    # media content type
     media.content_type
-    'video/mp4'
-
-    # media lenght in seconds
     media.media_duration_seconds
-    60
 
     # displaying thumbnail to stdout
     media.download_thumbnail()
 
     # downloading video
-    media.download_video('/home/user/garage.mp4')
-    True
+    media.download_video('/home/user/demo.mp4')
