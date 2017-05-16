@@ -4,9 +4,9 @@ import time
 import requests
 
 
-def pretty_timestamp(timestamp):
+def pretty_timestamp(timestamp, date_format='%a-%m_%d_%y:%H:%M:%S'):
     """Huminize timestamp."""
-    return time.strftime("%a-%m_%d_%y:%H:%M:%S",
+    return time.strftime(date_format,
                          time.localtime(int(str(timestamp)[:10])))
 
 
