@@ -106,8 +106,6 @@ class ArloCamera(object):
         library = ArloMediaLibrary(self._session, preload=False)
         try:
             return library.load(only_cameras=[self], days=days)
-        except IndexError:
-            return []
 
     @property
     def captured_today(self):
