@@ -124,7 +124,7 @@ class ArloVideo(object):
 
     def created_at_pretty(self, date_format=None):
         """Return pretty timestamp."""
-        if timestamp:
+        if date_format:
             return pretty_timestamp(self.created_at, date_format=date_format)
         else:
             return pretty_timestamp(self.created_at)
