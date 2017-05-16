@@ -97,7 +97,7 @@ class ArloCamera(object):
         except IndexError:
             return None
 
-    def videos(self, days=365):
+    def videos(self, days=180):
         """
         Return all <ArloVideo> objects from camera given days range
 
