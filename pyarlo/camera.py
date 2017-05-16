@@ -97,6 +97,7 @@ class ArloCamera(object):
         except IndexError:
             return None
 
+
     def videos(self, days=365):
         """
         Return all <ArloVideo> objects from camera given days range
@@ -106,8 +107,6 @@ class ArloCamera(object):
         library = ArloMediaLibrary(self._session, preload=False)
         try:
             return library.load(only_cameras=[self], days=days)
-        except IndexError:
-            return []
 
     @property
     def captured_today(self):
