@@ -97,14 +97,22 @@ class ArloCamera(object):
         except IndexError:
             return None
 
-    @property
-    def captured_today(self):
-        """Return list of  <ArloVideo> object captured today."""
+    def videos(self, days=180):
+        """
+        Return all <ArloVideo> objects from camera given days range
+
+        :param days: number of days to retrieve
+        """
         library = ArloMediaLibrary(self._session, preload=False)
         try:
-            return library.load(only_cameras=[self], days=1)
-        except IndexError:
+            return library.load(only_cameras=[self], days=days)
+        except (AttributeError, IndexError):
             return []
+
+    @property
+    def captured_today(self):
+        """Return list of <ArloVideo> object captured today."""
+        return self.videos(days=0)
 
     @property
     def play_last_video(self):
