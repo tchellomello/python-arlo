@@ -99,9 +99,9 @@ class ArloCamera(object):
 
     def videos(self, days=365):
         """
-        Return all <ArloVideo> objects from camera.
+        Return all <ArloVideo> objects from camera given days range
 
-        :param days: number of days to search
+        :param days: number of days to retrieve
         """
         library = ArloMediaLibrary(self._session, preload=False)
         try:
