@@ -1,14 +1,13 @@
 # coding: utf-8
 """Generic Python Class file for Netgear Arlo Base Station module."""
-import logging
-from pyarlo.const import ACTION_MODES, NOTIFY_ENDPOINT
-from pyarlo.const import (
-    ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT)
-import sseclient
 import json
 import threading
 import time
-
+import logging
+import sseclient
+from pyarlo.const import ACTION_MODES, NOTIFY_ENDPOINT, RESOURCES
+from pyarlo.const import (
+    ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT)
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -34,25 +33,24 @@ class ArloBaseStation(object):
         """Representation string of object."""
         return "<{0}: {1}>".format(self.__class__.__name__, self.name)
 
-    def thread_function(arg):
+    def thread_function(self):
         """Thread function."""
-        self = arg
         url = SUBSCRIBE_ENDPOINT + "?token=" + self._session_token
         data = self._session.query(url, method='GET', raw=True, stream=True)
-        self._sseclient = sseclient.SSEClient(data)
-        if self._sseclient:
+        self.__sseclient = sseclient.SSEClient(data)
+        if self.__sseclient:
             self.__subscribed = True
-        for event in (self._sseclient).events():
-            if self.__subscribed == False:
+        for event in (self.__sseclient).events():
+            if not self.__subscribed:
                 break
             data = json.loads(event.data)
             if 'status' in data:
                 if data['status'] == "connected":
-                    _LOGGER.debug("Successfully subscribed this base station for notifications")
+                    _LOGGER.debug("Successfully subscribed this base station")
             elif 'action' in data:
                 action = data['action']
                 if action == "logout":
-                    _LOGGER.debug("Logged out from the Arlo system by some other entity")
+                    _LOGGER.debug("Logged out by some other entity")
                     self.__subscribed = False
                     break
                 elif action == "is":
@@ -60,12 +58,16 @@ class ArloBaseStation(object):
 
     def _get_event_stream(self):
         """Spawn a thread and monitor the Arlo Event Stream."""
-        event_thread = threading.Thread(target = self.thread_function)
+        event_thread = threading.Thread(target=self.thread_function)
         event_thread.start()
 
     def _subscribe_myself(self):
         """Subscribe this base station for all events."""
-        return self.__run_action(method='SET', resource='subscribe', mode=None, publish_response=False)
+        return self.__run_action(
+            method='SET',
+            resource='subscribe',
+            mode=None,
+            publish_response=False)
 
     def _unsubscribe_myself(self):
         """Unsubscribe this base station for all events."""
@@ -82,9 +84,14 @@ class ArloBaseStation(object):
         self._subscribe_myself()
 
         this_event = ''
-        status = self.__run_action(method='GET', resource=resource, mode=None, publish_response=False)
+        status = self.__run_action(
+            method='GET',
+            resource=resource,
+            mode=None,
+            publish_response=False)
         if status == 'success':
             for i in range(0, 5):
+                _LOGGER.debug("Trying instance " + str(i))
                 for event in self.__events:
                     if event['resource'] == resource:
                         this_event = event
@@ -93,7 +100,7 @@ class ArloBaseStation(object):
                 if this_event:
                     break
                 else:
-                    time.sleep(0.5)
+                    time.sleep(1)
 
         self._unsubscribe_myself()
         self._close_event_stream()
@@ -103,11 +110,12 @@ class ArloBaseStation(object):
 
         return None
 
-    def __run_action(self,
-                    method = 'GET',
-                    resource = None,
-                    mode = None,
-                    publish_response = None):
+    def __run_action(
+            self,
+            method='GET',
+            resource=None,
+            mode=None,
+            publish_response=None):
         """Run action."""
         url = NOTIFY_ENDPOINT.format(self.device_id)
 
@@ -124,7 +132,8 @@ class ArloBaseStation(object):
             if resource == 'schedule':
                 body['properties'] = {'active': 'true'}
             elif resource == 'subscribe':
-                body['resource'] = "subscriptions/" + "{0}_web".format(self.user_id)
+                body['resource'] = "subscriptions/" + \
+                        "{0}_web".format(self.user_id)
                 dev = []
                 dev.append(self.device_id)
                 body['properties'] = {'devices': dev}
@@ -234,7 +243,7 @@ class ArloBaseStation(object):
         resource = "cameras"
         resource_event = self.publish_and_get_event(resource)
         if resource_event:
-            return (resource_event['properties'])
+            return resource_event['properties']
 
         return None
 
@@ -258,7 +267,7 @@ class ArloBaseStation(object):
         resource = "basestation"
         basestn_event = self.publish_and_get_event(resource)
         if basestn_event:
-            return (basestn_event['properties'])
+            return basestn_event['properties']
 
         return None
 
@@ -268,7 +277,7 @@ class ArloBaseStation(object):
         resource = "rules"
         rules_event = self.publish_and_get_event(resource)
         if rules_event:
-            return (rules_event['properties'])
+            return rules_event['properties']
 
         return None
 
@@ -292,7 +301,11 @@ class ArloBaseStation(object):
         """
         if mode not in ACTION_MODES.keys():
             return "Invalid mode"
-        return self.__run_action(method='SET', resource='modes', mode=mode, publish_response=True)
+        return self.__run_action(
+            method='SET',
+            resource='modes',
+            mode=mode,
+            publish_response=True)
 
     def update(self):
         """Update object properties."""

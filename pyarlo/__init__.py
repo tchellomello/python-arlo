@@ -8,11 +8,8 @@ from pyarlo.camera import ArloCamera
 from pyarlo.media import ArloMediaLibrary
 from pyarlo.const import (
     BILLING_ENDPOINT, DEVICES_ENDPOINT,
-    FRIENDS_ENDPOINT,LOGIN_ENDPOINT, PROFILE_ENDPOINT,
+    FRIENDS_ENDPOINT, LOGIN_ENDPOINT, PROFILE_ENDPOINT,
     PRELOAD_DAYS, RESET_ENDPOINT)
-import sseclient
-import json
-import threading
 
 _LOGGER = logging.getLogger(__name__)
 
