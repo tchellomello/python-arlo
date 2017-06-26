@@ -13,7 +13,7 @@ setup(
     url='https://github.com/tchellomello/python-arlo',
     license='LGPLv3+',
     include_package_data=True,
-    install_requires=['requests'],
+    install_requires=['requests', 'sseclient-py'],
     test_suite='tests',
     keywords=[
         'arlo',
