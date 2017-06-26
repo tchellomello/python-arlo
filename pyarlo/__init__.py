@@ -7,9 +7,12 @@ from pyarlo.base_station import ArloBaseStation
 from pyarlo.camera import ArloCamera
 from pyarlo.media import ArloMediaLibrary
 from pyarlo.const import (
-    BILLING_ENDPOINT, DEVICES_ENDPOINT, FRIENDS_ENDPOINT,
-    LOGIN_ENDPOINT, PROFILE_ENDPOINT, PRELOAD_DAYS,
-    RESET_ENDPOINT)
+    BILLING_ENDPOINT, DEVICES_ENDPOINT,
+    FRIENDS_ENDPOINT,LOGIN_ENDPOINT, PROFILE_ENDPOINT,
+    PRELOAD_DAYS, RESET_ENDPOINT)
+import sseclient
+import json
+import threading
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -90,7 +93,8 @@ class PyArlo(object):
               extra_params=None,
               extra_headers=None,
               retry=3,
-              raw=False):
+              raw=False,
+              stream=False):
         """
         Return a JSON object or raw session.
 
@@ -129,7 +133,7 @@ class PyArlo(object):
 
             # define connection method
             if method == 'GET':
-                req = self.session.get(url, headers=headers)
+                req = self.session.get(url, headers=headers, stream=stream)
             elif method == 'PUT':
                 req = self.session.put(url, json=params, headers=headers)
             elif method == 'POST':
@@ -145,6 +149,7 @@ class PyArlo(object):
 
                 # leave if everything worked fine
                 break
+
         return response
 
     @property
@@ -179,6 +184,7 @@ class PyArlo(object):
                device.get('state') == 'provisioned':
                 devices['base_station'].append(ArloBaseStation(name,
                                                                device,
+                                                               self.__token,
                                                                self))
         return devices
 
