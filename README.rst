@@ -41,12 +41,13 @@ Usage
     # listing base stations
     arlo.base_stations
 
+    # get base station handle
+    # assuming only 1 base station is available
+    base = arlo.base_stations[0]
+
     # listing Arlo modes
     base.available_modes
     ['armed', 'disarmed', 'schedule', 'custom']
-
-    # setting a mode
-    garage_cam.mode = 'armed'
 
     # listing all cameras
     arlo.cameras
@@ -54,10 +55,35 @@ Usage
     # showing camera preferences
     cam = arlo.cameras[0]
 
+    # setting a mode
+    cam.mode = 'armed'
+
+    # getting the current active mode
+    cam.mode
+    'armed'
+
     # printing camera attributes
     cam.serial_number
     cam.model_id
     cam.unseen_videos
+
+    # get current battery level of camera
+    cam.get_battery_level
+    92
+
+    # get battery levels of all cameras
+    # prints serial number and battery level of each camera
+    base.get_camera_battery_level
+    {'4N71235T12345': 92, '4N71235T12345': 90}    
+
+    # get base station properties
+    base.get_basestation_properties
+
+    # get camera properties
+    base.get_camera_properties
+
+    # get camera rules
+    base.get_camera_rules
 
     # refreshing camera properties
     cam.update()

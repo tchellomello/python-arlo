@@ -129,7 +129,7 @@ class ArloCamera(object):
     def get_battery_level(self):
         """Get the camera battery level."""
         base = self._session.base_stations[0]
-        return (base.get_camera_battery_level[self.device_id])
+        return base.get_camera_battery_level[self.device_id]
 
     def live_streaming(self):
         """Return live streaming generator."""
