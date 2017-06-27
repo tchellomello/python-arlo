@@ -101,6 +101,7 @@ class PyArlo(object):
         :param extra_headers: Dictionary to be apppended on request.headers
         :param retry: Attempts to retry a query. Default is 3.
         :param raw: Boolean if query() will return request object instead JSON.
+        :param stream: Boolean if query() will return a stream object.
         """
         response = None
         loop = 0

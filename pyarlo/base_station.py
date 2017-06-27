@@ -5,9 +5,9 @@ import threading
 import time
 import logging
 import sseclient
-from pyarlo.const import ACTION_MODES, NOTIFY_ENDPOINT, RESOURCES
 from pyarlo.const import (
-    ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT)
+    ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT,
+    ACTION_MODES, NOTIFY_ENDPOINT, RESOURCES)
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -19,6 +19,7 @@ class ArloBaseStation(object):
 
         :param name: Base Station name
         :param attrs: Attributes
+        :param session_token: Session token passed by camera class
         :param arlo_session: PyArlo shared session
         """
         self.name = name
@@ -44,10 +45,9 @@ class ArloBaseStation(object):
             if not self.__subscribed:
                 break
             data = json.loads(event.data)
-            if 'status' in data:
-                if data['status'] == "connected":
+            if data.get('status') == "connected":
                     _LOGGER.debug("Successfully subscribed this base station")
-            elif 'action' in data:
+            elif data.get('action'):
                 action = data['action']
                 if action == "logout":
                     _LOGGER.debug("Logged out by some other entity")
@@ -116,7 +116,13 @@ class ArloBaseStation(object):
             resource=None,
             mode=None,
             publish_response=None):
-        """Run action."""
+        """Run action.
+
+        :param method: Specify the method GET, POST or PUT. Default is GET.
+        :param resource: Specify one of the resources to fetch from arlo.
+        :param mode: Specify the mode to set, else None for GET operations
+        :param publish_response: Set to True for SETs. Default False
+        """
         url = NOTIFY_ENDPOINT.format(self.device_id)
 
         body = ACTION_BODY
@@ -249,6 +255,7 @@ class ArloBaseStation(object):
 
     @property
     def get_camera_battery_level(self):
+        """Return a list of battery levels of all cameras."""
         """Return cameras battery level."""
         battery_levels = {}
         resource = "cameras"
@@ -301,11 +308,12 @@ class ArloBaseStation(object):
         """
         if mode not in ACTION_MODES.keys():
             return "Invalid mode"
-        return self.__run_action(
+        self.__run_action(
             method='SET',
             resource='modes',
             mode=mode,
             publish_response=True)
+        self.update()
 
     def update(self):
         """Update object properties."""
