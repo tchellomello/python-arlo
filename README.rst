@@ -16,6 +16,9 @@ Python Arlo
 
 Python Arlo  is a library written in Python 2.7/3x that exposes the Netgear Arlo cameras as Python objects.
 
+Developer Documentation: `http://python-arlo.readthedocs.io/ <http://python-arlo.readthedocs.io/>`_
+
+
 Installation
 ------------
 
