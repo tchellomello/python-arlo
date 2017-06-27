@@ -40,6 +40,7 @@ class PyArlo(object):
         self.__password = password
         self.__username = username
         self.session = requests.Session()
+        self.__base_stations = []
 
         # login user
         self.login()
@@ -180,10 +181,10 @@ class PyArlo(object):
 
             if device.get('deviceType') == 'basestation' and \
                device.get('state') == 'provisioned':
-                devices['base_station'].append(ArloBaseStation(name,
-                                                               device,
-                                                               self.__token,
-                                                               self))
+                base = ArloBaseStation(name, device, self.__token, self)
+                devices['base_station'].append(base)
+                self.__base_stations.append(base)
+
         return devices
 
     def lookup_camera_by_id(self, device_id):

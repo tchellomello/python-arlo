@@ -125,6 +125,12 @@ class ArloCamera(object):
         """Return X-Cloud-ID attribute."""
         return self._attrs.get('xCloudId')
 
+    @property
+    def get_battery_level(self):
+        """Get the camera battery level."""
+        base = self._session.base_stations[0]
+        return (base.get_camera_battery_level[self.device_id])
+
     def live_streaming(self):
         """Return live streaming generator."""
         url = STREAM_ENDPOINT
