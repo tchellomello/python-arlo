@@ -46,7 +46,7 @@ class ArloBaseStation(object):
                 break
             data = json.loads(event.data)
             if data.get('status') == "connected":
-                    _LOGGER.debug("Successfully subscribed this base station")
+                _LOGGER.debug("Successfully subscribed this base station")
             elif data.get('action'):
                 action = data['action']
                 if action == "logout":
@@ -256,7 +256,6 @@ class ArloBaseStation(object):
     @property
     def get_camera_battery_level(self):
         """Return a list of battery levels of all cameras."""
-        """Return cameras battery level."""
         battery_levels = {}
         resource = "cameras"
         resource_event = self.publish_and_get_event(resource)
