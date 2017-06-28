@@ -227,7 +227,7 @@ class PyArlo(object):
 
     @property
     def is_connected(self):
-        """Return connection status."""
+        """Connection status of client with Arlo system."""
         return bool(self.authenticated)
 
     def update(self):

@@ -48,12 +48,13 @@ class ArloBaseStation(object):
             if data.get('status') == "connected":
                 _LOGGER.debug("Successfully subscribed this base station")
             elif data.get('action'):
-                action = data['action']
+                action = data.get('action')
+                resource = data.get('resource')
                 if action == "logout":
                     _LOGGER.debug("Logged out by some other entity")
                     self.__subscribed = False
                     break
-                elif action == "is":
+                elif action == "is" and "subscriptions/" not in resource:
                     self.__events.append(data)
 
     def _get_event_stream(self):
@@ -92,6 +93,7 @@ class ArloBaseStation(object):
         if status == 'success':
             for i in range(0, 5):
                 _LOGGER.debug("Trying instance " + str(i))
+                time.sleep(1)
                 for event in self.__events:
                     if event['resource'] == resource:
                         this_event = event
@@ -99,8 +101,6 @@ class ArloBaseStation(object):
                         break
                 if this_event:
                     break
-                else:
-                    time.sleep(1)
 
         self._unsubscribe_myself()
         self._close_event_stream()
@@ -286,6 +286,21 @@ class ArloBaseStation(object):
             return rules_event['properties']
 
         return None
+
+    @property
+    def get_camera_schedule(self):
+        """Return the schedule set for cameras."""
+        resource = "schedule"
+        schedule_event = self.publish_and_get_event(resource)
+        if schedule_event:
+            return schedule_event['properties']
+
+        return None
+
+    @property
+    def is_motion_detection_enabled(self):
+        """Return Boolean if motion is enabled."""
+        return bool(self.mode == "armed" or self.get_camera_schedule['active'])
 
     @property
     def subscribe(self):

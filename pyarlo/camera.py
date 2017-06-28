@@ -131,6 +131,84 @@ class ArloCamera(object):
         base = self._session.base_stations[0]
         return base.get_camera_battery_level[self.device_id]
 
+    @property
+    def get_signal_strength(self):
+        """Get the camera Signal strength."""
+        base = self._session.base_stations[0]
+        props = base.get_camera_properties
+        if not props:
+            return None
+        for cam in props:
+            if cam['serialNumber'] == self.device_id:
+                return cam['signalStrength']
+
+        return None
+
+    @property
+    def get_brightness(self):
+        """Get the brightness property of camera."""
+        base = self._session.base_stations[0]
+        props = base.get_camera_properties
+        if not props:
+            return None
+        for cam in props:
+            if cam['serialNumber'] == self.device_id:
+                return cam['brightness']
+
+        return None
+
+    @property
+    def get_mirror_state(self):
+        """Get the brightness property of camera."""
+        base = self._session.base_stations[0]
+        props = base.get_camera_properties
+        if not props:
+            return None
+        for cam in props:
+            if cam['serialNumber'] == self.device_id:
+                return cam['flip']
+
+        return None
+
+    @property
+    def get_flip_state(self):
+        """Get the brightness property of camera."""
+        base = self._session.base_stations[0]
+        props = base.get_camera_properties
+        if not props:
+            return None
+        for cam in props:
+            if cam['serialNumber'] == self.device_id:
+                return cam['mirror']
+
+        return None
+
+    @property
+    def get_powersave_mode(self):
+        """Get the brightness property of camera."""
+        base = self._session.base_stations[0]
+        props = base.get_camera_properties
+        if not props:
+            return None
+        for cam in props:
+            if cam['serialNumber'] == self.device_id:
+                return cam['powerSaveMode']
+
+        return None
+
+    @property
+    def is_camera_connected(self):
+        """Connectivity status of Cam with Base Station."""
+        base = self._session.base_stations[0]
+        props = base.get_camera_properties
+        if not props:
+            return None
+        for cam in props:
+            if cam['serialNumber'] == self.device_id:
+                return bool(cam['connectionState'] == 'available')
+
+        return None
+
     def live_streaming(self):
         """Return live streaming generator."""
         url = STREAM_ENDPOINT
