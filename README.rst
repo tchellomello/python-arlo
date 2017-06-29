@@ -55,6 +55,10 @@ Usage
     # showing camera preferences
     cam = arlo.cameras[0]
 
+    # check if camera is connected to base station
+    cam.is_camera_connected
+    True
+
     # setting a mode
     cam.mode = 'armed'
 
@@ -67,9 +71,29 @@ Usage
     cam.model_id
     cam.unseen_videos
 
+    # get brightness value of camera
+    cam.get_brightness
+
+    # get signal strength of camera with base station
+    cam.get_signal_strength
+    
+    # get flip property from camera
+    cam.get_flip_state
+
+    # get mirror property from camera
+    cam.get_mirror_state
+
+    # get power save mode value from camera
+    cam.get_powersave_mode
+
     # get current battery level of camera
     cam.get_battery_level
     92
+
+    # get boolean result if motion detection
+    # is enabled or not
+    cam.is_motion_detection_enabled
+    True
 
     # get battery levels of all cameras
     # prints serial number and battery level of each camera
@@ -84,6 +108,12 @@ Usage
 
     # get camera rules
     base.get_camera_rules
+
+    # get camera schedule
+    base.get_camera_schedule
+
+    # get camera motion detection sensitivity
+    cam.get_motion_detection_sensitivity
 
     # refreshing camera properties
     cam.update()
