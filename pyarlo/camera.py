@@ -209,6 +209,19 @@ class ArloCamera(object):
 
         return None
 
+    @property
+    def get_motion_detection_sensitivity(self):
+        """Sensitivity level of Camera motion detection."""
+        base = self._session.base_stations[0]
+        props = base.get_camera_properties
+        if not props:
+            return None
+        for cam in props:
+            if cam['serialNumber'] == self.device_id:
+                return cam['capabilities'][9]['Triggers'][0]['sensitivity']['default']
+
+        return None
+
     def live_streaming(self):
         """Return live streaming generator."""
         url = STREAM_ENDPOINT
