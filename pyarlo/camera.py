@@ -218,9 +218,9 @@ class ArloCamera(object):
             return None
         for cam in props:
             if cam['serialNumber'] == self.device_id:
-                return cam['capabilities'][9]['Triggers'][0]['sensitivity']['default']
-
-        return None
+                this_cam = cam
+        triggers = this_cam['capabilities'][9]['Triggers']
+        return triggers[0]['sensitivity']['default']
 
     def live_streaming(self):
         """Return live streaming generator."""
