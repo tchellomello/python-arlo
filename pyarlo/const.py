@@ -3,11 +3,14 @@
 # API Endpoints
 API_URL = "https://arlo.netgear.com/hmsweb"
 
-BILLING_ENDPOINT = API_URL + "/users/serviceLevel"
+DEVICE_SUPPORT_ENDPOINT = API_URL + "/devicesupport/v2"
+SUBSCRIBE_ENDPOINT = API_URL + "/client/subscribe"
+UNSUBSCRIBE_ENDPOINT = API_URL + "/client/unsubscribe"
+BILLING_ENDPOINT = API_URL + "/users/serviceLevel/v2"
 DEVICES_ENDPOINT = API_URL + "/users/devices"
 FRIENDS_ENDPOINT = API_URL + "/users/friends"
 LIBRARY_ENDPOINT = API_URL + "/users/library"
-LOGIN_ENDPOINT = API_URL + "/login"
+LOGIN_ENDPOINT = API_URL + "/login/v2"
 LOGOUT_ENDPOINT = API_URL + "/logout"
 NOTIFY_ENDPOINT = API_URL + "/users/devices/notify/{0}"
 PROFILE_ENDPOINT = API_URL + "/users/profile"
@@ -26,13 +29,22 @@ ACTION_MODES = {
     'schedule': 'true',
 }
 
+# define resources
+RESOURCES = {
+    'base_station': 'base_station',
+    'modes': 'modes',
+    'schedule': 'schedule',
+    'rules': 'rules',
+    'cameras': 'cameras',
+}
+
 # define body used when executing an action
-RUN_ACTION_BODY = {
-    'action': 'set',
+ACTION_BODY = {
+    'action': None,
     'from': None,
     'properties': None,
-    'publishResponse': 'true',
-    'resource': 'modes',
+    'publishResponse': None,
+    'resource': None,
     'to': None
 }
 
