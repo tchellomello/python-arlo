@@ -8,9 +8,6 @@ from pyarlo.const import (
 
 USERNAME = 'foo'
 PASSWORD = 'bar'
-EMAIL = 'foobar@mock-example.com'
-COUNTRY_CODE = 'US'
-TOKEN = '999999999999'
 USERID = '999-123456'
 
 
@@ -28,7 +25,7 @@ class TestPyArlo(unittest.TestCase):
 
         arlo = PyArlo(USERNAME, PASSWORD, preload=False)
 
-        self.assertTrue(arlo.country_code, COUNTRY_CODE)
+        self.assertTrue(arlo.country_code, 'US')
         self.assertTrue(arlo.authenticated, 1498801924)
         self.assertTrue(arlo.userid, USERID)
         self.assertIsInstance(arlo.ArloMediaLibrary, ArloMediaLibrary)
