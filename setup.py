@@ -5,7 +5,7 @@ from setuptools import setup
 setup(
     name='pyarlo',
     packages=['pyarlo'],
-    version='0.0.4',
+    version='0.0.5',
     description='Python Arlo is a library written in Python 2.7/3x ' +
                 'that exposes the Netgear Arlo cameras as Python objects.',
     author='Marcelo Moreira de Mello',
@@ -13,7 +13,7 @@ setup(
     url='https://github.com/tchellomello/python-arlo',
     license='LGPLv3+',
     include_package_data=True,
-    install_requires=['requests'],
+    install_requires=['requests', 'sseclient-py'],
     test_suite='tests',
     keywords=[
         'arlo',
@@ -30,6 +30,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Topic :: Software Development :: Libraries :: Python Modules'
