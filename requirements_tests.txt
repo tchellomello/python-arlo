@@ -3,4 +3,5 @@ flake8
 mock
 pylint
 pytest
+requests_mock
 tox
