@@ -4,7 +4,7 @@ from tests.common import load_fixture
 import requests_mock
 
 from pyarlo.const import (
-    DEVICES_ENDPOINT, LOGIN_ENDPOINT)
+    DEVICES_ENDPOINT, LIBRARY_ENDPOINT, LOGIN_ENDPOINT)
 
 USERNAME = 'foo'
 PASSWORD = 'bar'
@@ -33,7 +33,7 @@ class TestPyArlo(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_without_preload_devices(self, mock):
-        """Test PyArlo without preloading videos."""
+        """Test PyArlo without preloading videos but loading devices."""
         from pyarlo import PyArlo
         from pyarlo.camera import ArloCamera
         from pyarlo.base_station import ArloBaseStation
@@ -68,3 +68,39 @@ class TestPyArlo(unittest.TestCase):
         self.assertTrue(base.user_id, USERID)
         self.assertTrue(base.hw_version, 'VMB3010r2')
         self.assertIsNone(base.serial_number)
+
+    @requests_mock.Mocker()
+    def test_preload_devices(self, mock):
+        """Test PyArlo preloading videos from the last day."""
+        from pyarlo import PyArlo
+
+        mock.post(LOGIN_ENDPOINT,
+                  text=load_fixture('pyarlo_authentication.json'))
+        mock.get(DEVICES_ENDPOINT,
+                 text=load_fixture('pyarlo_devices.json'))
+        mock.post(LIBRARY_ENDPOINT,
+                  text=load_fixture('pyarlo_videos.json'))
+
+        arlo = PyArlo(USERNAME, PASSWORD, days=1)
+        self.assertTrue(len(arlo.ArloMediaLibrary.videos), 3)
+
+    @requests_mock.Mocker()
+    def test_general_attributes(self, mock):
+        """Test PyArlo without preloading videos."""
+        from pyarlo import PyArlo
+        from pyarlo.camera import ArloCamera
+
+        mock.post(LOGIN_ENDPOINT,
+                  text=load_fixture('pyarlo_authentication.json'))
+        mock.get(DEVICES_ENDPOINT,
+                 text=load_fixture('pyarlo_devices.json'))
+        mock.post(LIBRARY_ENDPOINT,
+                  text=load_fixture('pyarlo_videos.json'))
+
+        arlo = PyArlo(USERNAME, PASSWORD, days=1)
+
+        self.assertIsInstance(arlo.lookup_camera_by_id('48B14CAAAAAAA'),
+                              ArloCamera)
+        self.assertRaises(IndexError, arlo.lookup_camera_by_id, 'FAKEID')
+        self.assertTrue(arlo.is_connected)
+        self.assertIsNone(arlo.update())
