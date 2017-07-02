@@ -50,7 +50,7 @@ class TestPyArlo(unittest.TestCase):
         self.assertTrue(arlo_devices.get('cameras', arlo.cameras))
 
         cameras = arlo.cameras
-        self.assertEquals(len(cameras), 2)
+        self.assertEqual(len(cameras), 2)
         for camera in cameras:
             self.assertIsNone(arlo.refresh_attributes(camera))
             self.assertIsInstance(camera, ArloCamera)
@@ -101,7 +101,7 @@ class TestPyArlo(unittest.TestCase):
 
         arlo = PyArlo(USERNAME, PASSWORD, days=1)
 
-        self.assertEquals(arlo.__repr__(), '<PyArlo: 999-123456>')
+        self.assertEqual(arlo.__repr__(), '<PyArlo: 999-123456>')
         self.assertIsInstance(arlo.lookup_camera_by_id('48B14CAAAAAAA'),
                               ArloCamera)
         self.assertRaises(IndexError, arlo.lookup_camera_by_id, 'FAKEID')

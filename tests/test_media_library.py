@@ -8,7 +8,6 @@ from pyarlo.const import (
 
 USERNAME = 'foo'
 PASSWORD = 'bar'
-USERID = '999-123456'
 
 
 class TestArloMediaLibrary(unittest.TestCase):
@@ -25,8 +24,8 @@ class TestArloMediaLibrary(unittest.TestCase):
                   text=load_fixture('pyarlo_videos.json'))
 
         arlo = PyArlo(USERNAME, PASSWORD, preload=False)
-        self.assertEquals(arlo.ArloMediaLibrary.__repr__(),
-                          '<ArloMediaLibrary: 999-123456>')
+        self.assertEqual(arlo.ArloMediaLibrary.__repr__(),
+                         '<ArloMediaLibrary: 999-123456>')
 
     @requests_mock.Mocker()
     def test_load_method(self, mock):
@@ -43,7 +42,6 @@ class TestArloMediaLibrary(unittest.TestCase):
 
         arlo = PyArlo(USERNAME, PASSWORD, preload=False)
         library = ArloMediaLibrary(arlo, preload=False)
-        videos = library.load(days=1,
-                              only_cameras=[
-                                arlo.lookup_camera_by_id('48B14C1299999')])
-        self.assertEquals(len(videos), 2)
+        camera = arlo.lookup_camera_by_id('48B14C1299999')
+        videos = library.load(days=1, limit=3, only_cameras=camera)
+        self.assertEqual(len(videos), 2)
