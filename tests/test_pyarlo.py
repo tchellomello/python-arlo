@@ -4,7 +4,7 @@ from tests.common import load_fixture
 import requests_mock
 
 from pyarlo.const import (
-    DEVICES_ENDPOINT, LIBRARY_ENDPOINT, LOGIN_ENDPOINT)
+    DEVICES_ENDPOINT, LIBRARY_ENDPOINT, LOGIN_ENDPOINT, RESET_ENDPOINT)
 
 USERNAME = 'foo'
 PASSWORD = 'bar'
@@ -52,6 +52,7 @@ class TestPyArlo(unittest.TestCase):
         cameras = arlo.cameras
         self.assertEquals(len(cameras), 2)
         for camera in cameras:
+            self.assertIsNone(arlo.refresh_attributes(camera))
             self.assertIsInstance(camera, ArloCamera)
             self.assertTrue(camera.device_type, 'camera')
             self.assertTrue(camera.user_id, USERID)
@@ -96,11 +97,14 @@ class TestPyArlo(unittest.TestCase):
                  text=load_fixture('pyarlo_devices.json'))
         mock.post(LIBRARY_ENDPOINT,
                   text=load_fixture('pyarlo_videos.json'))
+        mock.get(RESET_ENDPOINT, json={'success': True})
 
         arlo = PyArlo(USERNAME, PASSWORD, days=1)
 
+        self.assertEquals(arlo.__repr__(), '<PyArlo: 999-123456>')
         self.assertIsInstance(arlo.lookup_camera_by_id('48B14CAAAAAAA'),
                               ArloCamera)
         self.assertRaises(IndexError, arlo.lookup_camera_by_id, 'FAKEID')
         self.assertTrue(arlo.is_connected)
+        self.assertTrue(arlo.unseen_videos_reset)
         self.assertIsNone(arlo.update())
