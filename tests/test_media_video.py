@@ -36,5 +36,5 @@ class TestArloVideo(unittest.TestCase):
             self.assertTrue(video.video_url.startswith('https://'))
 
             if video.id == '1498880152142':
-                vstr = 'ArloVideo: Patio Fri-06_30_17:23:35:52 00:01:00'
+                vstr = '<ArloVideo: Patio Fri-06_30_17:23:35:52 00:01:00>'
                 self.assertEqual(video.__repr__(), vstr)
