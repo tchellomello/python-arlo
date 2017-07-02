@@ -239,8 +239,8 @@ class ArloBaseStation(object):
             modes = mode_event['properties']['modes']
             for mode in modes:
                 if mode['id'] == active_mode:
-                    return mode['type']
-
+                    return mode.get('type') \
+                        if mode.get('type') is not None else mode.get('name')
         return None
 
     @property
