@@ -34,9 +34,9 @@ class TestPyarloUtils(unittest.TestCase):
         """Test http_get with filename."""
         from pyarlo.utils import http_get
 
+        m = mock.mock_open(io.StringIO())
         mock.get(DEVICES_ENDPOINT, json=MOCK_DATA)
-        mockfile = io.StringIO()
-        self.assertTrue(http_get(DEVICES_ENDPOINT, filename=mockfile))
+        self.assertTrue(http_get(DEVICES_ENDPOINT, filename=m))
 
     @requests_mock.Mocker()
     def test_http_stream(self, mock):
