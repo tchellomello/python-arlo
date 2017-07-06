@@ -1,6 +1,7 @@
 """The tests for the PyArlo utils methods."""
 import unittest
 import mock
+import os
 
 from tests.common import load_fixture
 
@@ -8,10 +9,20 @@ import requests_mock
 from pyarlo.const import DEVICES_ENDPOINT
 
 MOCK_DATA = {'data': 'This is a test message'}
+TEST_FILE = 'test_file.txt'
 
 
 class TestPyarloUtils(unittest.TestCase):
     """Tests for pyarlo.utils methods."""
+
+    def cleanup(self):
+        """Cleanup any data created by the tests."""
+        if os.path.isfile(TEST_FILE):
+            os.remove(TEST_FILE)
+
+    def tearDown(self):
+        """Stop actions from unittest."""
+        self.cleanup()
 
     @requests_mock.Mocker()
     def test_http_get_errno_500(self, mock):
@@ -37,7 +48,7 @@ class TestPyarloUtils(unittest.TestCase):
 
         mock.get(DEVICES_ENDPOINT,
                  text=load_fixture('pyarlo_devices.json'))
-        self.assertTrue(http_get(DEVICES_ENDPOINT, filename="test_file"))
+        self.assertTrue(http_get(DEVICES_ENDPOINT, filename=TEST_FILE))
 
     @mock.patch('requests.get')
     def test_http_stream(self, mock):
