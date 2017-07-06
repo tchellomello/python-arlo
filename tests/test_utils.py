@@ -1,7 +1,8 @@
 """The tests for the PyArlo utils methods."""
 import unittest
 import mock
-import io
+
+from tests.common import load_fixture
 
 import requests_mock
 from pyarlo.const import DEVICES_ENDPOINT
@@ -28,15 +29,15 @@ class TestPyarloUtils(unittest.TestCase):
         mock.get(DEVICES_ENDPOINT, json=MOCK_DATA)
         self.assertIsInstance(http_get(DEVICES_ENDPOINT), bytes)
 
-    @mock.patch('pyarlo.utils.http_get')
     @requests_mock.Mocker()
-    def test_http_get_with_filename(self, mock, open_mock):
+    @mock.patch('pyarlo.utils.http_get.open', create=True)
+    def test_http_get_with_filename(self, mock, mock_open):
         """Test http_get with filename."""
         from pyarlo.utils import http_get
 
-        m = mock.mock_open(io.StringIO())
-        mock.get(DEVICES_ENDPOINT, json=MOCK_DATA)
-        self.assertTrue(http_get(DEVICES_ENDPOINT, filename=m))
+        mock.get(DEVICES_ENDPOINT,
+                 text=load_fixture('pyarlo_devices.json'))
+        self.assertTrue(http_get(DEVICES_ENDPOINT, filename="test_file"))
 
     @requests_mock.Mocker()
     def test_http_stream(self, mock):
