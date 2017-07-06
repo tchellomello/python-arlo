@@ -39,12 +39,11 @@ class TestPyarloUtils(unittest.TestCase):
                  text=load_fixture('pyarlo_devices.json'))
         self.assertTrue(http_get(DEVICES_ENDPOINT, filename="test_file"))
 
-    @requests_mock.Mocker()
+    @mock.patch('requests.get')
     def test_http_stream(self, mock):
         """Test http_stream."""
         from pyarlo.utils import http_stream
         import types
 
-        mock.get(DEVICES_ENDPOINT, json=MOCK_DATA)
         self.assertIsInstance(http_stream(DEVICES_ENDPOINT),
                               types.GeneratorType)
