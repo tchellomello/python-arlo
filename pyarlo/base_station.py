@@ -164,7 +164,7 @@ class ArloBaseStation(object):
         body['to'] = self.device_id
         body['transId'] = "web!e6d1b969.8aa4b!1498165992111"
 
-        _LOGGER.info("Action body: %s", body)
+        _LOGGER.debug("Action body: %s", body)
 
         ret = \
             self._session.query(url, method='POST', extra_params=body,
