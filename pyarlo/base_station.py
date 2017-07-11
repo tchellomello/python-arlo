@@ -81,8 +81,12 @@ class ArloBaseStation(object):
 
     def publish_and_get_event(self, resource):
         """Publish and get the event from base station."""
-        self._get_event_stream()
-        self._subscribe_myself()
+        l_subscribe = 0
+
+        if not self.__subscribed:
+            self._get_event_stream()
+            self._subscribe_myself()
+            l_subscribe = 1
 
         this_event = ''
         status = self.__run_action(
@@ -102,8 +106,10 @@ class ArloBaseStation(object):
                 if this_event:
                     break
 
-        self._unsubscribe_myself()
-        self._close_event_stream()
+        if l_subscribe == 1:
+            l_subscribe = 0
+            self._unsubscribe_myself()
+            self._close_event_stream()
 
         if this_event:
             return this_event
@@ -158,7 +164,7 @@ class ArloBaseStation(object):
         body['to'] = self.device_id
         body['transId'] = "web!e6d1b969.8aa4b!1498165992111"
 
-        _LOGGER.info("Action body: %s", body)
+        _LOGGER.debug("Action body: %s", body)
 
         ret = \
             self._session.query(url, method='POST', extra_params=body,
