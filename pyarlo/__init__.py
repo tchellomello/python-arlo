@@ -138,7 +138,6 @@ class PyArlo(object):
             elif method == 'POST':
                 req = self.session.post(url, json=params, headers=headers)
 
-            req.raise_for_status()
             if req.status_code == 200:
                 if raw:
                     _LOGGER.debug("Required raw object.")
