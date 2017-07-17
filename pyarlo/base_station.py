@@ -2,7 +2,6 @@
 """Generic Python Class file for Netgear Arlo Base Station module."""
 import json
 import threading
-import time
 import logging
 import sseclient
 from pyarlo.const import (
@@ -29,6 +28,7 @@ class ArloBaseStation(object):
         self.__sseclient = None
         self.__subscribed = False
         self.__events = []
+        self.__event_handle = None
 
     def __repr__(self):
         """Representation string of object."""
@@ -36,11 +36,11 @@ class ArloBaseStation(object):
 
     def thread_function(self):
         """Thread function."""
+        self.__subscribed = True
         url = SUBSCRIBE_ENDPOINT + "?token=" + self._session_token
+
         data = self._session.query(url, method='GET', raw=True, stream=True)
         self.__sseclient = sseclient.SSEClient(data)
-        if self.__sseclient:
-            self.__subscribed = True
         for event in (self.__sseclient).events():
             if not self.__subscribed:
                 break
@@ -56,9 +56,11 @@ class ArloBaseStation(object):
                     break
                 elif action == "is" and "subscriptions/" not in resource:
                     self.__events.append(data)
+                    self.__event_handle.set()
 
     def _get_event_stream(self):
         """Spawn a thread and monitor the Arlo Event Stream."""
+        self.__event_handle = threading.Event()
         event_thread = threading.Thread(target=self.thread_function)
         event_thread.start()
 
@@ -78,43 +80,43 @@ class ArloBaseStation(object):
     def _close_event_stream(self):
         """Stop the Event stream thread."""
         self.__subscribed = False
+        del self.__events[:]
+        self.__event_handle.clear()
 
     def publish_and_get_event(self, resource):
         """Publish and get the event from base station."""
-        l_subscribe = 0
+        l_subscribed = False
+        this_event = None
 
         if not self.__subscribed:
             self._get_event_stream()
             self._subscribe_myself()
-            l_subscribe = 1
+            l_subscribed = True
 
-        this_event = ''
         status = self.__run_action(
             method='GET',
             resource=resource,
             mode=None,
             publish_response=False)
         if status == 'success':
-            for i in range(0, 5):
-                _LOGGER.debug("Trying instance " + str(i))
-                time.sleep(1)
+            i = 0
+            while not this_event and i < 2:
+                self.__event_handle.wait(5.0)
+                self.__event_handle.clear()
+                _LOGGER.debug("Instance " + str(i) + " resource: " + resource)
                 for event in self.__events:
                     if event['resource'] == resource:
                         this_event = event
                         self.__events.remove(event)
                         break
-                if this_event:
-                    break
+                i = i + 1
 
-        if l_subscribe == 1:
-            l_subscribe = 0
+        if l_subscribed:
             self._unsubscribe_myself()
             self._close_event_stream()
+            l_subscribed = False
 
-        if this_event:
-            return this_event
-
-        return None
+        return this_event
 
     def __run_action(
             self,
@@ -268,8 +270,26 @@ class ArloBaseStation(object):
         if resource_event:
             cameras = resource_event['properties']
             for camera in cameras:
-                battery_levels[camera['serialNumber']] = camera['batteryLevel']
+                serialnum = camera['serialNumber']
+                cam_battery = camera['batteryLevel']
+                battery_levels[serialnum] = cam_battery
             return battery_levels
+
+        return None
+
+    @property
+    def get_camera_signal_strength(self):
+        """Return a list of signal strength of all cameras."""
+        signal_strength = {}
+        resource = "cameras"
+        resource_event = self.publish_and_get_event(resource)
+        if resource_event:
+            cameras = resource_event['properties']
+            for camera in cameras:
+                serialnum = camera['serialNumber']
+                cam_strength = camera['signalStrength']
+                signal_strength[serialnum] = cam_strength
+            return signal_strength
 
         return None
 
@@ -306,7 +326,7 @@ class ArloBaseStation(object):
     @property
     def is_motion_detection_enabled(self):
         """Return Boolean if motion is enabled."""
-        return bool(self.mode == "armed" or self.get_camera_schedule['active'])
+        return bool(self.mode == "armed")
 
     @property
     def subscribe(self):

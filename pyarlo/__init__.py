@@ -153,12 +153,12 @@ class PyArlo(object):
     @property
     def cameras(self):
         """Return all cameras linked on Arlo account."""
-        return self.devices['cameras']
+        return self.devices.get('cameras')
 
     @property
     def base_stations(self):
         """Return all base stations linked on Arlo account."""
-        return self.devices['base_station']
+        return self.devices.get('base_station')
 
     @property
     def devices(self):
