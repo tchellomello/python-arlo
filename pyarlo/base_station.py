@@ -270,8 +270,8 @@ class ArloBaseStation(object):
         if resource_event:
             cameras = resource_event['properties']
             for camera in cameras:
-                serialnum = camera['serialNumber']
-                cam_battery = camera['batteryLevel']
+                serialnum = camera.get('serialNumber')
+                cam_battery = camera.get('batteryLevel')
                 battery_levels[serialnum] = cam_battery
             return battery_levels
 
@@ -286,8 +286,8 @@ class ArloBaseStation(object):
         if resource_event:
             cameras = resource_event['properties']
             for camera in cameras:
-                serialnum = camera['serialNumber']
-                cam_strength = camera['signalStrength']
+                serialnum = camera.get('serialNumber')
+                cam_strength = camera.get('signalStrength')
                 signal_strength[serialnum] = cam_strength
             return signal_strength
 
