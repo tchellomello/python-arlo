@@ -243,10 +243,11 @@ class ArloBaseStation(object):
         resource = "modes"
         mode_event = self.publish_and_get_event(resource)
         if mode_event:
-            active_mode = mode_event['properties']['active']
-            modes = mode_event['properties']['modes']
+            properties = mode_event.get('properties')
+            active_mode = properties.get('active')
+            modes = properties.get('modes')
             for mode in modes:
-                if mode['id'] == active_mode:
+                if mode.get('id') == active_mode:
                     return mode.get('type') \
                         if mode.get('type') is not None else mode.get('name')
         return None
@@ -257,7 +258,7 @@ class ArloBaseStation(object):
         resource = "cameras"
         resource_event = self.publish_and_get_event(resource)
         if resource_event:
-            return resource_event['properties']
+            return resource_event.get('properties')
 
         return None
 
@@ -268,7 +269,7 @@ class ArloBaseStation(object):
         resource = "cameras"
         resource_event = self.publish_and_get_event(resource)
         if resource_event:
-            cameras = resource_event['properties']
+            cameras = resource_event.get('properties')
             for camera in cameras:
                 serialnum = camera.get('serialNumber')
                 cam_battery = camera.get('batteryLevel')
@@ -284,7 +285,7 @@ class ArloBaseStation(object):
         resource = "cameras"
         resource_event = self.publish_and_get_event(resource)
         if resource_event:
-            cameras = resource_event['properties']
+            cameras = resource_event.get('properties')
             for camera in cameras:
                 serialnum = camera.get('serialNumber')
                 cam_strength = camera.get('signalStrength')
@@ -299,7 +300,7 @@ class ArloBaseStation(object):
         resource = "basestation"
         basestn_event = self.publish_and_get_event(resource)
         if basestn_event:
-            return basestn_event['properties']
+            return basestn_event.get('properties')
 
         return None
 
@@ -309,7 +310,7 @@ class ArloBaseStation(object):
         resource = "rules"
         rules_event = self.publish_and_get_event(resource)
         if rules_event:
-            return rules_event['properties']
+            return rules_event.get('properties')
 
         return None
 
@@ -319,7 +320,7 @@ class ArloBaseStation(object):
         resource = "schedule"
         schedule_event = self.publish_and_get_event(resource)
         if schedule_event:
-            return schedule_event['properties']
+            return schedule_event.get('properties')
 
         return None
 
