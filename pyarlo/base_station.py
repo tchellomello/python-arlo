@@ -330,7 +330,7 @@ class ArloBaseStation(object):
     @property
     def is_motion_detection_enabled(self):
         """Return Boolean if motion is enabled."""
-        return (self.mode == "armed")
+        return self.mode == "armed"
 
     @property
     def subscribe(self):
