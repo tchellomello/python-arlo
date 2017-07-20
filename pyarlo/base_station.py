@@ -36,6 +36,7 @@ class ArloBaseStation(object):
 
     def thread_function(self):
         """Thread function."""
+
         self.__subscribed = True
         url = SUBSCRIBE_ENDPOINT + "?token=" + self._session_token
 
