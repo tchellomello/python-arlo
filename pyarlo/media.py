@@ -69,7 +69,7 @@ class ArloMediaLibrary(object):
             # make sure only_cameras is a list
             if only_cameras and \
                not isinstance(only_cameras, list):
-                only_cameras = list(only_cameras)
+                only_cameras = [(only_cameras)]
 
             # filter by camera only
             if only_cameras:

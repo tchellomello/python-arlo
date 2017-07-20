@@ -1,0 +1,12 @@
+{"data": {"accountStatus": "registered",
+  "arlo": true,
+  "authenticated": 1498801924,
+  "countryCode": "US",
+  "dateCreated": 1456549914113,
+  "email": "foorbar@mock-example.com",
+  "policyUpdate": false,
+  "tocUpdate": false,
+  "token": "999999999999",
+  "userId": "999-123456",
+  "validEmail": true},
+ "success": true}

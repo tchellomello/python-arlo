@@ -7,8 +7,8 @@ Python Arlo
 .. image:: https://travis-ci.org/tchellomello/python-arlo.svg?branch=master
     :target: https://travis-ci.org/tchellomello/python-arlo
 
-.. image:: https://coveralls.io/repos/github/tchellomello/python-arlo/badge.svg
-    :target: https://coveralls.io/github/tchellomello/python-arlo
+.. image:: https://coveralls.io/repos/github/tchellomello/python-arlo/badge.svg?branch=master
+    :target: https://coveralls.io/github/tchellomello/python-arlo?branch=master
 
 .. image:: https://img.shields.io/pypi/pyversions/pyarlo.svg
     :target: https://pypi.python.org/pypi/pyarlo
