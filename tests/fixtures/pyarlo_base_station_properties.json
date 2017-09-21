@@ -1,0 +1,38 @@
+{
+    "resource": "basestation",
+    "to": "FQ8QKG-336-14182007_web",
+    "action": "is",
+    "from": "4R03757BA387F",
+    "transId": "web!e6d1b969.8aa4b!1498165992111",
+    "properties": {
+        "modelId": "VMB4000",
+        "uploadBandwidthSaturated": false,
+        "timeSyncState": "synchronized",
+        "connectivity": [{"connected": true, "type": "ethernet"}],
+        "lowBatteryAlert": {"enabled": true},
+        "swVersion": "1.8.10.1_13433",
+        "olsonTimeZone": "America/Chicago",
+        "apiVersion": 1,
+        "autoUpdateEnabled": true,
+        "claimed": true,
+        "state": "idle",
+        "lowSignalAlert": {"enabled": false},
+        "capabilities": ["gateway"],
+        "antiFlicker": {"autoDefault": 1, "mode": 0},
+        "mcsEnabled": true,
+        "timeZone": "CST6CDT,M3.2.0,M11.1.0",
+        "interfaceVersion": 3,
+        "hwVersion": "VMB4000r3",
+        "resources": [
+            {"type": "storage", "mediaTypes": ["USB"]},
+            {
+                "sirenState": ["on", "off", {"default": "off"}],
+                "pattern": ["alarm", "alert", {"default": "alarm"}],
+                "volume": [1, 2, 3, 4, 5, 6, 7, 8, {"default": 6}],
+                "sirenType": ["PCM"],
+                "duration": [60, 180, 300, 86400, {"default": 180}],
+                "type": "siren", "ID": 1
+            }
+        ]
+    }
+}

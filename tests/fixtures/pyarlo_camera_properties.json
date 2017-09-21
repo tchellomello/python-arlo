@@ -1,0 +1,134 @@
+{
+    "resource": "cameras",
+    "to": "FQ8QKG-336-14182007_web",
+    "action": "is",
+    "from": "4R03757BA387F",
+    "transId": "web!e6d1b969.8aa4b!1498165992111",
+    "properties": [
+        {
+            "signalStrength": 3,
+            "zoom": {
+                "bottomrightx": 1280,
+                "topleftx": 0,
+                "toplefty": 0,
+                "bottomrighty": 720
+            },
+            "standbyActive": false,
+            "continuousStreamState": "inactive",
+            "privacyActive": false,
+            "mirror": false,
+            "powerSaveMode": 2,
+            "localRecordingActive": false,
+            "nightVisionMode": 1,
+            "mic": {
+                "volume": 100,
+                "mute": false
+            },
+            "capabilities": [
+                "H.264Streaming",
+                "JPEGSnapshot",
+                "SignalStrength",
+                "Privacy",
+                "Standby",
+                {
+                    "Resolutions": [
+                        {"y": 720, "text": "720p", "x": 1280},
+                        {"y": 480, "text": "480p", "x": 848},
+                        {"y": 352, "text": "360p", "x": 640},
+                        {"y": 240, "text": "240p", "x": 416}
+                    ]
+                },
+                {"TimedStreamDuration": {"default": 10, "max": 120, "min": 5}},
+                {"TriggerEndStreamDuration": {"default": 300, "max": 300, "min": 5}},
+                {
+                    "Actions": [
+                        {"recordVideo": [{"StopActions": ["timeout", "triggerEndDetected"]}]},
+                        "sendEmailAlert",
+                        "pushNotification",
+                        "sirenAlert"
+                    ]
+                },
+                "PirMotion",
+                "IRLED",
+                "BatteryLevel",
+                "MJPEGStreaming",
+                "MotionEstimation",
+                "Temperature",
+                "NightVision",
+                "Microphone",
+                "Speaker",
+                "Solar",
+                "BatteryCharging",
+                {
+                    "Triggers": [
+                        {"sensitivity": {"default": 80, "max": 100, "step": 1, "type": "integer", "min": 1}, "type": "pirMotionActive"}, {"sensitivity": {"default": 2, "max": 5, "step": 1, "type": "integer", "min": 1}, "type": "audioAmplitude"}
+                    ]
+                }
+            ],
+            "motionSetupModeSensitivity": 80,
+            "speaker": {"volume": 100, "mute": false},
+            "motionSetupModeEnabled": false,
+            "hasStreamed": true,
+            "chargerTech": "None",
+            "batteryLevel": 77,
+            "hwVersion": "H8",
+            "chargingState": "Off",
+            "modelId": "VMC4030",
+            "audioDetected": false,
+            "activityState": "idle",
+            "swVersion": "1.092.0.5_13833",
+            "olsonTimeZone": "America/Chicago",
+            "interfaceVersion": 2,
+            "connectionState": "available",
+            "streamingMode": "eventBased",
+            "name": "",
+            "brightness": 0,
+            "motionDetected": false,
+            "serialNumber": "SERIAL1",
+            "flip": false,
+            "motion": {"zones": [], "sensitivity": 5},
+            "idleLedEnable": true,
+            "batteryTech": "Rechargeable",
+            "resolution": {"width": 1280, "height": 720},
+            "chargeNotificationLedEnable": true
+        },
+        {
+            "signalStrength": 4,
+            "zoom": {"bottomrightx": 1280, "topleftx": 0, "toplefty": 0, "bottomrighty": 720},
+            "standbyActive": false,
+            "continuousStreamState": "inactive",
+            "privacyActive": false,
+            "mirror": false,
+            "powerSaveMode": 2,
+            "localRecordingActive": false,
+            "nightVisionMode": 1,
+            "mic": {"volume": 100, "mute": false},
+            "capabilities": ["H.264Streaming", "JPEGSnapshot", "SignalStrength", "Privacy", "Standby", {"Resolutions": [{"y": 720, "text": "720p", "x": 1280}, {"y": 480, "text": "480p", "x": 848}, {"y": 352, "text": "360p", "x": 640}, {"y": 240, "text": "240p", "x": 416}]}, {"TimedStreamDuration": {"default": 10, "max": 120, "min": 5}}, {"TriggerEndStreamDuration": {"default": 300, "max": 300, "min": 5}}, {"Actions": [{"recordVideo": [{"StopActions": ["timeout", "triggerEndDetected"]}]}, "sendEmailAlert", "pushNotification", "sirenAlert"]}, "PirMotion", "IRLED", "BatteryLevel", "MJPEGStreaming", "MotionEstimation", "Temperature", "NightVision", "Microphone", "Speaker", "Solar", "BatteryCharging", {"Triggers": [{"sensitivity": {"default": 80, "max": 100, "step": 1, "type": "integer", "min": 1}, "type": "pirMotionActive"}, {"sensitivity": {"default": 2, "max": 5, "step": 1, "type": "integer", "min": 1}, "type": "audioAmplitude"}]}],
+            "motionSetupModeSensitivity": 80,
+            "speaker": {"volume": 100, "mute": false},
+            "motionSetupModeEnabled": false,
+            "hasStreamed": true,
+            "chargerTech": "None",
+            "batteryLevel": 95,
+            "hwVersion": "H8",
+            "chargingState": "Off",
+            "modelId": "VMC4030",
+            "audioDetected": false,
+            "activityState": "idle",
+            "swVersion": "1.092.0.5_13833",
+            "olsonTimeZone": "America/Chicago",
+            "interfaceVersion": 2,
+            "connectionState": "available",
+            "streamingMode": "eventBased",
+            "name": "", "brightness": 0,
+            "motionDetected": false,
+            "serialNumber": "SERIAL2",
+            "flip": false,
+            "motion": {"zones": [], "sensitivity": 5},
+            "idleLedEnable": true,
+            "batteryTech": "Rechargeable",
+            "resolution": {"width": 1280, "height": 720},
+            "chargeNotificationLedEnable": true
+        }
+    ]
+}
