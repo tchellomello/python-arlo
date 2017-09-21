@@ -240,7 +240,9 @@ class ArloBaseStation(object):
     def available_modes_with_ids(self):
         """Return list of objects containing available mode name and id."""
         modes = self.get_available_modes()
-        simple_modes = dict([(m.get("type", m.get("name")), m.get("id")) for m in modes])
+        simple_modes = dict(
+            [(m.get("type", m.get("name")), m.get("id")) for m in modes]
+        )
         all_modes = FIXED_MODES.copy()
         all_modes.update(simple_modes)
         return all_modes

@@ -36,7 +36,6 @@ class TestArloBaseStationModes(unittest.TestCase):
         base_station = self.load_base_station(mock)
         self.assertEqual(base_station.mode, "disarmed")
 
-
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event", load_modes)
     def test_get_available_modes(self, mock):
@@ -46,17 +45,21 @@ class TestArloBaseStationModes(unittest.TestCase):
         mocked_modes = self.load_modes()
         self.assertEqual(available_modes, mocked_modes["properties"]["modes"])
 
-
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event", load_modes)
     def test_available_modes_with_ids(self, mock):
         """Test PyArlo BaseStation.available_modes_with_ids property."""
         base_station = self.load_base_station(mock)
         available_modes = base_station.available_modes_with_ids
-        mocked_modes = self.load_modes()
         self.assertEqual(
             available_modes,
-            {"schedule": "true", "disarmed": "mode0", "armed": "mode1", "Inside": "mode3", "Home": "mode4"}
+            {
+                "schedule": "true",
+                "disarmed": "mode0",
+                "armed": "mode1",
+                "Inside": "mode3",
+                "Home": "mode4"
+            }
         )
 
     @requests_mock.Mocker()
@@ -65,10 +68,9 @@ class TestArloBaseStationModes(unittest.TestCase):
         """Test PyArlo BaseStation.available_modes property."""
         base_station = self.load_base_station(mock)
         available_modes = base_station.available_modes
-        mocked_modes = self.load_modes()
         self.assertEqual(
-            available_modes,
-            ["Home", "Inside", "armed", "disarmed", "schedule"]
+            set(available_modes),
+            set(["Home", "Inside", "armed", "disarmed", "schedule"])
         )
 
     @requests_mock.Mocker()
@@ -83,9 +85,12 @@ class TestArloBaseStationModes(unittest.TestCase):
         base_station.mode = "Inside"
         request_number = mock.call_count - 2
         request = mock.request_history[request_number]
-        self.assertEqual("{}://{}{}".format(request.scheme, request.netloc, request.path), notify_url)
-        body = request.json()
+        self.assertEqual(
+            "{}://{}{}".format(request.scheme, request.netloc, request.path),
+            notify_url
+        )
 
+        body = request.json()
         self.assertEqual(body.get("publishResponse"), "true")
         self.assertEqual(body.get("action"), "set")
         self.assertEqual(body.get("resource"), "modes")
