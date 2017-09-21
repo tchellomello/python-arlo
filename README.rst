@@ -48,9 +48,14 @@ Usage
     # assuming only 1 base station is available
     base = arlo.base_stations[0]
 
+    # get the current base station mode
+    base.mode  # 'disarmed'
+
     # listing Arlo modes
-    base.available_modes
-    ['armed', 'disarmed', 'schedule', 'custom']
+    base.available_modes # ['armed', 'disarmed', 'schedule', 'custom']
+
+    # Updating the base station mode
+    base.mode = 'custom'
 
     # listing all cameras
     arlo.cameras
@@ -59,15 +64,7 @@ Usage
     cam = arlo.cameras[0]
 
     # check if camera is connected to base station
-    cam.is_camera_connected
-    True
-
-    # setting a mode
-    cam.mode = 'armed'
-
-    # getting the current active mode
-    cam.mode
-    'armed'
+    cam.is_camera_connected  # True
 
     # printing camera attributes
     cam.serial_number
@@ -95,13 +92,11 @@ Usage
 
     # get boolean result if motion detection
     # is enabled or not
-    cam.is_motion_detection_enabled
-    True
+    cam.is_motion_detection_enabled  # True
 
     # get battery levels of all cameras
     # prints serial number and battery level of each camera
-    base.get_camera_battery_level
-    {'4N71235T12345': 92, '4N71235T12345': 90}    
+    base.get_camera_battery_level  # {'4N71235T12345': 92, '4N71235T12345': 90}
 
     # get base station properties
     base.get_basestation_properties
@@ -122,8 +117,7 @@ Usage
     cam.update()
 
     # gathering live_streaming URL
-    cam.live_streaming()
-    rtmps://vzwow72-z2-prod.vz.netgear.com:80/vzmodulelive?egressToken=b723a7bb_abbXX&userAgent=web&cameraId=48AAAAA
+    cam.live_streaming()  # rtmps://vzwow72-z2-prod.vz.netgear.com:80/vzmodulelive?egressToken=b723a7bb_abbXX&userAgent=web&cameraId=48AAAAA
 
     # gather last recorded video URL
     cam.last_video.video_url

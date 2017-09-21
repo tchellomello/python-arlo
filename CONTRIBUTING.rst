@@ -69,6 +69,10 @@ Ready to contribute? Here's how to set up `python-arlo` for local development.
 
     $ tox -r
 
+    During development, you can also quickly run unit tests with::
+
+    $ pytest
+
 6. Commit your changes and push your branch to GitHub::
 
     $ git add .
