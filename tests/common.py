@@ -6,8 +6,7 @@ import os
 def open_fixture(filename):
     """Open a fixture file."""
     path = os.path.join(os.path.dirname(__file__), "fixtures", filename)
-    return open(path)
-
+    return open(path, 'rb')
 
 def load_fixture(filename):
     """Load a fixture."""
