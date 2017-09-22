@@ -5,6 +5,7 @@ import unittest
 from tests.common import (
     load_fixture,
     load_fixture_json,
+    load_camera_live_streaming,
     load_camera_properties as load_camera_props,
     open_fixture
 )
@@ -69,9 +70,12 @@ class TestArloCamera(unittest.TestCase):
                 self.assertEqual(camera.get_motion_detection_sensitivity, 80)
 
                 image_url = camera._attrs.get("presignedLastImageUrl")
-                mock.get(image_url, body=open_fixture("last_image.jpg", binary=True))
+
+                response_body = open_fixture("last_image.jpg", binary=True)
+                mock.get(image_url, body=response_body)
                 self.assertEqual(
-                    camera.last_image, load_fixture("last_image.jpg", binary=True)
+                    camera.last_image,
+                    load_fixture("last_image.jpg", binary=True)
                 )
 
                 videos = load_fixture_json("pyarlo_videos.json")
@@ -117,7 +121,8 @@ class TestArloCamera(unittest.TestCase):
         arlo = self.load_arlo(mock)
         camera = arlo.cameras[0]
         last_video_url = camera.last_video.video_url
-        mock.get(last_video_url, body=open_fixture("last_image.jpg", binary=True))
+        response_body = open_fixture("last_image.jpg", binary=True)
+        mock.get(last_video_url, body=response_body)
         video = camera.play_last_video()
         self.assertTrue(video)
 
@@ -126,8 +131,10 @@ class TestArloCamera(unittest.TestCase):
         """Test ArloCamera.live_streaming."""
         arlo = self.load_arlo(mock)
         camera = arlo.cameras[0]
-        mock.post(STREAM_ENDPOINT, text=load_fixture("pyarlo_camera_live_streaming.json"))
-        mocked_streaming_response = load_fixture_json("pyarlo_camera_live_streaming.json")
-
+        response_text = load_fixture("pyarlo_camera_live_streaming.json")
+        mock.post(STREAM_ENDPOINT, text=response_text)
+        mocked_streaming_response = load_camera_live_streaming()
         streaming_url = camera.live_streaming()
-        self.assertEqual(streaming_url, mocked_streaming_response["data"]["url"])
+        self.assertEqual(
+            streaming_url, mocked_streaming_response["data"]["url"]
+        )

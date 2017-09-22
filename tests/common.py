@@ -9,11 +9,13 @@ def open_fixture(filename, binary=False):
     mode = "rb" if binary else "r"
     return open(path, mode)
 
+
 def load_fixture(filename, binary=False):
     """Load a fixture."""
     fixture = open_fixture(filename, binary)
     with fixture as fdp:
         return fdp.read()
+
 
 def load_fixture_json(filename):
     """Load a fixture JSON into a dict."""
@@ -39,3 +41,8 @@ def load_camera_rules(*args, **kwargs):
 def load_camera_schedule(*args, **kwargs):
     """Load camera schedule into a dict."""
     return load_fixture_json("pyarlo_camera_schedule.json")
+
+
+def load_camera_live_streaming(*args, **kwargs):
+    """Load camera live streaming response as dict."""
+    return load_fixture_json("pyarlo_camera_live_streaming.json")
