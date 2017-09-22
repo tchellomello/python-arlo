@@ -1,0 +1,16 @@
+{
+	"resource": "modes",
+	"to": "FQ8QKG-336-14182007_web",
+	"action": "is",
+	"from": "4R03757BA387F",
+	"transId": "web!e6d1b969.8aa4b!1498165992111",
+	"properties": {
+		"active": "mode0",
+		"modes": [
+			{"id": "mode0", "type": "disarmed", "name": "", "rules": []},
+			{"id": "mode1", "type": "armed", "name": "", "rules": ["rule0", "rule1", "rule2", "rule3"]},
+			{"id": "mode3", "name": "Inside", "rules": ["rule5", "rule6", "rule7"]},
+			{"id": "mode4", "name": "Home", "rules": ["rule15", "rule16", "rule17"]}
+		]
+	}
+}
