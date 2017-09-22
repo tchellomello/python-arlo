@@ -6,7 +6,7 @@ import logging
 import sseclient
 from pyarlo.const import (
     ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT,
-    ACTION_MODES, NOTIFY_ENDPOINT, RESOURCES)
+    FIXED_MODES, NOTIFY_ENDPOINT, RESOURCES)
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -134,7 +134,7 @@ class ArloBaseStation(object):
         """
         url = NOTIFY_ENDPOINT.format(self.device_id)
 
-        body = ACTION_BODY
+        body = ACTION_BODY.copy()
 
         if resource:
             body['resource'] = resource
@@ -153,7 +153,9 @@ class ArloBaseStation(object):
                 dev.append(self.device_id)
                 body['properties'] = {'devices': dev}
             elif resource == 'modes':
-                body['properties'] = {'active': ACTION_MODES.get(mode)}
+                available_modes = self.available_modes_with_ids
+                body['properties'] = {'active': available_modes.get(mode)}
+
         else:
             _LOGGER.info("Invalid method requested")
             return None
@@ -172,6 +174,7 @@ class ArloBaseStation(object):
         ret = \
             self._session.query(url, method='POST', extra_params=body,
                                 extra_headers={"xCloudId": self.xcloud_id})
+
         if ret.get('success'):
             return 'success'
 
@@ -230,8 +233,19 @@ class ArloBaseStation(object):
 
     @property
     def available_modes(self):
-        """Return list of available modes."""
-        return list(ACTION_MODES.keys())
+        """Return list of available mode names."""
+        return list(self.available_modes_with_ids.keys())
+
+    @property
+    def available_modes_with_ids(self):
+        """Return list of objects containing available mode name and id."""
+        modes = self.get_available_modes()
+        simple_modes = dict(
+            [(m.get("type", m.get("name")), m.get("id")) for m in modes]
+        )
+        all_modes = FIXED_MODES.copy()
+        all_modes.update(simple_modes)
+        return all_modes
 
     @property
     def available_resources(self):
@@ -240,7 +254,7 @@ class ArloBaseStation(object):
 
     @property
     def mode(self):
-        """Return current mode."""
+        """Return current mode key."""
         resource = "modes"
         mode_event = self.publish_and_get_event(resource)
         if mode_event:
@@ -254,6 +268,16 @@ class ArloBaseStation(object):
                 if mode.get('id') == active_mode:
                     return mode.get('type') \
                         if mode.get('type') is not None else mode.get('name')
+        return None
+
+    def get_available_modes(self):
+        """Return a list of available mode objects for an Arlo user."""
+        resource = "modes"
+        resource_event = self.publish_and_get_event(resource)
+        if resource_event:
+            properties = resource_event.get("properties")
+            return properties.get("modes")
+
         return None
 
     @property
@@ -351,8 +375,8 @@ class ArloBaseStation(object):
 
         :param mode: arm, disarm
         """
-        if mode not in ACTION_MODES.keys():
-            return "Invalid mode"
+        if mode not in self.available_modes:
+            return
         self.__run_action(
             method='SET',
             resource='modes',
