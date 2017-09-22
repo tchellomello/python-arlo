@@ -14,7 +14,7 @@ from pyarlo import PyArlo, ArloBaseStation
 from pyarlo.camera import ArloCamera
 from pyarlo.const import (
     DEVICES_ENDPOINT, LIBRARY_ENDPOINT, LOGIN_ENDPOINT,
-    RESET_CAM_ENDPOINT
+    RESET_CAM_ENDPOINT, STREAM_ENDPOINT
 )
 
 USERNAME = "foo"
@@ -69,9 +69,9 @@ class TestArloCamera(unittest.TestCase):
                 self.assertEqual(camera.get_motion_detection_sensitivity, 80)
 
                 image_url = camera._attrs.get("presignedLastImageUrl")
-                mock.get(image_url, body=open_fixture("last_image.jpg"))
+                mock.get(image_url, body=open_fixture("last_image.jpg", binary=True))
                 self.assertEqual(
-                    camera.last_image, load_fixture("last_image.jpg")
+                    camera.last_image, load_fixture("last_image.jpg", binary=True)
                 )
 
                 videos = load_fixture_json("pyarlo_videos.json")
@@ -117,6 +117,17 @@ class TestArloCamera(unittest.TestCase):
         arlo = self.load_arlo(mock)
         camera = arlo.cameras[0]
         last_video_url = camera.last_video.video_url
-        mock.get(last_video_url, body=open_fixture("last_image.jpg"))
+        mock.get(last_video_url, body=open_fixture("last_image.jpg", binary=True))
         video = camera.play_last_video()
         self.assertTrue(video)
+
+    @requests_mock.Mocker()
+    def test_live_streaming(self, mock):
+        """Test ArloCamera.live_streaming."""
+        arlo = self.load_arlo(mock)
+        camera = arlo.cameras[0]
+        mock.post(STREAM_ENDPOINT, text=load_fixture("pyarlo_camera_live_streaming.json"))
+        mocked_streaming_response = load_fixture_json("pyarlo_camera_live_streaming.json")
+
+        streaming_url = camera.live_streaming()
+        self.assertEqual(streaming_url, mocked_streaming_response["data"]["url"])

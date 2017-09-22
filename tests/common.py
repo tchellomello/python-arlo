@@ -3,17 +3,17 @@ import json
 import os
 
 
-def open_fixture(filename):
+def open_fixture(filename, binary=False):
     """Open a fixture file."""
     path = os.path.join(os.path.dirname(__file__), "fixtures", filename)
-    return open(path, 'rb')
+    mode = "rb" if binary else "r"
+    return open(path, mode)
 
-def load_fixture(filename):
+def load_fixture(filename, binary=False):
     """Load a fixture."""
-    fixture = open_fixture(filename)
+    fixture = open_fixture(filename, binary)
     with fixture as fdp:
         return fdp.read()
-
 
 def load_fixture_json(filename):
     """Load a fixture JSON into a dict."""
