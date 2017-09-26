@@ -1,0 +1,52 @@
+{
+    "resource": "schedule",
+    "to": "FQ8QKG-336-14182007_web",
+    "action": "is",
+    "from": "4R03757BA387F",
+    "transId": "web!e6d1b969.8aa4b!1498165992111",
+    "properties": {
+        "active": false,
+        "schedule": [
+            {
+                "modeId": "mode1",
+                "startTime": 28800000
+            },
+            {
+                "modeId": "mode0",
+                "startTime": 61200000
+            },
+            {
+                "modeId": "mode1",
+                "startTime": 115200000
+            },
+            {
+                "modeId": "mode0",
+                "startTime": 147600000
+            },
+            {
+                "modeId": "mode1",
+                "startTime": 201600000
+            },
+            {
+                "modeId": "mode0",
+                "startTime": 234000000
+            },
+            {
+                "modeId": "mode1",
+                "startTime": 288000000
+            },
+            {
+                "modeId": "mode0",
+                "startTime": 320400000
+            },
+            {
+                "modeId": "mode1",
+                "startTime": 374400000
+            },
+            {
+                "modeId": "mode0",
+                "startTime": 406800000
+            }
+        ]
+    }
+}
