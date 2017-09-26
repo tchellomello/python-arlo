@@ -21,12 +21,9 @@ STREAM_ENDPOINT = API_URL + "/users/devices/startStream"
 # number of days to preload video
 PRELOAD_DAYS = 30
 
-# define action modes
-ACTION_MODES = {
-    'armed': 'mode1',
-    'disarmed': 'mode0',
-    'custom': 'mode2',
-    'schedule': 'true',
+# modes not returned with the Arlo API's available modes
+FIXED_MODES = {
+    'schedule': 'true'
 }
 
 # define resources
