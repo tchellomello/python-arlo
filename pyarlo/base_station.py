@@ -278,8 +278,6 @@ class ArloBaseStation(object):
             properties = resource_event.get("properties")
             return properties.get("modes")
 
-        return None
-
     @property
     def get_camera_properties(self):
         """Return camera properties."""
@@ -317,6 +315,22 @@ class ArloBaseStation(object):
             cam_strength = camera.get('signalStrength')
             signal_strength[serialnum] = cam_strength
         return signal_strength
+
+    @property
+    def get_camera_signal_strength(self):
+        """Return a list of signal strength of all cameras."""
+        signal_strength = {}
+        resource = "cameras"
+        resource_event = self.publish_and_get_event(resource)
+        if resource_event:
+            cameras = resource_event.get('properties')
+            for camera in cameras:
+                serialnum = camera.get('serialNumber')
+                cam_strength = camera.get('signalStrength')
+                signal_strength[serialnum] = cam_strength
+            return signal_strength
+
+        return None
 
     @property
     def get_basestation_properties(self):
