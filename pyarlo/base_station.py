@@ -278,6 +278,8 @@ class ArloBaseStation(object):
             properties = resource_event.get("properties")
             return properties.get("modes")
 
+        return None
+
     @property
     def get_camera_properties(self):
         """Return camera properties."""
