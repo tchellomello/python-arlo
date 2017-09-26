@@ -294,33 +294,29 @@ class ArloBaseStation(object):
     def get_camera_battery_level(self):
         """Return a list of battery levels of all cameras."""
         battery_levels = {}
-        resource = "cameras"
-        resource_event = self.publish_and_get_event(resource)
-        if resource_event:
-            cameras = resource_event.get('properties')
-            for camera in cameras:
-                serialnum = camera.get('serialNumber')
-                cam_battery = camera.get('batteryLevel')
-                battery_levels[serialnum] = cam_battery
-            return battery_levels
+        camera_properties = self.get_camera_properties
+        if not camera_properties:
+            return None
 
-        return None
+        for camera in camera_properties:
+            serialnum = camera.get('serialNumber')
+            cam_battery = camera.get('batteryLevel')
+            battery_levels[serialnum] = cam_battery
+        return battery_levels
 
     @property
     def get_camera_signal_strength(self):
         """Return a list of signal strength of all cameras."""
         signal_strength = {}
-        resource = "cameras"
-        resource_event = self.publish_and_get_event(resource)
-        if resource_event:
-            cameras = resource_event.get('properties')
-            for camera in cameras:
-                serialnum = camera.get('serialNumber')
-                cam_strength = camera.get('signalStrength')
-                signal_strength[serialnum] = cam_strength
-            return signal_strength
+        camera_properties = self.get_camera_properties
+        if not camera_properties:
+            return None
 
-        return None
+        for camera in camera_properties:
+            serialnum = camera.get('serialNumber')
+            cam_strength = camera.get('signalStrength')
+            signal_strength[serialnum] = cam_strength
+        return signal_strength
 
     @property
     def get_basestation_properties(self):

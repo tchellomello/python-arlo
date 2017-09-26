@@ -1,0 +1,154 @@
+{
+    "resource": "rules",
+    "to": "FQ8QKG-336-14182007_web",
+    "action": "is",
+    "from": "4R03757BA387F",
+    "transId": "web!e6d1b969.8aa4b!1498165992111",
+    "properties": {
+        "rules": [
+            {
+                "id": "rule0",
+                "protected": true,
+                "name": "**_DEFAULT_RULE_** 4XH37572A5347",
+                "actions": [
+                    {
+                        "stopCondition": {
+                            "type": "timeout",
+                            "timeout": 10
+                        },
+                        "type": "recordVideo",
+                        "deviceId": "4XH37572A5347"
+                    },
+                    {
+                        "type": "pushNotification"
+                    },
+                    {
+                        "type": "sendEmailAlert",
+                        "recipients": [
+                            "__OWNER_EMAIL__"
+                        ]
+                    }
+                ],
+                "triggers": [
+                    {
+                        "sensitivity": 80,
+                        "type": "pirMotionActive",
+                        "deviceId": "4XH37572A5347"
+                    }
+                ]
+            },
+            {
+                "id": "rule1",
+                "protected": true,
+                "name": "**_DEFAULT_RULE_** 4XH3757NA4234",
+                "actions": [
+                    {
+                        "stopCondition": {
+                            "type": "timeout",
+                            "timeout": 10
+                        },
+                        "type": "recordVideo",
+                        "deviceId": "4XH3757NA4234"
+                    },
+                    {
+                        "type": "pushNotification"
+                    },
+                    {
+                        "type": "sendEmailAlert",
+                        "recipients": [
+                            "__OWNER_EMAIL__"
+                        ]
+                    }
+                ],
+                "triggers": [
+                    {
+                        "sensitivity": 80,
+                        "type": "pirMotionActive",
+                        "deviceId": "4XH3757NA4234"
+                    }
+                ]
+            },
+            {
+                "id": "rule10",
+                "protected": false,
+                "name": "4XH37572A5347",
+                "actions": [
+                    {
+                        "type": "pushNotification"
+                    }
+                ],
+                "triggers": [
+                    {
+                        "sensitivity": 80,
+                        "type": "pirMotionActive",
+                        "deviceId": "4XH37572A5347"
+                    }
+                ]
+            },
+            {
+                "id": "rule14",
+                "protected": false,
+                "name": "4XH3757MA4063",
+                "actions": [
+                    {
+                        "type": "pushNotification"
+                    }
+                ],
+                "triggers": [
+                    {
+                        "sensitivity": 80,
+                        "type": "pirMotionActive",
+                        "deviceId": "4XH3757MA4063"
+                    }
+                ]
+            },
+            {
+                "id": "rule15",
+                "protected": false,
+                "name": "Push notification if Front detects motion",
+                "actions": [
+                    {
+                        "stopCondition": {
+                            "type": "triggerEndDetected",
+                            "deviceId": "4XH3757MA4063"
+                        },
+                        "type": "recordVideo",
+                        "deviceId": "4XH3757MA4063"
+                    },
+                    {
+                        "type": "pushNotification"
+                    }
+                ],
+                "triggers": [
+                    {
+                        "sensitivity": 70,
+                        "type": "pirMotionActive",
+                        "deviceId": "4XH3757MA4063"
+                    }
+                ]
+            },
+            {
+                "id": "rule16",
+                "protected": false,
+                "name": "Record if Garage detects motion",
+                "actions": [
+                    {
+                        "stopCondition": {
+                            "type": "triggerEndDetected",
+                            "deviceId": "4XH3757KA55C2"
+                        },
+                        "type": "recordVideo",
+                        "deviceId": "4XH3757KA55C2"
+                    }
+                ],
+                "triggers": [
+                    {
+                        "sensitivity": 81,
+                        "type": "pirMotionActive",
+                        "deviceId": "4XH3757KA55C2"
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -92,7 +92,7 @@ Usage
 
     # get boolean result if motion detection
     # is enabled or not
-    cam.is_motion_detection_enabled  # True
+    base.is_motion_detection_enabled  # True
 
     # get battery levels of all cameras
     # prints serial number and battery level of each camera
