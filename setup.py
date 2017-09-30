@@ -5,7 +5,11 @@ from setuptools import setup
 setup(
     name='pyarlo',
     packages=['pyarlo'],
+<<<<<<< HEAD
     version='0.0.8',
+=======
+    version='0.0.7',
+>>>>>>> pyarlo-upstream/0.0.x
     description='Python Arlo is a library written in Python 2.7/3x ' +
                 'that exposes the Netgear Arlo cameras as Python objects.',
     author='Marcelo Moreira de Mello',
