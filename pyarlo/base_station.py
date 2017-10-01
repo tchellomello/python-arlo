@@ -123,12 +123,14 @@ class ArloBaseStation(object):
             self,
             method='GET',
             resource=None,
+            camera_id=None,
             mode=None,
             publish_response=None):
         """Run action.
 
         :param method: Specify the method GET, POST or PUT. Default is GET.
         :param resource: Specify one of the resources to fetch from arlo.
+        :param camera_id: Specify, if applicable, the camera ID involved with this action
         :param mode: Specify the mode to set, else None for GET operations
         :param publish_response: Set to True for SETs. Default False
         """
@@ -155,6 +157,9 @@ class ArloBaseStation(object):
             elif resource == 'modes':
                 available_modes = self.available_modes_with_ids
                 body['properties'] = {'active': available_modes.get(mode)}
+            elif resource == 'privacy':
+                body['properties'] = {'privacyActive': mode}
+                body['resource'] = "cameras/{0}".format(camera_id)
 
         else:
             _LOGGER.info("Invalid method requested")
@@ -167,7 +172,7 @@ class ArloBaseStation(object):
 
         body['from'] = "{0}_web".format(self.user_id)
         body['to'] = self.device_id
-        body['transId'] = "web!e6d1b969.8aa4b!1498165992111"
+        body['transId'] = "web!{0}".format(self.xcloud_id)
 
         _LOGGER.debug("Action body: %s", body)
 
@@ -377,6 +382,19 @@ class ArloBaseStation(object):
             method='SET',
             resource='modes',
             mode=mode,
+            publish_response=True)
+        self.update()
+
+    def set_camera_enabled(self, camera_id, is_enabled):
+        """Turn Arlo camera On/Off.
+
+        :param mode: True, False
+        """
+        self.__run_action(
+            method='SET',
+            resource='privacy',
+            cameraid=camera_id,
+            mode=not(is_enabled),
             publish_response=True)
         self.update()
 

@@ -129,12 +129,6 @@ class ArloCamera(object):
         return self._attrs.get('xCloudId')
 
     @property
-    def get_battery_level(self):
-        """Get the camera battery level."""
-        base = self._session.base_stations[0]
-        return base.get_camera_battery_level[self.device_id]
-
-    @property
     def properties(self):
         """Get this camera's extended properties."""
         base = self._session.base_stations[0]
@@ -173,6 +167,24 @@ class ArloCamera(object):
                 return triggers
 
         return None
+
+    @property
+    def get_camera_enabled(self):
+        """Get the camera on/off status"""
+        properties = self.properties
+        if not self.properties:
+            return None
+
+        return not (properties.get("privacyActive"))
+
+    @property
+    def get_battery_level(self):
+        """Get the camera battery level."""
+        properties = self.properties
+        if not self.properties:
+            return None
+
+        return properties.get("batteryLevel")
 
     @property
     def get_signal_strength(self):
@@ -241,6 +253,21 @@ class ArloCamera(object):
                 return sensitivity.get("default")
 
         return None
+
+    @property
+    def get_audio_detection_sensitivity(self):
+        """Sensitivity level of Camera audio detection."""
+        triggers = self.triggers
+        for trigger in triggers:
+            if trigger.get("type") != "audioAmplitude":
+                continue
+
+            sensitivity = trigger.get("sensitivity")
+            if sensitivity:
+                return sensitivity.get("default")
+
+        return None
+
 
     def live_streaming(self):
         """Return live streaming generator."""
