@@ -129,12 +129,6 @@ class ArloCamera(object):
         return self._attrs.get('xCloudId')
 
     @property
-    def get_battery_level(self):
-        """Get the camera battery level."""
-        base = self._session.base_stations[0]
-        return base.get_camera_battery_level[self.device_id]
-
-    @property
     def properties(self):
         """Get this camera's extended properties."""
         base = self._session.base_stations[0]
@@ -175,6 +169,15 @@ class ArloCamera(object):
         return None
 
     @property
+    def get_battery_level(self):
+        """Get the camera battery level."""
+        properties = self.properties
+        if not self.properties:
+            return None
+
+        return properties.get("batteryLevel")
+
+    @property
     def get_signal_strength(self):
         """Get the camera Signal strength."""
         properties = self.properties
@@ -194,7 +197,7 @@ class ArloCamera(object):
 
     @property
     def get_mirror_state(self):
-        """Get the brightness property of camera."""
+        """Get the mirror state of camera image."""
         properties = self.properties
         if not self.properties:
             return None
@@ -203,7 +206,7 @@ class ArloCamera(object):
 
     @property
     def get_flip_state(self):
-        """Get the brightness property of camera."""
+        """Get the flipped state of camera image."""
         properties = self.properties
         if not self.properties:
             return None
@@ -212,7 +215,7 @@ class ArloCamera(object):
 
     @property
     def get_powersave_mode(self):
-        """Get the brightness property of camera."""
+        """Get the power mode (stream quality) of camera."""
         properties = self.properties
         if not self.properties:
             return None
@@ -241,6 +244,21 @@ class ArloCamera(object):
                 return sensitivity.get("default")
 
         return None
+
+    @property
+    def get_audio_detection_sensitivity(self):
+        """Sensitivity level of Camera audio detection."""
+        triggers = self.triggers
+        for trigger in triggers:
+            if trigger.get("type") != "audioAmplitude":
+                continue
+
+            sensitivity = trigger.get("sensitivity")
+            if sensitivity:
+                return sensitivity.get("default")
+
+        return None
+
 
     def live_streaming(self):
         """Return live streaming generator."""
