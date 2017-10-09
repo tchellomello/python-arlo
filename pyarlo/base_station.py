@@ -25,6 +25,8 @@ class ArloBaseStation(object):
         self._attrs = attrs
         self._session = arlo_session
         self._session_token = session_token
+        self._available_modes = None
+        self._available_mode_ids = None
         self.__sseclient = None
         self.__subscribed = False
         self.__events = []
@@ -42,6 +44,7 @@ class ArloBaseStation(object):
 
         data = self._session.query(url, method='GET', raw=True, stream=True)
         self.__sseclient = sseclient.SSEClient(data)
+
         for event in (self.__sseclient).events():
             if not self.__subscribed:
                 break
@@ -99,6 +102,7 @@ class ArloBaseStation(object):
             resource=resource,
             mode=None,
             publish_response=False)
+
         if status == 'success':
             i = 0
             while not this_event and i < 2:
@@ -155,7 +159,6 @@ class ArloBaseStation(object):
             elif resource == 'modes':
                 available_modes = self.available_modes_with_ids
                 body['properties'] = {'active': available_modes.get(mode)}
-
         else:
             _LOGGER.info("Invalid method requested")
             return None
@@ -234,18 +237,28 @@ class ArloBaseStation(object):
     @property
     def available_modes(self):
         """Return list of available mode names."""
-        return list(self.available_modes_with_ids.keys())
+        if not self._available_modes:
+            modes = self.available_modes_with_ids
+            if not modes:
+                return None
+            self._available_modes = list(modes.keys())
+        return self._available_modes
 
     @property
     def available_modes_with_ids(self):
         """Return list of objects containing available mode name and id."""
-        modes = self.get_available_modes()
-        simple_modes = dict(
-            [(m.get("type", m.get("name")), m.get("id")) for m in modes]
-        )
-        all_modes = FIXED_MODES.copy()
-        all_modes.update(simple_modes)
-        return all_modes
+        if not self._available_mode_ids:
+            all_modes = FIXED_MODES.copy()
+            self._available_mode_ids = all_modes
+            modes = self.get_available_modes()
+            if modes:
+                simple_modes = dict(
+                    [(m.get("type", m.get("name")), m.get("id"))
+                     for m in modes]
+                )
+                all_modes.update(simple_modes)
+                self._available_mode_ids = all_modes
+        return self._available_mode_ids
 
     @property
     def available_resources(self):
@@ -371,7 +384,8 @@ class ArloBaseStation(object):
 
         :param mode: arm, disarm
         """
-        if mode not in self.available_modes:
+        modes = self.available_modes
+        if (not modes) or (mode not in modes):
             return
         self.__run_action(
             method='SET',
