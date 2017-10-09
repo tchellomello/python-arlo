@@ -253,7 +253,8 @@ class ArloBaseStation(object):
             modes = self.get_available_modes()
             if modes:
                 simple_modes = dict(
-                    [(m.get("type", m.get("name")), m.get("id")) for m in modes]
+                    [(m.get("type", m.get("name")), m.get("id"))
+                     for m in modes]
                 )
                 all_modes.update(simple_modes)
                 self._available_mode_ids = all_modes
