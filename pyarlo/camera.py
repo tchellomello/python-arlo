@@ -129,12 +129,6 @@ class ArloCamera(object):
         return self._attrs.get('xCloudId')
 
     @property
-    def get_battery_level(self):
-        """Get the camera battery level."""
-        base = self._session.base_stations[0]
-        return base.get_camera_battery_level[self.device_id]
-
-    @property
     def properties(self):
         """Get this camera's extended properties."""
         base = self._session.base_stations[0]
@@ -175,65 +169,67 @@ class ArloCamera(object):
         return None
 
     @property
+    def get_battery_level(self):
+        """Get the camera battery level."""
+        return self.properties.get("batteryLevel") if self.properties else None
+
+    @property
     def get_signal_strength(self):
         """Get the camera Signal strength."""
-        properties = self.properties
         if not self.properties:
             return None
 
-        return properties.get("signalStrength")
+        return self.properties.get("signalStrength")
 
     @property
     def get_brightness(self):
         """Get the brightness property of camera."""
-        properties = self.properties
-        if not self.properties:
-            return None
-
-        return properties.get("brightness")
+        return self.properties.get("brightness") if self.properties else None
 
     @property
     def get_mirror_state(self):
-        """Get the brightness property of camera."""
-        properties = self.properties
-        if not self.properties:
-            return None
-
-        return properties.get("flip")
+        """Get the mirror state of camera image."""
+        return self.properties.get("mirror") if self.properties else None
 
     @property
     def get_flip_state(self):
-        """Get the brightness property of camera."""
-        properties = self.properties
-        if not self.properties:
-            return None
-
-        return properties.get("mirror")
+        """Get the flipped state of camera image."""
+        return self.properties.get("flip") if self.properties else None
 
     @property
     def get_powersave_mode(self):
-        """Get the brightness property of camera."""
-        properties = self.properties
+        """Get the power mode (stream quality) of camera."""
         if not self.properties:
             return None
 
-        return properties.get("powerSaveMode")
+        return self.properties.get("powerSaveMode")
 
     @property
     def is_camera_connected(self):
         """Connectivity status of Cam with Base Station."""
-        properties = self.properties
         if not self.properties:
             return None
 
-        return bool(properties.get("connectionState") == "available")
+        return bool(self.properties.get("connectionState") == "available")
 
     @property
     def get_motion_detection_sensitivity(self):
         """Sensitivity level of Camera motion detection."""
-        triggers = self.triggers
-        for trigger in triggers:
+        for trigger in self.triggers:
             if trigger.get("type") != "pirMotionActive":
+                continue
+
+            sensitivity = trigger.get("sensitivity")
+            if sensitivity:
+                return sensitivity.get("default")
+
+        return None
+
+    @property
+    def get_audio_detection_sensitivity(self):
+        """Sensitivity level of Camera audio detection."""
+        for trigger in self.triggers:
+            if trigger.get("type") != "audioAmplitude":
                 continue
 
             sensitivity = trigger.get("sensitivity")
