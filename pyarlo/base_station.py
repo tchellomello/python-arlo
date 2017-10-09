@@ -130,7 +130,7 @@ class ArloBaseStation(object):
 
         :param method: Specify the method GET, POST or PUT. Default is GET.
         :param resource: Specify one of the resources to fetch from arlo.
-        :param camera_id: Specify, if applicable, the camera ID involved with this action
+        :param camera_id: Specify the camera ID involved with this action
         :param mode: Specify the mode to set, else None for GET operations
         :param publish_response: Set to True for SETs. Default False
         """
