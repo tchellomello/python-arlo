@@ -131,6 +131,8 @@ class PyArlo(object):
             loop += 1
 
             # define connection method
+            req = None
+
             if method == 'GET':
                 req = self.session.get(url, headers=headers, stream=stream)
             elif method == 'PUT':
@@ -138,7 +140,7 @@ class PyArlo(object):
             elif method == 'POST':
                 req = self.session.post(url, json=params, headers=headers)
 
-            if req.status_code == 200:
+            if req and (req.status_code == 200):
                 if raw:
                     _LOGGER.debug("Required raw object.")
                     response = req
