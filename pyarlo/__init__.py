@@ -184,7 +184,8 @@ class PyArlo(object):
                device.get('state') == 'provisioned':
                 base = ArloBaseStation(name, device, self.__token, self)
                 devices['base_station'].append(base)
-                self.__base_stations.append(base)
+                if base not in self.__base_stations:
+                    self.__base_stations.append(base)
 
         return devices
 
