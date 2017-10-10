@@ -24,7 +24,6 @@ USERNAME = "foo"
 PASSWORD = "bar"
 USERID = "999-123456"
 
-
 MOCK_DATA = {"success": True}
 
 

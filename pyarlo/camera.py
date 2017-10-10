@@ -130,7 +130,7 @@ class ArloCamera(object):
         return self._attrs.get('xCloudId')
 
     def _update_extended_properties(self):
-        """Cache this camera's extended properties."""
+        """Cache self.extended_properties attributes."""
         base = self._session.base_stations[0]
         props = base.get_camera_properties
 
@@ -145,7 +145,7 @@ class ArloCamera(object):
     @property
     def properties(self):
         """Get this camera's extended properties."""
-        if not self._extended_properties:
+        if self._extended_properties is None:
             self._update_extended_properties()
         return self._extended_properties
 
