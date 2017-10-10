@@ -22,6 +22,7 @@ class ArloCamera(object):
         self.name = name
         self._attrs = attrs
         self._session = arlo_session
+        self._extended_properties = None
 
     def __repr__(self):
         """Representation string of object."""
@@ -128,19 +129,25 @@ class ArloCamera(object):
         """Return X-Cloud-ID attribute."""
         return self._attrs.get('xCloudId')
 
+    def _update_extended_properties(self):
+        """Cache this camera's extended properties."""
+        base = self._session.base_stations[0]
+        props = base.get_camera_properties
+
+        data = None
+        if props:
+            for cam in props:
+                if cam["serialNumber"] == self.device_id:
+                    data = cam
+
+        self._extended_properties = data
+
     @property
     def properties(self):
         """Get this camera's extended properties."""
-        base = self._session.base_stations[0]
-        props = base.get_camera_properties
-        if not props:
-            return None
-
-        for cam in props:
-            if cam["serialNumber"] == self.device_id:
-                return cam
-
-        return None
+        if not self._extended_properties:
+            self._update_extended_properties()
+        return self._extended_properties
 
     @property
     def capabilities(self):
@@ -269,5 +276,6 @@ class ArloCamera(object):
     def update(self):
         """Update object properties."""
         self._attrs = self._session.refresh_attributes(self.name)
+        self._update_extended_properties()
 
 # vim:sw=4:ts=4:et:
