@@ -15,9 +15,11 @@ from pyarlo import PyArlo, ArloBaseStation
 from pyarlo.camera import ArloCamera
 from pyarlo.const import (
     DEVICES_ENDPOINT, LIBRARY_ENDPOINT, LOGIN_ENDPOINT,
-    RESET_CAM_ENDPOINT, STREAM_ENDPOINT
+    NOTIFY_ENDPOINT, RESET_CAM_ENDPOINT, STREAM_ENDPOINT,
+    UNSUBSCRIBE_ENDPOINT
 )
 
+BASE_STATION_ID = "48B14CBBBBBBB"
 USERNAME = "foo"
 PASSWORD = "bar"
 USERID = "999-123456"
@@ -33,6 +35,9 @@ class TestArloCamera(unittest.TestCase):
                   text=load_fixture("pyarlo_authentication.json"))
         mock.get(DEVICES_ENDPOINT, text=load_fixture("pyarlo_devices.json"))
         mock.post(LIBRARY_ENDPOINT, text=load_fixture("pyarlo_videos.json"))
+        mock.post(NOTIFY_ENDPOINT.format(BASE_STATION_ID),
+                  text=load_fixture("pyarlo_camera_properties.json"))
+        mock.get(UNSUBSCRIBE_ENDPOINT)
         return PyArlo(USERNAME, PASSWORD, preload=False)
 
     @requests_mock.Mocker()
@@ -52,11 +57,13 @@ class TestArloCamera(unittest.TestCase):
             self.assertEqual(camera.timezone, "America/New_York")
             self.assertEqual(camera.user_role, "ADMIN")
             self.assertTrue(len(camera.captured_today), 1)
+            self.assertIsNone(camera._extended_properties)
+            self.assertIsNotNone(camera.properties)
 
             if camera.name == "Front Door":
                 self.assertTrue(camera.device_id, "48B14CAAAAAAA")
                 self.assertEqual(camera.unique_id, "235-48B14CAAAAAAA")
-                self.assertEquals(camera.unseen_videos, 39)
+                self.assertEqual(camera.unseen_videos, 39)
                 self.assertEqual(camera.xcloud_id, "1005-123-999999")
                 self.assertEqual(camera.serial_number, camera.device_id)
 
@@ -85,7 +92,7 @@ class TestArloCamera(unittest.TestCase):
             if camera.name == "Patio":
                 self.assertTrue(camera.model_id, "VMC3030")
                 self.assertEqual(camera.unique_id, "999-123456_48B14C1299999")
-                self.assertEquals(camera.unseen_videos, 233)
+                self.assertEqual(camera.unseen_videos, 233)
 
     @requests_mock.Mocker()
     def test_unseen_videos_reset(self, mock):
@@ -98,8 +105,7 @@ class TestArloCamera(unittest.TestCase):
         self.assertTrue(camera.unseen_videos_reset)
 
         camera.unseen_videos_reset()
-        request_number = mock.call_count - 2
-        request = mock.request_history[request_number]
+        request = mock.request_history[2]
         self.assertEqual(
             "{}://{}{}?{}".format(
                 request.scheme, request.netloc, request.path, request.query
