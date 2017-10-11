@@ -3,8 +3,8 @@
 import json
 import threading
 import logging
-import sseclient
 import time
+import sseclient
 from pyarlo.const import (
     ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT,
     FIXED_MODES, NOTIFY_ENDPOINT, RESOURCES)

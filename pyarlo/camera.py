@@ -134,7 +134,7 @@ class ArloCamera(object):
             return None
 
         base = base_stations[0]
-        props = base._camera_properties
+        props = base.camera_properties
         if props:
             for cam in props:
                 if cam["serialNumber"] == self.device_id:
@@ -210,8 +210,8 @@ class ArloCamera(object):
     def is_camera_connected(self):
         """Connectivity status of Cam with Base Station."""
         properties = self.properties
-        return bool(properties.get("connectionState") == "available"
-                    ) if properties else None
+        return bool(properties.get("connectionState") == "available") \
+            if properties else None
 
     @property
     def get_motion_detection_sensitivity(self):
