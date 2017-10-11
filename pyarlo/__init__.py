@@ -36,11 +36,12 @@ class PyArlo(object):
         self.__headers = None
         self.__params = None
 
+        self._all_devices = {}
+
         # set username and password
         self.__password = password
         self.__username = username
         self.session = requests.Session()
-        self.__base_stations = []
 
         # login user
         self.login()
@@ -165,9 +166,12 @@ class PyArlo(object):
     @property
     def devices(self):
         """Return all devices on Arlo account."""
-        devices = {}
-        devices['cameras'] = []
-        devices['base_station'] = []
+        if self._all_devices:
+            return self._all_devices
+
+        self._all_devices = {}
+        self._all_devices['cameras'] = []
+        self._all_devices['base_station'] = []
 
         url = DEVICES_ENDPOINT
         data = self.query(url)
@@ -178,16 +182,15 @@ class PyArlo(object):
                  device.get('deviceType') == 'arloq' or
                  device.get('deviceType') == 'arloqs') and
                     device.get('state') == 'provisioned'):
-                devices['cameras'].append(ArloCamera(name, device, self))
+                camera = ArloCamera(name, device, self)
+                self._all_devices['cameras'].append(camera)
 
             if device.get('deviceType') == 'basestation' and \
                device.get('state') == 'provisioned':
                 base = ArloBaseStation(name, device, self.__token, self)
-                devices['base_station'].append(base)
-                if base not in self.__base_stations:
-                    self.__base_stations.append(base)
+                self._all_devices['base_station'].append(base)
 
-        return devices
+        return self._all_devices
 
     def lookup_camera_by_id(self, device_id):
         """Return camera object by device_id."""
