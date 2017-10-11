@@ -8,7 +8,7 @@ import time
 from pyarlo.const import (
     ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT,
     FIXED_MODES, NOTIFY_ENDPOINT, RESOURCES)
-_LOGGER = logging.getLogger('__name__')
+_LOGGER = logging.getLogger(__name__)
 
 
 class ArloBaseStation(object):

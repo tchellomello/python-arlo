@@ -151,10 +151,7 @@ class ArloCamera(object):
     def capabilities(self):
         """Get a camera's capabilities."""
         properties = self.properties
-        if not properties:
-            return None
-
-        return properties.get("capabilities")
+        return properties.get("capabilities") if properties else None
 
     @property
     def triggers(self):
@@ -213,7 +210,6 @@ class ArloCamera(object):
     def is_camera_connected(self):
         """Connectivity status of Cam with Base Station."""
         properties = self.properties
-
         return bool(properties.get("connectionState") == "available"
                     ) if properties else None
 
