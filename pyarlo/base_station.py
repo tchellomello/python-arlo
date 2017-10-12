@@ -308,10 +308,10 @@ class ArloBaseStation(object):
     def camera_properties(self):
         """Return _camera_properties"""
         if self._camera_properties is None:
-            self.get_camera_properties()
+            self.get_cameras_properties()
         return self._camera_properties
 
-    def get_camera_properties(self):
+    def get_cameras_properties(self):
         """Return camera properties."""
         resource = "cameras"
         resource_event = self.publish_and_get_event(resource)
@@ -320,8 +320,7 @@ class ArloBaseStation(object):
             self._camera_properties = resource_event.get('properties')
         return
 
-    @property
-    def get_camera_battery_level(self):
+    def get_cameras_battery_level(self):
         """Return a list of battery levels of all cameras."""
         battery_levels = {}
         if not self.camera_properties:
@@ -333,8 +332,7 @@ class ArloBaseStation(object):
             battery_levels[serialnum] = cam_battery
         return battery_levels
 
-    @property
-    def get_camera_signal_strength(self):
+    def get_cameras_signal_strength(self):
         """Return a list of signal strength of all cameras."""
         signal_strength = {}
         if not self.camera_properties:
@@ -347,7 +345,7 @@ class ArloBaseStation(object):
         return signal_strength
 
     @property
-    def get_basestation_properties(self):
+    def properties(self):
         """Return the base station info."""
         resource = "basestation"
         basestn_event = self.publish_and_get_event(resource)
@@ -356,8 +354,7 @@ class ArloBaseStation(object):
 
         return None
 
-    @property
-    def get_camera_rules(self):
+    def get_cameras_rules(self):
         """Return the camera rules."""
         resource = "rules"
         rules_event = self.publish_and_get_event(resource)
@@ -366,8 +363,7 @@ class ArloBaseStation(object):
 
         return None
 
-    @property
-    def get_camera_schedule(self):
+    def get_cameras_schedule(self):
         """Return the schedule set for cameras."""
         resource = "schedule"
         schedule_event = self.publish_and_get_event(resource)
@@ -428,7 +424,7 @@ class ArloBaseStation(object):
         last_refresh = 0 if self._last_refresh is None else self._last_refresh
 
         if current_time >= (last_refresh + self._refresh_rate):
-            self.get_camera_properties()
+            self.get_cameras_properties()
             self._attrs = self._session.refresh_attributes(self.name)
             _LOGGER.debug("Called base station update of camera properties: "
                           "Scan Interval: %s, New Properties: %s",

@@ -69,14 +69,14 @@ class TestArloCamera(unittest.TestCase):
                 self.assertEqual(camera.xcloud_id, "1005-123-999999")
                 self.assertEqual(camera.serial_number, camera.device_id)
 
-                self.assertEqual(camera.get_battery_level, 77)
-                self.assertEqual(camera.get_signal_strength, 3)
-                self.assertEqual(camera.get_brightness, 0)
-                self.assertEqual(camera.get_mirror_state, 0)
-                self.assertEqual(camera.get_flip_state, 0)
-                self.assertEqual(camera.get_powersave_mode, 2)
+                self.assertEqual(camera.battery_level, 77)
+                self.assertEqual(camera.signal_strength, 3)
+                self.assertEqual(camera.brightness, 0)
+                self.assertEqual(camera.mirror_state, 0)
+                self.assertEqual(camera.flip_state, 0)
+                self.assertEqual(camera.powersave_mode, 2)
                 self.assertTrue(camera.is_camera_connected)
-                self.assertEqual(camera.get_motion_detection_sensitivity, 80)
+                self.assertEqual(camera.motion_detection_sensitivity, 80)
 
                 image_url = camera._attrs.get("presignedLastImageUrl")
 
