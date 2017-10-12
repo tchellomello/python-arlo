@@ -22,7 +22,6 @@ class ArloCamera(object):
         self.name = name
         self._attrs = attrs
         self._session = arlo_session
-        self._extended_properties = None
 
     def __repr__(self):
         """Representation string of object."""
@@ -126,26 +125,23 @@ class ArloCamera(object):
         """Return X-Cloud-ID attribute."""
         return self._attrs.get('xCloudId')
 
-    def _update_extended_properties(self):
-        """Cache self.extended_properties attributes."""
+    def _get_camera_properties(self):
+        """Lookup camera properties from base station."""
         base_stations = self._session.base_stations
 
-        if not base_stations:
-            return None
+        if base_stations:
+            base = base_stations[0]
 
-        base = base_stations[0]
-        props = base.camera_properties
-        if props:
-            for cam in props:
-                if cam["serialNumber"] == self.device_id:
-                    self._extended_properties = cam
+            if base.camera_properties:
+                for cam in base.camera_properties:
+                    if cam["serialNumber"] == self.device_id:
+                        return cam
+        return None
 
     @property
     def properties(self):
-        """Get this camera's extended properties."""
-        if self._extended_properties is None:
-            self._update_extended_properties()
-        return self._extended_properties
+        """Get this camera's properties."""
+        return self._get_camera_properties()
 
     @property
     def capabilities(self):
@@ -276,5 +272,11 @@ class ArloCamera(object):
     def update(self):
         """Update object properties."""
         self._attrs = self._session.refresh_attributes(self.name)
-        self._update_extended_properties()
+
+        # force base_state to update properties
+        base_stations = self._session.base_stations
+        if base_stations:
+            base = base_stations[0]
+            base.update()
+
 # vim:sw=4:ts=4:et:

@@ -60,7 +60,6 @@ class TestArloCamera(unittest.TestCase):
             self.assertEqual(camera.timezone, "America/New_York")
             self.assertEqual(camera.user_role, "ADMIN")
             self.assertTrue(len(camera.captured_today), 1)
-            self.assertIsNotNone(camera._extended_properties)
             self.assertIsNotNone(camera.properties)
 
             if camera.name == "Front Door":

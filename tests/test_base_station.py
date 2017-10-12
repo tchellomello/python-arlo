@@ -77,7 +77,7 @@ class TestArloBaseStation(unittest.TestCase):
     def test_camera_properties(self, mock):
         """Test ArloBaseStation.get_camera_properties."""
         base = self.load_base_station(mock)
-        camera_properties = base.get_camera_properties
+        camera_properties = base.camera_properties
         mocked_properties = load_camera_props()
         self.assertEqual(camera_properties, mocked_properties["properties"])
 
