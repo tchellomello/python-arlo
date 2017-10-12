@@ -46,8 +46,11 @@ class TestArloCamera(unittest.TestCase):
         """Test ArloCamera properties."""
         arlo = self.load_arlo(mock)
         cameras = arlo.cameras
+        basestation = arlo.base_stations[0]
+        basestation.update()
         self.assertEqual(len(cameras), 2)
         for camera in cameras:
+            camera.update()
             self.assertTrue(camera.__repr__().startswith("<ArloCamera:"))
             self.assertIsNone(arlo.refresh_attributes(camera))
             self.assertIsInstance(camera, ArloCamera)
@@ -57,7 +60,7 @@ class TestArloCamera(unittest.TestCase):
             self.assertEqual(camera.timezone, "America/New_York")
             self.assertEqual(camera.user_role, "ADMIN")
             self.assertTrue(len(camera.captured_today), 1)
-            self.assertIsNone(camera._extended_properties)
+            self.assertIsNotNone(camera._extended_properties)
             self.assertIsNotNone(camera.properties)
 
             if camera.name == "Front Door":

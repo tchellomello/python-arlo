@@ -3,6 +3,7 @@
 import json
 import threading
 import logging
+import time
 import sseclient
 from pyarlo.const import (
     ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT,
@@ -27,6 +28,9 @@ class ArloBaseStation(object):
         self._session_token = session_token
         self._available_modes = None
         self._available_mode_ids = None
+        self._camera_properties = None
+        self._last_refresh = None
+        self._refresh_rate = 15
         self.__sseclient = None
         self.__subscribed = False
         self.__events = []
@@ -240,6 +244,11 @@ class ArloBaseStation(object):
         return self._attrs.get('xCloudId')
 
     @property
+    def camera_properties(self):
+        """Return _camera_properties"""
+        return self._camera_properties
+
+    @property
     def available_modes(self):
         """Return list of available mode names."""
         if not self._available_modes:
@@ -304,6 +313,8 @@ class ArloBaseStation(object):
         resource = "cameras"
         resource_event = self.publish_and_get_event(resource)
         if resource_event:
+            self._camera_properties = resource_event.get('properties')
+            self._last_refresh = int(time.time())
             return resource_event.get('properties')
 
         return None
@@ -414,6 +425,13 @@ class ArloBaseStation(object):
 
     def update(self):
         """Update object properties."""
-        self._attrs = self._session.refresh_attributes(self.name)
+        current_time = int(time.time())
+        last_refresh = 0 if self._last_refresh is None else self._last_refresh
+        if current_time >= (last_refresh + self._refresh_rate):
+            props = self.get_camera_properties
+            self._attrs = self._session.refresh_attributes(self.name)
+            _LOGGER.debug("Called base station update on camera properties: "
+                          "Scan Interval: %s, New Properties: %s",
+                          self._refresh_rate, props)
 
 # vim:sw=4:ts=4:et:
