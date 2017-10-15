@@ -1,2 +1,2 @@
-requests
-sseclient-py
+requests==2.18.4
+sseclient-py==1.7
