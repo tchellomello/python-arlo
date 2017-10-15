@@ -164,6 +164,8 @@ class ArloCamera(object):
             if triggers:
                 return triggers
 
+        return None
+
     @property
     def battery_level(self):
         """Get the camera battery level."""
