@@ -10,6 +10,8 @@ from pyarlo.const import (
     FIXED_MODES, NOTIFY_ENDPOINT, RESOURCES)
 _LOGGER = logging.getLogger(__name__)
 
+REFRESH_RATE = 15
+
 
 class ArloBaseStation(object):
     """Arlo Base Station module implementation."""
@@ -30,7 +32,7 @@ class ArloBaseStation(object):
         self._available_mode_ids = None
         self._camera_properties = None
         self._last_refresh = None
-        self._refresh_rate = 15
+        self._refresh_rate = REFRESH_RATE
         self.__sseclient = None
         self.__subscribed = False
         self.__events = []
@@ -244,11 +246,6 @@ class ArloBaseStation(object):
         return self._attrs.get('xCloudId')
 
     @property
-    def camera_properties(self):
-        """Return _camera_properties"""
-        return self._camera_properties
-
-    @property
     def available_modes(self):
         """Return list of available mode names."""
         if not self._available_modes:
@@ -308,47 +305,47 @@ class ArloBaseStation(object):
         return None
 
     @property
-    def get_camera_properties(self):
+    def camera_properties(self):
+        """Return _camera_properties"""
+        if self._camera_properties is None:
+            self.get_cameras_properties()
+        return self._camera_properties
+
+    def get_cameras_properties(self):
         """Return camera properties."""
         resource = "cameras"
         resource_event = self.publish_and_get_event(resource)
         if resource_event:
-            self._camera_properties = resource_event.get('properties')
             self._last_refresh = int(time.time())
-            return resource_event.get('properties')
+            self._camera_properties = resource_event.get('properties')
+        return
 
-        return None
-
-    @property
-    def get_camera_battery_level(self):
+    def get_cameras_battery_level(self):
         """Return a list of battery levels of all cameras."""
         battery_levels = {}
-        camera_properties = self.get_camera_properties
-        if not camera_properties:
+        if not self.camera_properties:
             return None
 
-        for camera in camera_properties:
+        for camera in self.camera_properties:
             serialnum = camera.get('serialNumber')
             cam_battery = camera.get('batteryLevel')
             battery_levels[serialnum] = cam_battery
         return battery_levels
 
-    @property
-    def get_camera_signal_strength(self):
+    def get_cameras_signal_strength(self):
         """Return a list of signal strength of all cameras."""
         signal_strength = {}
-        camera_properties = self.get_camera_properties
-        if not camera_properties:
+        if not self.camera_properties:
             return None
 
-        for camera in camera_properties:
+        for camera in self.camera_properties:
             serialnum = camera.get('serialNumber')
             cam_strength = camera.get('signalStrength')
             signal_strength[serialnum] = cam_strength
         return signal_strength
 
     @property
-    def get_basestation_properties(self):
+    def properties(self):
         """Return the base station info."""
         resource = "basestation"
         basestn_event = self.publish_and_get_event(resource)
@@ -357,8 +354,7 @@ class ArloBaseStation(object):
 
         return None
 
-    @property
-    def get_camera_rules(self):
+    def get_cameras_rules(self):
         """Return the camera rules."""
         resource = "rules"
         rules_event = self.publish_and_get_event(resource)
@@ -367,8 +363,7 @@ class ArloBaseStation(object):
 
         return None
 
-    @property
-    def get_camera_schedule(self):
+    def get_cameras_schedule(self):
         """Return the schedule set for cameras."""
         resource = "schedule"
         schedule_event = self.publish_and_get_event(resource)
@@ -427,11 +422,13 @@ class ArloBaseStation(object):
         """Update object properties."""
         current_time = int(time.time())
         last_refresh = 0 if self._last_refresh is None else self._last_refresh
+
         if current_time >= (last_refresh + self._refresh_rate):
-            props = self.get_camera_properties
+            self.get_cameras_properties()
             self._attrs = self._session.refresh_attributes(self.name)
-            _LOGGER.debug("Called base station update on camera properties: "
+            _LOGGER.debug("Called base station update of camera properties: "
                           "Scan Interval: %s, New Properties: %s",
-                          self._refresh_rate, props)
+                          self._refresh_rate, self.camera_properties)
+        return
 
 # vim:sw=4:ts=4:et:

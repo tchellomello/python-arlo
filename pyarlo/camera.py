@@ -22,7 +22,6 @@ class ArloCamera(object):
         self.name = name
         self._attrs = attrs
         self._session = arlo_session
-        self._extended_properties = None
 
     def __repr__(self):
         """Representation string of object."""
@@ -126,26 +125,23 @@ class ArloCamera(object):
         """Return X-Cloud-ID attribute."""
         return self._attrs.get('xCloudId')
 
-    def _update_extended_properties(self):
-        """Cache self.extended_properties attributes."""
+    def _get_camera_properties(self):
+        """Lookup camera properties from base station."""
         base_stations = self._session.base_stations
 
-        if not base_stations:
-            return None
+        if base_stations:
+            base = base_stations[0]
 
-        base = base_stations[0]
-        props = base.camera_properties
-        if props:
-            for cam in props:
-                if cam["serialNumber"] == self.device_id:
-                    self._extended_properties = cam
+            if base.camera_properties:
+                for cam in base.camera_properties:
+                    if cam["serialNumber"] == self.device_id:
+                        return cam
+        return None
 
     @property
     def properties(self):
-        """Get this camera's extended properties."""
-        if self._extended_properties is None:
-            self._update_extended_properties()
-        return self._extended_properties
+        """Get this camera's properties."""
+        return self._get_camera_properties()
 
     @property
     def capabilities(self):
@@ -171,37 +167,37 @@ class ArloCamera(object):
         return None
 
     @property
-    def get_battery_level(self):
+    def battery_level(self):
         """Get the camera battery level."""
         properties = self.properties
         return properties.get("batteryLevel") if properties else None
 
     @property
-    def get_signal_strength(self):
+    def signal_strength(self):
         """Get the camera Signal strength."""
         properties = self.properties
         return properties.get("signalStrength") if properties else None
 
     @property
-    def get_brightness(self):
+    def brightness(self):
         """Get the brightness property of camera."""
         properties = self.properties
         return properties.get("brightness") if properties else None
 
     @property
-    def get_mirror_state(self):
+    def mirror_state(self):
         """Get the mirror state of camera image."""
         properties = self.properties
         return properties.get("mirror") if properties else None
 
     @property
-    def get_flip_state(self):
+    def flip_state(self):
         """Get the flipped state of camera image."""
         properties = self.properties
         return properties.get("flip") if properties else None
 
     @property
-    def get_powersave_mode(self):
+    def powersave_mode(self):
         """Get the power mode (stream quality) of camera."""
         properties = self.properties
         return properties.get("powerSaveMode") if properties else None
@@ -214,7 +210,7 @@ class ArloCamera(object):
             if properties else None
 
     @property
-    def get_motion_detection_sensitivity(self):
+    def motion_detection_sensitivity(self):
         """Sensitivity level of Camera motion detection."""
         if not self.triggers:
             return None
@@ -230,7 +226,7 @@ class ArloCamera(object):
         return None
 
     @property
-    def get_audio_detection_sensitivity(self):
+    def audio_detection_sensitivity(self):
         """Sensitivity level of Camera audio detection."""
         if not self.triggers:
             return None
@@ -276,5 +272,11 @@ class ArloCamera(object):
     def update(self):
         """Update object properties."""
         self._attrs = self._session.refresh_attributes(self.name)
-        self._update_extended_properties()
+
+        # force base_state to update properties
+        base_stations = self._session.base_stations
+        if base_stations:
+            base = base_stations[0]
+            base.update()
+
 # vim:sw=4:ts=4:et:
