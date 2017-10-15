@@ -68,45 +68,45 @@ class TestArloBaseStation(unittest.TestCase):
     def test_get_properties(self, mock):
         """Test ArloBaseStation.get_basestation_properties."""
         base = self.load_base_station(mock)
-        base_properties = base.get_basestation_properties
+        base_properties = base.properties
         mocked_properties = load_base_props()
         self.assertEqual(base_properties, mocked_properties["properties"])
 
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event", load_camera_props)
     def test_camera_properties(self, mock):
-        """Test ArloBaseStation.get_camera_properties."""
+        """Test ArloBaseStation.get_cameras_properties."""
         base = self.load_base_station(mock)
-        camera_properties = base.get_camera_properties
+        camera_properties = base.camera_properties
         mocked_properties = load_camera_props()
         self.assertEqual(camera_properties, mocked_properties["properties"])
 
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event", load_camera_props)
     def test_battery_level(self, mock):
-        """Test ArloBaseStation.get_camera_battery_level."""
+        """Test ArloBaseStation.get_cameras_battery_level."""
         base = self.load_base_station(mock)
         self.assertEqual(
-            base.get_camera_battery_level,
+            base.get_cameras_battery_level(),
             {"48B14C1299999": 95, "48B14CAAAAAAA": 77}
         )
 
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event", load_camera_props)
     def test_signal_strength(self, mock):
-        """Test ArloBaseStation.get_camera_signal_strength."""
+        """Test ArloBaseStation.get_cameras_signal_strength."""
         base = self.load_base_station(mock)
         self.assertEqual(
-            base.get_camera_signal_strength,
+            base.get_cameras_signal_strength(),
             {"48B14C1299999": 4, "48B14CAAAAAAA": 3}
         )
 
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event", load_camera_rules)
     def test_camera_rules(self, mock):
-        """Test ArloBaseStation.get_camera_rules."""
+        """Test ArloBaseStation.get_cameras_rules."""
         base = self.load_base_station(mock)
-        camera_rules = base.get_camera_rules
+        camera_rules = base.get_cameras_rules()
         mocked_rules = load_camera_rules()
         self.assertEqual(camera_rules, mocked_rules["properties"])
 
@@ -114,8 +114,8 @@ class TestArloBaseStation(unittest.TestCase):
     @patch.object(
         ArloBaseStation, "publish_and_get_event", load_camera_schedule)
     def test_camera_schedule(self, mock):
-        """Test ArloBaseStation.get_camera_schedule."""
+        """Test ArloBaseStation.get_cameras_schedule."""
         base = self.load_base_station(mock)
-        camera_schedule = base.get_camera_schedule
+        camera_schedule = base.get_cameras_schedule()
         mocked_schedules = load_camera_schedule()
         self.assertEqual(camera_schedule, mocked_schedules["properties"])

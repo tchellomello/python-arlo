@@ -3,11 +3,14 @@
 import json
 import threading
 import logging
+import time
 import sseclient
 from pyarlo.const import (
     ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT,
     FIXED_MODES, NOTIFY_ENDPOINT, RESOURCES)
 _LOGGER = logging.getLogger(__name__)
+
+REFRESH_RATE = 15
 
 
 class ArloBaseStation(object):
@@ -25,6 +28,11 @@ class ArloBaseStation(object):
         self._attrs = attrs
         self._session = arlo_session
         self._session_token = session_token
+        self._available_modes = None
+        self._available_mode_ids = None
+        self._camera_properties = None
+        self._last_refresh = None
+        self._refresh_rate = REFRESH_RATE
         self.__sseclient = None
         self.__subscribed = False
         self.__events = []
@@ -42,6 +50,7 @@ class ArloBaseStation(object):
 
         data = self._session.query(url, method='GET', raw=True, stream=True)
         self.__sseclient = sseclient.SSEClient(data)
+
         for event in (self.__sseclient).events():
             if not self.__subscribed:
                 break
@@ -99,6 +108,7 @@ class ArloBaseStation(object):
             resource=resource,
             mode=None,
             publish_response=False)
+
         if status == 'success':
             i = 0
             while not this_event and i < 2:
@@ -123,12 +133,14 @@ class ArloBaseStation(object):
             self,
             method='GET',
             resource=None,
+            camera_id=None,
             mode=None,
             publish_response=None):
         """Run action.
 
         :param method: Specify the method GET, POST or PUT. Default is GET.
         :param resource: Specify one of the resources to fetch from arlo.
+        :param camera_id: Specify the camera ID involved with this action
         :param mode: Specify the mode to set, else None for GET operations
         :param publish_response: Set to True for SETs. Default False
         """
@@ -155,7 +167,9 @@ class ArloBaseStation(object):
             elif resource == 'modes':
                 available_modes = self.available_modes_with_ids
                 body['properties'] = {'active': available_modes.get(mode)}
-
+            elif resource == 'privacy':
+                body['properties'] = {'privacyActive': not mode}
+                body['resource'] = "cameras/{0}".format(camera_id)
         else:
             _LOGGER.info("Invalid method requested")
             return None
@@ -167,7 +181,7 @@ class ArloBaseStation(object):
 
         body['from'] = "{0}_web".format(self.user_id)
         body['to'] = self.device_id
-        body['transId'] = "web!e6d1b969.8aa4b!1498165992111"
+        body['transId'] = "web!{0}".format(self.xcloud_id)
 
         _LOGGER.debug("Action body: %s", body)
 
@@ -175,7 +189,7 @@ class ArloBaseStation(object):
             self._session.query(url, method='POST', extra_params=body,
                                 extra_headers={"xCloudId": self.xcloud_id})
 
-        if ret.get('success'):
+        if ret and ret.get('success'):
             return 'success'
 
         return None
@@ -234,18 +248,28 @@ class ArloBaseStation(object):
     @property
     def available_modes(self):
         """Return list of available mode names."""
-        return list(self.available_modes_with_ids.keys())
+        if not self._available_modes:
+            modes = self.available_modes_with_ids
+            if not modes:
+                return None
+            self._available_modes = list(modes.keys())
+        return self._available_modes
 
     @property
     def available_modes_with_ids(self):
         """Return list of objects containing available mode name and id."""
-        modes = self.get_available_modes()
-        simple_modes = dict(
-            [(m.get("type", m.get("name")), m.get("id")) for m in modes]
-        )
-        all_modes = FIXED_MODES.copy()
-        all_modes.update(simple_modes)
-        return all_modes
+        if not self._available_mode_ids:
+            all_modes = FIXED_MODES.copy()
+            self._available_mode_ids = all_modes
+            modes = self.get_available_modes()
+            if modes:
+                simple_modes = dict(
+                    [(m.get("type", m.get("name")), m.get("id"))
+                     for m in modes]
+                )
+                all_modes.update(simple_modes)
+                self._available_mode_ids = all_modes
+        return self._available_mode_ids
 
     @property
     def available_resources(self):
@@ -281,45 +305,47 @@ class ArloBaseStation(object):
         return None
 
     @property
-    def get_camera_properties(self):
+    def camera_properties(self):
+        """Return _camera_properties"""
+        if self._camera_properties is None:
+            self.get_cameras_properties()
+        return self._camera_properties
+
+    def get_cameras_properties(self):
         """Return camera properties."""
         resource = "cameras"
         resource_event = self.publish_and_get_event(resource)
         if resource_event:
-            return resource_event.get('properties')
+            self._last_refresh = int(time.time())
+            self._camera_properties = resource_event.get('properties')
+        return
 
-        return None
-
-    @property
-    def get_camera_battery_level(self):
+    def get_cameras_battery_level(self):
         """Return a list of battery levels of all cameras."""
         battery_levels = {}
-        camera_properties = self.get_camera_properties
-        if not camera_properties:
+        if not self.camera_properties:
             return None
 
-        for camera in camera_properties:
+        for camera in self.camera_properties:
             serialnum = camera.get('serialNumber')
             cam_battery = camera.get('batteryLevel')
             battery_levels[serialnum] = cam_battery
         return battery_levels
 
-    @property
-    def get_camera_signal_strength(self):
+    def get_cameras_signal_strength(self):
         """Return a list of signal strength of all cameras."""
         signal_strength = {}
-        camera_properties = self.get_camera_properties
-        if not camera_properties:
+        if not self.camera_properties:
             return None
 
-        for camera in camera_properties:
+        for camera in self.camera_properties:
             serialnum = camera.get('serialNumber')
             cam_strength = camera.get('signalStrength')
             signal_strength[serialnum] = cam_strength
         return signal_strength
 
     @property
-    def get_basestation_properties(self):
+    def properties(self):
         """Return the base station info."""
         resource = "basestation"
         basestn_event = self.publish_and_get_event(resource)
@@ -328,8 +354,7 @@ class ArloBaseStation(object):
 
         return None
 
-    @property
-    def get_camera_rules(self):
+    def get_cameras_rules(self):
         """Return the camera rules."""
         resource = "rules"
         rules_event = self.publish_and_get_event(resource)
@@ -338,8 +363,7 @@ class ArloBaseStation(object):
 
         return None
 
-    @property
-    def get_camera_schedule(self):
+    def get_cameras_schedule(self):
         """Return the schedule set for cameras."""
         resource = "schedule"
         schedule_event = self.publish_and_get_event(resource)
@@ -371,7 +395,8 @@ class ArloBaseStation(object):
 
         :param mode: arm, disarm
         """
-        if mode not in self.available_modes:
+        modes = self.available_modes
+        if (not modes) or (mode not in modes):
             return
         self.__run_action(
             method='SET',
@@ -380,8 +405,30 @@ class ArloBaseStation(object):
             publish_response=True)
         self.update()
 
+    def set_camera_enabled(self, camera_id, is_enabled):
+        """Turn Arlo camera On/Off.
+
+        :param mode: True, False
+        """
+        self.__run_action(
+            method='SET',
+            resource='privacy',
+            camera_id=camera_id,
+            mode=is_enabled,
+            publish_response=True)
+        self.update()
+
     def update(self):
         """Update object properties."""
-        self._attrs = self._session.refresh_attributes(self.name)
+        current_time = int(time.time())
+        last_refresh = 0 if self._last_refresh is None else self._last_refresh
+
+        if current_time >= (last_refresh + self._refresh_rate):
+            self.get_cameras_properties()
+            self._attrs = self._session.refresh_attributes(self.name)
+            _LOGGER.debug("Called base station update of camera properties: "
+                          "Scan Interval: %s, New Properties: %s",
+                          self._refresh_rate, self.camera_properties)
+        return
 
 # vim:sw=4:ts=4:et:
