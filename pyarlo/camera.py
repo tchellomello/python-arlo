@@ -54,6 +54,11 @@ class ArloCamera(object):
         return self._attrs.get('properties').get('hwVersion')
 
     @property
+    def parent_id(self):
+        """Return camera parentID."""
+        return self._attrs.get('parentId')
+
+    @property
     def timezone(self):
         """Return timezone."""
         return self._attrs.get('properties').get('olsonTimeZone')
@@ -125,17 +130,21 @@ class ArloCamera(object):
         """Return X-Cloud-ID attribute."""
         return self._attrs.get('xCloudId')
 
+    @property
+    def base_station(self):
+        """Return the base_station assigned for the given camera."""
+        try:
+            return list(filter(lambda x: x.device_id == self.parent_id,
+                               self._session.base_stations))[0]
+        except IndexError:
+            return None
+
     def _get_camera_properties(self):
         """Lookup camera properties from base station."""
-        base_stations = self._session.base_stations
-
-        if base_stations:
-            base = base_stations[0]
-
-            if base.camera_properties:
-                for cam in base.camera_properties:
-                    if cam["serialNumber"] == self.device_id:
-                        return cam
+        if self.base_station and self.base_station.camera_properties:
+            for cam in self.base_station.camera_properties:
+                if cam["serialNumber"] == self.device_id:
+                    return cam
         return None
 
     @property
@@ -274,9 +283,6 @@ class ArloCamera(object):
         self._attrs = self._session.refresh_attributes(self.name)
 
         # force base_state to update properties
-        base_stations = self._session.base_stations
-        if base_stations:
-            base = base_stations[0]
-            base.update()
+        self.base_station.update()
 
 # vim:sw=4:ts=4:et:
