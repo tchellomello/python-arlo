@@ -16,13 +16,15 @@ REFRESH_RATE = 15
 class ArloBaseStation(object):
     """Arlo Base Station module implementation."""
 
-    def __init__(self, name, attrs, session_token, arlo_session):
+    def __init__(self, name, attrs, session_token, arlo_session,
+                 refresh_rate=REFRESH_RATE):
         """Initialize Arlo Base Station object.
 
         :param name: Base Station name
         :param attrs: Attributes
         :param session_token: Session token passed by camera class
         :param arlo_session: PyArlo shared session
+        :param refresh_rate: Attributes refresh rate. Defaults to 15
         """
         self.name = name
         self._attrs = attrs
@@ -32,7 +34,7 @@ class ArloBaseStation(object):
         self._available_mode_ids = None
         self._camera_properties = None
         self._last_refresh = None
-        self._refresh_rate = REFRESH_RATE
+        self._refresh_rate = refresh_rate
         self.__sseclient = None
         self.__subscribed = False
         self.__events = []
@@ -244,6 +246,22 @@ class ArloBaseStation(object):
     def xcloud_id(self):
         """Return X-Cloud-ID attribute."""
         return self._attrs.get('xCloudId')
+
+    @property
+    def last_refresh(self):
+        """Return last_refresh attribute."""
+        return self._last_refresh
+
+    @property
+    def refresh_rate(self):
+        """Return refresh_rate attribute."""
+        return self._refresh_rate
+
+    @refresh_rate.setter
+    def refresh_rate(self, value):
+        """Override the refresh_rate attribute."""
+        if isinstance(value, (int, float)):
+            self._refresh_rate = value
 
     @property
     def available_modes(self):
