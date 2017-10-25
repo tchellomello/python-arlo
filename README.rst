@@ -72,22 +72,22 @@ Usage
     cam.unseen_videos
 
     # get brightness value of camera
-    cam.get_brightness
+    cam.brightness
 
     # get signal strength of camera with base station
-    cam.get_signal_strength
+    cam.signal_strength
     
     # get flip property from camera
-    cam.get_flip_state
+    cam.flip_state
 
     # get mirror property from camera
-    cam.get_mirror_state
+    cam.mirror_state
 
     # get power save mode value from camera
-    cam.get_powersave_mode
+    cam.powersave_mode
 
     # get current battery level of camera
-    cam.get_battery_level
+    cam.battery_level
     92
 
     # get boolean result if motion detection
@@ -96,10 +96,10 @@ Usage
 
     # get battery levels of all cameras
     # prints serial number and battery level of each camera
-    base.get_camera_battery_level  # {'4N71235T12345': 92, '4N71235T12345': 90}
+    base.get_cameras_battery_level  # {'4N71235T12345': 92, '4N71235T12345': 90}
 
     # get base station properties
-    base.get_basestation_properties
+    base.properties
 
     # get camera properties
     base.get_camera_properties

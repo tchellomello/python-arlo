@@ -50,7 +50,9 @@ class TestArloCamera(unittest.TestCase):
         basestation.update()
         self.assertEqual(len(cameras), 2)
         for camera in cameras:
+
             camera.update()
+
             self.assertTrue(camera.__repr__().startswith("<ArloCamera:"))
             self.assertIsNone(arlo.refresh_attributes(camera))
             self.assertIsInstance(camera, ArloCamera)
@@ -61,11 +63,13 @@ class TestArloCamera(unittest.TestCase):
             self.assertEqual(camera.user_role, "ADMIN")
             self.assertTrue(len(camera.captured_today), 1)
             self.assertIsNotNone(camera.properties)
+            self.assertEqual(camera.base_station, basestation)
 
             if camera.name == "Front Door":
                 self.assertTrue(camera.device_id, "48B14CAAAAAAA")
                 self.assertEqual(camera.unique_id, "235-48B14CAAAAAAA")
                 self.assertEqual(camera.unseen_videos, 39)
+                self.assertEqual(camera.parent_id, "48B14CBBBBBBB")
                 self.assertEqual(camera.xcloud_id, "1005-123-999999")
                 self.assertEqual(camera.serial_number, camera.device_id)
 
