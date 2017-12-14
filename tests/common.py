@@ -46,3 +46,8 @@ def load_camera_schedule(*args, **kwargs):
 def load_camera_live_streaming(*args, **kwargs):
     """Load camera live streaming response as dict."""
     return load_fixture_json("pyarlo_camera_live_streaming.json")
+
+
+def load_camera_schedule_snapshot(*args, **kwargs):
+    """Load camera live streaming response as dict."""
+    return load_fixture_json("pyarlo_success.json")
