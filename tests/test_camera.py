@@ -7,6 +7,7 @@ from tests.common import (
     load_fixture_json,
     load_camera_live_streaming,
     load_camera_properties as load_camera_props,
+    load_camera_schedule_snapshot,
     open_fixture
 )
 
@@ -16,7 +17,7 @@ from pyarlo.camera import ArloCamera
 from pyarlo.const import (
     DEVICES_ENDPOINT, LIBRARY_ENDPOINT, LOGIN_ENDPOINT,
     NOTIFY_ENDPOINT, RESET_CAM_ENDPOINT, STREAM_ENDPOINT,
-    UNSUBSCRIBE_ENDPOINT
+    UNSUBSCRIBE_ENDPOINT, SNAPSHOTS_ENDPOINT
 )
 
 BASE_STATION_ID = "48B14CBBBBBBB"
@@ -149,4 +150,17 @@ class TestArloCamera(unittest.TestCase):
         streaming_url = camera.live_streaming()
         self.assertEqual(
             streaming_url, mocked_streaming_response["data"]["url"]
+        )
+
+    @requests_mock.Mocker()
+    def test_schedule_snapshot(self, mock):
+        """Test ArloCamera.live_streaming."""
+        arlo = self.load_arlo(mock)
+        camera = arlo.cameras[0]
+        response_text = load_fixture("pyarlo_success.json")
+        mock.post(SNAPSHOTS_ENDPOINT, text=response_text)
+        mocked_snapshot_response = load_camera_schedule_snapshot()
+        status = camera.schedule_snapshot()
+        self.assertEqual(
+            status, mocked_snapshot_response["success"]
         )

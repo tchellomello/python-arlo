@@ -90,7 +90,8 @@
             "idleLedEnable": true,
             "batteryTech": "Rechargeable",
             "resolution": {"width": 1280, "height": 720},
-            "chargeNotificationLedEnable": true
+            "chargeNotificationLedEnable": true,
+            "presignedFullFrameSnapshotUrl": "https://www.example.com/1"
         },
         {
             "signalStrength": 4,
@@ -128,7 +129,8 @@
             "idleLedEnable": true,
             "batteryTech": "Rechargeable",
             "resolution": {"width": 1280, "height": 720},
-            "chargeNotificationLedEnable": true
+            "chargeNotificationLedEnable": true,
+            "presignedFullFrameSnapshotUrl": "https://www.example.com/2"
         }
     ]
 }

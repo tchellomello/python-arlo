@@ -79,7 +79,7 @@ class TestArloBaseStationModes(unittest.TestCase):
         """Test PyArlo BaseStation.mode property."""
         notify_url = NOTIFY_ENDPOINT.format("48b14cbbbbbbb")
 
-        mock.post(notify_url, text=load_fixture("pyarlo_success.json"))
+        mock.post(notify_url, text=load_fixture("pyarlo_failure.json"))
         base_station = self.load_base_station(mock)
 
         base_station.mode = "Inside"
