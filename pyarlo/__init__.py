@@ -198,6 +198,7 @@ class PyArlo(object):
             lambda cam: cam.device_id == device_id, self.cameras))[0]
         if camera:
             return camera
+        return None
 
     def refresh_attributes(self, name):
         """Refresh attributes from a given Arlo object."""
@@ -206,6 +207,7 @@ class PyArlo(object):
         for device in data:
             if device.get('deviceName') == name:
                 return device
+        return None
 
     @property
     def unseen_videos_reset(self):

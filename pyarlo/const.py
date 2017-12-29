@@ -17,6 +17,7 @@ PROFILE_ENDPOINT = API_URL + "/users/profile"
 RESET_ENDPOINT = LIBRARY_ENDPOINT + "/reset"
 RESET_CAM_ENDPOINT = RESET_ENDPOINT + "/?uniqueId={0}"
 STREAM_ENDPOINT = API_URL + "/users/devices/startStream"
+SNAPSHOTS_ENDPOINT = API_URL + "/users/devices/fullFrameSnapshot"
 
 # number of days to preload video
 PRELOAD_DAYS = 30
@@ -54,6 +55,18 @@ STREAMING_BODY = {
     'resource': None,
     'to': None,
     'transId': "",
+}
+
+
+# define body used for live_streaming
+SNAPSHOTS_BODY = {
+    'action': 'set',
+    'from': None,
+    'properties': {'activityState': 'fullFrameSnapshot'},
+    'publishResponse': 'true',
+    'resource': None,
+    'to': None,
+    'transId': ""
 }
 
 # vim:sw=4:ts=4:et:

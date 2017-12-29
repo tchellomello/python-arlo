@@ -2,7 +2,8 @@
 """Generic Python Class file for Netgear Arlo camera module."""
 import logging
 from pyarlo.const import (
-    RESET_CAM_ENDPOINT, STREAM_ENDPOINT, STREAMING_BODY)
+    RESET_CAM_ENDPOINT, STREAM_ENDPOINT, STREAMING_BODY,
+    SNAPSHOTS_ENDPOINT, SNAPSHOTS_BODY)
 from pyarlo.media import ArloMediaLibrary
 from pyarlo.utils import http_get
 
@@ -277,6 +278,50 @@ class ArloCamera(object):
         if ret.get('success'):
             return ret.get('data').get('url')
         return ret.get('data')
+
+    @property
+    def snapshot_url(self):
+        """Return the snapshot url."""
+        # Snapshot should be scheduled first.  It will
+        # available a couple seconds after.
+        # If a GET request fails on this URL, trying
+        # again is logical since the snapshot isn't
+        # taken immediately.  Snapshots will be cached for a
+        # predefined amount of time.
+        return self._attrs.get('presignedFullFrameSnapshotUrl')
+
+    def schedule_snapshot(self):
+        """Trigger snapshot to be uploaded to AWS.
+        Return success state."""
+        # Notes:
+        #  - Snapshots are not immediate.
+        #  - Snapshots will be cached for predefined amount
+        #    of time.
+        #  - Snapshots are not balanced. To get a better
+        #    image, it must be taken from the stream, a few
+        #    seconds after stream start.
+        url = SNAPSHOTS_ENDPOINT
+        params = SNAPSHOTS_BODY
+        params['from'] = "{0}_web".format(self.user_id)
+        params['to'] = self.device_id
+        params['resource'] = "cameras/{0}".format(self.device_id)
+        params['transId'] = "web!{0}".format(self.xcloud_id)
+
+        # override headers
+        headers = {'xCloudId': self.xcloud_id}
+
+        _LOGGER.debug("Snapshot device %s", self.name)
+        _LOGGER.debug("Device params %s", params)
+        _LOGGER.debug("Device headers %s", headers)
+
+        ret = self._session.query(url,
+                                  method='POST',
+                                  extra_params=params,
+                                  extra_headers=headers)
+
+        _LOGGER.debug("Snapshot results %s", ret)
+
+        return ret is not None and ret.get('success')
 
     def update(self):
         """Update object properties."""
