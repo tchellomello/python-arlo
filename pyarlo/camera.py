@@ -328,6 +328,7 @@ class ArloCamera(object):
         self._attrs = self._session.refresh_attributes(self.name)
 
         # force base_state to update properties
-        self.base_station.update()
+        if self.base_station:
+            self.base_station.update()
 
 # vim:sw=4:ts=4:et:
