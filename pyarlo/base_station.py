@@ -159,7 +159,7 @@ class ArloBaseStation(object):
         elif method == 'SET':
             body['action'] = "set"
             if resource == 'schedule':
-                body['properties'] = {'active': 'true'}
+                body['properties'] = {'active': True}
             elif resource == 'subscribe':
                 body['resource'] = "subscriptions/" + \
                         "{0}_web".format(self.user_id)
@@ -176,10 +176,7 @@ class ArloBaseStation(object):
             _LOGGER.info("Invalid method requested")
             return None
 
-        if not publish_response:
-            body['publishResponse'] = 'false'
-        else:
-            body['publishResponse'] = 'true'
+        body['publishResponse'] = publish_response
 
         body['from'] = "{0}_web".format(self.user_id)
         body['to'] = self.device_id
@@ -297,6 +294,10 @@ class ArloBaseStation(object):
     @property
     def mode(self):
         """Return current mode key."""
+
+        if self.is_in_schedule_mode:
+            return "schedule"
+
         resource = "modes"
         mode_event = self.publish_and_get_event(resource)
         if mode_event:
@@ -311,6 +312,16 @@ class ArloBaseStation(object):
                     return mode.get('type') \
                         if mode.get('type') is not None else mode.get('name')
         return None
+
+    @property
+    def is_in_schedule_mode(self):
+        """Returns True if base_station is currently on a scheduled mode."""
+        resource = "schedule"
+        mode_event = self.publish_and_get_event(resource)
+        if mode_event and mode_event.get("resource", None) == "schedule":
+            properties = mode_event.get('properties')
+            return properties.get("active", False)
+        return False
 
     def get_available_modes(self):
         """Return a list of available mode objects for an Arlo user."""
@@ -418,7 +429,7 @@ class ArloBaseStation(object):
             return
         self.__run_action(
             method='SET',
-            resource='modes',
+            resource='modes' if mode != 'schedule' else 'schedule',
             mode=mode,
             publish_response=True)
         self.update()

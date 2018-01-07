@@ -91,7 +91,7 @@ class TestArloBaseStationModes(unittest.TestCase):
         )
 
         body = request.json()
-        self.assertEqual(body.get("publishResponse"), "true")
+        self.assertEqual(body.get("publishResponse"), True)
         self.assertEqual(body.get("action"), "set")
         self.assertEqual(body.get("resource"), "modes")
         self.assertEqual(body.get("properties"), {"active": "mode3"})
