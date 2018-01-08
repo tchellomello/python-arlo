@@ -1,8 +1,9 @@
 """The tests for the PyArlo platform."""
 import unittest
+from functools import partial
 from mock import patch
 from pyarlo import ArloBaseStation, PyArlo
-from tests.common import load_fixture
+from tests.common import load_fixture, load_camera_schedule
 
 import json
 import requests_mock
@@ -32,9 +33,17 @@ class TestArloBaseStationModes(unittest.TestCase):
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event", load_modes)
     def test_current_mode(self, mock):
-        """Test PyArlo BaseStation.mode property."""
+        """Test PyArlo BaseStation.mode property for non-scheduled modes."""
         base_station = self.load_base_station(mock)
         self.assertEqual(base_station.mode, "disarmed")
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish_and_get_event",
+                  partial(load_camera_schedule, active=True))
+    def test_current_mode_is_scheduled(self, mock):
+        """Test PyArlo BaseStation.mode property for scheduled mode."""
+        base_station = self.load_base_station(mock)
+        self.assertEqual(base_station.mode, "schedule")
 
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event", load_modes)
@@ -95,3 +104,27 @@ class TestArloBaseStationModes(unittest.TestCase):
         self.assertEqual(body.get("action"), "set")
         self.assertEqual(body.get("resource"), "modes")
         self.assertEqual(body.get("properties"), {"active": "mode3"})
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish_and_get_event",
+                  partial(load_camera_schedule, active=True))
+    def test_set_schedule_mode(self, mock):
+        """Test PyArlo BaseStation.mode property."""
+        notify_url = NOTIFY_ENDPOINT.format("48b14cbbbbbbb")
+
+        mock.post(notify_url, text=load_fixture("pyarlo_failure.json"))
+        base_station = self.load_base_station(mock)
+
+        base_station.mode = "schedule"
+        request_number = mock.call_count - 2
+        request = mock.request_history[request_number]
+        self.assertEqual(
+            "{}://{}{}".format(request.scheme, request.netloc, request.path),
+            notify_url
+        )
+
+        body = request.json()
+        self.assertEqual(body.get("publishResponse"), True)
+        self.assertEqual(body.get("action"), "set")
+        self.assertEqual(body.get("resource"), "schedule")
+        self.assertEqual(body.get("properties"), {"active": True})
