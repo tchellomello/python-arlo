@@ -40,7 +40,10 @@ def load_camera_rules(*args, **kwargs):
 
 def load_camera_schedule(*args, **kwargs):
     """Load camera schedule into a dict."""
-    return load_fixture_json("pyarlo_camera_schedule.json")
+    schedule = load_fixture_json("pyarlo_camera_schedule.json")
+    if kwargs.get("active", False):
+        schedule["properties"]["active"] = kwargs["active"]
+    return schedule
 
 
 def load_camera_live_streaming(*args, **kwargs):
