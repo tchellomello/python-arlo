@@ -112,7 +112,9 @@ class ArloCamera(object):
         if self._cached_videos is None:
             self.make_video_cache()
 
-        return self._cached_videos[0]
+        if self._cached_videos:
+            return self._cached_videos[0]
+        return None
 
     def make_video_cache(self, days=180):
         """Save videos on _cache_videos to avoid dups."""
