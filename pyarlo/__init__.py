@@ -248,7 +248,7 @@ class PyArlo(object):
             for camera in self.cameras:
                 for dev_info in data:
                     if dev_info.get('deviceName') == camera.name:
-                        _LOGGER.debug("Refreshing %s attributes", camera)
+                        _LOGGER.debug("Refreshing %s attributes", camera.name)
                         camera.attrs = dev_info
 
 # vim:sw=4:ts=4:et:
