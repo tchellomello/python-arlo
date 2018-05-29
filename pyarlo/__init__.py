@@ -237,8 +237,18 @@ class PyArlo(object):
         """Connection status of client with Arlo system."""
         return bool(self.authenticated)
 
-    def update(self):
+    def update(self, update_cameras=False):
         """Refresh object."""
         self._authenticate()
+
+        # update attributes in all cameras to avoid duped queries
+        if update_cameras:
+            url = DEVICES_ENDPOINT
+            data = self.query(url).get('data')
+            for camera in self.cameras:
+                for dev_info in data:
+                    if dev_info.get('deviceName') == camera.name:
+                        _LOGGER.debug("Refreshing %s attributes", camera)
+                        camera.attrs = dev_info
 
 # vim:sw=4:ts=4:et:

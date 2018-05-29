@@ -28,6 +28,16 @@ class ArloCamera(object):
         """Representation string of object."""
         return "<{0}: {1}>".format(self.__class__.__name__, self.name)
 
+    @property
+    def attrs(self):
+        """Return device attributes."""
+        return self._attrs
+
+    @attrs.setter
+    def attrs(self, value):
+        """Override device attributes."""
+        self._attrs = value
+
     # pylint: disable=invalid-name
     @property
     def device_id(self):
