@@ -23,6 +23,7 @@ class ArloCamera(object):
         self.name = name
         self._attrs = attrs
         self._session = arlo_session
+        self._cached_videos = None
 
     def __repr__(self):
         """Representation string of object."""
@@ -108,11 +109,14 @@ class ArloCamera(object):
     @property
     def last_video(self):
         """Return the last <ArloVideo> object from camera."""
-        library = ArloMediaLibrary(self._session, preload=False)
-        try:
-            return library.load(only_cameras=[self], limit=1)[0]
-        except IndexError:
-            return None
+        if self._cached_videos is None:
+            self.make_video_cache()
+
+        return self._cached_videos[0]
+
+    def make_video_cache(self, days=180):
+        """Save videos on _cache_videos to avoid dups."""
+        self._cached_videos = self.videos(days)
 
     def videos(self, days=180):
         """
@@ -129,7 +133,10 @@ class ArloCamera(object):
     @property
     def captured_today(self):
         """Return list of <ArloVideo> object captured today."""
-        return self.videos(days=0)
+        if self._cached_videos is None:
+            self.make_video_cache()
+
+        return [vdo for vdo in self._cached_videos if vdo.created_today]
 
     def play_last_video(self):
         """Play last <ArloVideo> recorded from camera."""

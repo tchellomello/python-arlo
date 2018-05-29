@@ -251,4 +251,9 @@ class PyArlo(object):
                         _LOGGER.debug("Refreshing %s attributes", camera.name)
                         camera.attrs = dev_info
 
+                # preload cached videos
+                # the user is still able to force a new query by
+                # calling the Arlo.video()
+                camera.make_video_cache()
+
 # vim:sw=4:ts=4:et:
