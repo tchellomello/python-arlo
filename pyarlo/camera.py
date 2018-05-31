@@ -122,7 +122,7 @@ class ArloCamera(object):
     @property
     def last_video(self):
         """Return the last <ArloVideo> object from camera."""
-        if not self._cached_videos:
+        if self._cached_videos is None:
             self.make_video_cache()
 
         if self._cached_videos:
@@ -143,12 +143,16 @@ class ArloCamera(object):
         try:
             return library.load(only_cameras=[self], days=days)
         except (AttributeError, IndexError):
+            # make sure we are returning an empty list istead of None
+            # returning an empty list, cache will be forced only when calling
+            # the update method. Changing this can impact badly
+            # in the Home Assistant performance
             return []
 
     @property
     def captured_today(self):
         """Return list of <ArloVideo> object captured today."""
-        if not self._cached_videos:
+        if self._cached_videos is None:
             self.make_video_cache()
 
         return [vdo for vdo in self._cached_videos if vdo.created_today]
