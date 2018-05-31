@@ -237,7 +237,7 @@ class PyArlo(object):
         """Connection status of client with Arlo system."""
         return bool(self.authenticated)
 
-    def update(self, update_cameras=False):
+    def update(self, update_cameras=False, update_base_station=False):
         """Refresh object."""
         self._authenticate()
 
@@ -255,5 +255,10 @@ class PyArlo(object):
                 # the user is still able to force a new query by
                 # calling the Arlo.video()
                 camera.make_video_cache()
+
+        # force update base_station
+        if update_base_station:
+            for base in self.base_stations:
+                base.update()
 
 # vim:sw=4:ts=4:et:
