@@ -103,13 +103,26 @@ class ArloCamera(object):
 
     @property
     def last_image(self):
-        """Return last image capture by camera."""
+        """Return last image captured by camera."""
         return http_get(self._attrs.get('presignedLastImageUrl'))
+
+    @property
+    def last_image_from_cache(self):
+        """
+        Return last thumbnail present in self._cached_images.
+
+        This is useful in Home Assistant when the ArloHub has not
+        updated all information, but the camera.arlo already pulled
+        the last image. Using this method, everything is kept synced.
+        """
+        if self.last_video:
+            return http_get(self.last_video.thumbnail_url)
+        return None
 
     @property
     def last_video(self):
         """Return the last <ArloVideo> object from camera."""
-        if self._cached_videos is None:
+        if not self._cached_videos:
             self.make_video_cache()
 
         if self._cached_videos:
@@ -135,7 +148,7 @@ class ArloCamera(object):
     @property
     def captured_today(self):
         """Return list of <ArloVideo> object captured today."""
-        if self._cached_videos is None:
+        if not self._cached_videos:
             self.make_video_cache()
 
         return [vdo for vdo in self._cached_videos if vdo.created_today]
