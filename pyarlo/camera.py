@@ -41,6 +41,11 @@ class ArloCamera(object):
         """Override device attributes."""
         self._attrs = value
 
+    @property
+    def min_days_vdo_cache(self):
+        """Return minimal days to lookup when building the video cache."""
+        return self._min_days_vdo_cache
+
     # pylint: disable=invalid-name
     @property
     def device_id(self):
