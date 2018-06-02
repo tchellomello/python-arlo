@@ -13,17 +13,19 @@ _LOGGER = logging.getLogger(__name__)
 class ArloCamera(object):
     """Arlo Camera module implementation."""
 
-    def __init__(self, name, attrs, arlo_session):
+    def __init__(self, name, attrs, arlo_session, min_days_vdo_cache=120):
         """Initialize Arlo camera object.
 
         :param name: Camera name
         :param attrs: Camera attributes
         :param arlo_session: PyArlo shared session
+        :param min_days_vdo_cache: Minium number of days to preload in video cache
         """
         self.name = name
         self._attrs = attrs
         self._session = arlo_session
         self._cached_videos = None
+        self._min_days_vdo_cache = min_days_vdo_cache
 
     def __repr__(self):
         """Representation string of object."""
@@ -129,16 +131,20 @@ class ArloCamera(object):
             return self._cached_videos[0]
         return None
 
-    def make_video_cache(self, days=180):
+    def make_video_cache(self, days=None):
         """Save videos on _cache_videos to avoid dups."""
+        if days is None:
+            days = self._min_days_vdo_cache
         self._cached_videos = self.videos(days)
 
-    def videos(self, days=180):
+    def videos(self, days=None):
         """
         Return all <ArloVideo> objects from camera given days range
 
         :param days: number of days to retrieve
         """
+        if days is None:
+            days = self._min_days_vdo_cache
         library = ArloMediaLibrary(self._session, preload=False)
         try:
             return library.load(only_cameras=[self], days=days)
