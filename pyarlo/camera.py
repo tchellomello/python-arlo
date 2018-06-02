@@ -48,7 +48,7 @@ class ArloCamera(object):
         return self._min_days_vdo_cache
 
     @min_days_vdo_cache.setter
-    def min_days_vdo_cache(self,value):
+    def min_days_vdo_cache(self, value):
         """Set minimal days to lookup when building the video cache."""
         self._min_days_vdo_cache = value
 
