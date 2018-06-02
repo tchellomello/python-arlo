@@ -3,7 +3,7 @@
 import logging
 from pyarlo.const import (
     RESET_CAM_ENDPOINT, STREAM_ENDPOINT, STREAMING_BODY,
-    SNAPSHOTS_ENDPOINT, SNAPSHOTS_BODY)
+    SNAPSHOTS_ENDPOINT, SNAPSHOTS_BODY, PRELOAD_DAYS)
 from pyarlo.media import ArloMediaLibrary
 from pyarlo.utils import http_get
 
@@ -13,7 +13,8 @@ _LOGGER = logging.getLogger(__name__)
 class ArloCamera(object):
     """Arlo Camera module implementation."""
 
-    def __init__(self, name, attrs, arlo_session, min_days_vdo_cache=120):
+    def __init__(self, name, attrs, arlo_session,
+                 min_days_vdo_cache=PRELOAD_DAYS):
         """Initialize Arlo camera object.
 
         :param name: Camera name
