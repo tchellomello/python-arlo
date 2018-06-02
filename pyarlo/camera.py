@@ -19,7 +19,7 @@ class ArloCamera(object):
         :param name: Camera name
         :param attrs: Camera attributes
         :param arlo_session: PyArlo shared session
-        :param min_days_vdo_cache: Minium number of days to preload in video cache
+        :param min_days_vdo_cache: min. days to preload in video cache
         """
         self.name = name
         self._attrs = attrs
