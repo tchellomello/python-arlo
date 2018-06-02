@@ -47,6 +47,11 @@ class ArloCamera(object):
         """Return minimal days to lookup when building the video cache."""
         return self._min_days_vdo_cache
 
+    @min_days_vdo_cache.setter
+    def min_days_vdo_cache(self,value):
+        """Set minimal days to lookup when building the video cache."""
+        self._min_days_vdo_cache = value
+
     # pylint: disable=invalid-name
     @property
     def device_id(self):
