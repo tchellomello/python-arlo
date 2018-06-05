@@ -51,24 +51,35 @@ class ArloBaseStation(object):
         url = SUBSCRIBE_ENDPOINT + "?token=" + self._session_token
 
         data = self._session.query(url, method='GET', raw=True, stream=True)
+        if not data or not data.ok:
+            _LOGGER.debug("Did not receive a valid response. Aborting..")
+            return None
+
         self.__sseclient = sseclient.SSEClient(data)
 
-        for event in (self.__sseclient).events():
-            if not self.__subscribed:
-                break
-            data = json.loads(event.data)
-            if data.get('status') == "connected":
-                _LOGGER.debug("Successfully subscribed this base station")
-            elif data.get('action'):
-                action = data.get('action')
-                resource = data.get('resource')
-                if action == "logout":
-                    _LOGGER.debug("Logged out by some other entity")
-                    self.__subscribed = False
+        try:
+            for event in (self.__sseclient).events():
+                if not self.__subscribed:
                     break
-                elif action == "is" and "subscriptions/" not in resource:
-                    self.__events.append(data)
-                    self.__event_handle.set()
+                data = json.loads(event.data)
+                if data.get('status') == "connected":
+                    _LOGGER.debug("Successfully subscribed this base station")
+                elif data.get('action'):
+                    action = data.get('action')
+                    resource = data.get('resource')
+                    if action == "logout":
+                        _LOGGER.debug("Logged out by some other entity")
+                        self.__subscribed = False
+                        break
+                    elif action == "is" and "subscriptions/" not in resource:
+                        self.__events.append(data)
+                        self.__event_handle.set()
+
+        except TypeError as error:
+            _LOGGER.debug("Got unexpected error: %s", error)
+            return None
+
+        return True
 
     def _get_event_stream(self):
         """Spawn a thread and monitor the Arlo Event Stream."""
@@ -277,13 +288,16 @@ class ArloBaseStation(object):
             all_modes = FIXED_MODES.copy()
             self._available_mode_ids = all_modes
             modes = self.get_available_modes()
-            if modes:
-                simple_modes = dict(
-                    [(m.get("type", m.get("name")), m.get("id"))
-                     for m in modes]
-                )
-                all_modes.update(simple_modes)
-                self._available_mode_ids = all_modes
+            try:
+                if modes:
+                    simple_modes = dict(
+                        [(m.get("type", m.get("name")), m.get("id"))
+                         for m in modes]
+                    )
+                    all_modes.update(simple_modes)
+                    self._available_mode_ids = all_modes
+            except TypeError:
+                _LOGGER.debug("Did not receive a valid response. Passing..")
         return self._available_mode_ids
 
     @property

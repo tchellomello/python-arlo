@@ -1,7 +1,14 @@
 # coding: utf-8
 """Implementation of Arlo utils."""
 import time
+from datetime import datetime as dt
 import requests
+
+
+def to_datetime(timestamp):
+    """Return datetime object from timestamp."""
+    return dt.fromtimestamp(time.mktime(
+        time.localtime(int(str(timestamp)[:10]))))
 
 
 def pretty_timestamp(timestamp, date_format='%a-%m_%d_%y:%H:%M:%S'):

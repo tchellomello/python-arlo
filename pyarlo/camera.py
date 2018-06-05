@@ -3,7 +3,7 @@
 import logging
 from pyarlo.const import (
     RESET_CAM_ENDPOINT, STREAM_ENDPOINT, STREAMING_BODY,
-    SNAPSHOTS_ENDPOINT, SNAPSHOTS_BODY)
+    SNAPSHOTS_ENDPOINT, SNAPSHOTS_BODY, PRELOAD_DAYS)
 from pyarlo.media import ArloMediaLibrary
 from pyarlo.utils import http_get
 
@@ -13,20 +13,44 @@ _LOGGER = logging.getLogger(__name__)
 class ArloCamera(object):
     """Arlo Camera module implementation."""
 
-    def __init__(self, name, attrs, arlo_session):
+    def __init__(self, name, attrs, arlo_session,
+                 min_days_vdo_cache=PRELOAD_DAYS):
         """Initialize Arlo camera object.
 
         :param name: Camera name
         :param attrs: Camera attributes
         :param arlo_session: PyArlo shared session
+        :param min_days_vdo_cache: min. days to preload in video cache
         """
         self.name = name
         self._attrs = attrs
         self._session = arlo_session
+        self._cached_videos = None
+        self._min_days_vdo_cache = min_days_vdo_cache
 
     def __repr__(self):
         """Representation string of object."""
         return "<{0}: {1}>".format(self.__class__.__name__, self.name)
+
+    @property
+    def attrs(self):
+        """Return device attributes."""
+        return self._attrs
+
+    @attrs.setter
+    def attrs(self, value):
+        """Override device attributes."""
+        self._attrs = value
+
+    @property
+    def min_days_vdo_cache(self):
+        """Return minimal days to lookup when building the video cache."""
+        return self._min_days_vdo_cache
+
+    @min_days_vdo_cache.setter
+    def min_days_vdo_cache(self, value):
+        """Set minimal days to lookup when building the video cache."""
+        self._min_days_vdo_cache = value
 
     # pylint: disable=invalid-name
     @property
@@ -92,34 +116,63 @@ class ArloCamera(object):
 
     @property
     def last_image(self):
-        """Return last image capture by camera."""
+        """Return last image captured by camera."""
         return http_get(self._attrs.get('presignedLastImageUrl'))
+
+    @property
+    def last_image_from_cache(self):
+        """
+        Return last thumbnail present in self._cached_images.
+
+        This is useful in Home Assistant when the ArloHub has not
+        updated all information, but the camera.arlo already pulled
+        the last image. Using this method, everything is kept synced.
+        """
+        if self.last_video:
+            return http_get(self.last_video.thumbnail_url)
+        return None
 
     @property
     def last_video(self):
         """Return the last <ArloVideo> object from camera."""
-        library = ArloMediaLibrary(self._session, preload=False)
-        try:
-            return library.load(only_cameras=[self], limit=1)[0]
-        except IndexError:
-            return None
+        if self._cached_videos is None:
+            self.make_video_cache()
 
-    def videos(self, days=180):
+        if self._cached_videos:
+            return self._cached_videos[0]
+        return None
+
+    def make_video_cache(self, days=None):
+        """Save videos on _cache_videos to avoid dups."""
+        if days is None:
+            days = self._min_days_vdo_cache
+        self._cached_videos = self.videos(days)
+
+    def videos(self, days=None):
         """
         Return all <ArloVideo> objects from camera given days range
 
         :param days: number of days to retrieve
         """
+        if days is None:
+            days = self._min_days_vdo_cache
         library = ArloMediaLibrary(self._session, preload=False)
         try:
             return library.load(only_cameras=[self], days=days)
         except (AttributeError, IndexError):
+            # make sure we are returning an empty list istead of None
+            # returning an empty list, cache will be forced only when calling
+            # the update method. Changing this can impact badly
+            # in the Home Assistant performance
             return []
 
     @property
     def captured_today(self):
         """Return list of <ArloVideo> object captured today."""
-        return self.videos(days=0)
+        if self._cached_videos is None:
+            self.make_video_cache()
+
+        return [vdo for vdo in self._cached_videos if vdo.created_today]
 
     def play_last_video(self):
         """Play last <ArloVideo> recorded from camera."""
