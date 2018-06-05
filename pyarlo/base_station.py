@@ -51,6 +51,10 @@ class ArloBaseStation(object):
         url = SUBSCRIBE_ENDPOINT + "?token=" + self._session_token
 
         data = self._session.query(url, method='GET', raw=True, stream=True)
+        if not data or not data.ok:
+            _LOGGER.debug("Did not receive a valid response. Aborting..")
+            return None
+
         self.__sseclient = sseclient.SSEClient(data)
 
         for event in (self.__sseclient).events():
@@ -69,6 +73,7 @@ class ArloBaseStation(object):
                 elif action == "is" and "subscriptions/" not in resource:
                     self.__events.append(data)
                     self.__event_handle.set()
+        return True
 
     def _get_event_stream(self):
         """Spawn a thread and monitor the Arlo Event Stream."""
