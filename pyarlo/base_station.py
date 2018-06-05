@@ -51,6 +51,10 @@ class ArloBaseStation(object):
         url = SUBSCRIBE_ENDPOINT + "?token=" + self._session_token
 
         data = self._session.query(url, method='GET', raw=True, stream=True)
+        if not data or not data.ok:
+            _LOGGER.debug("Did not receive a valid response. Aborting..")
+            return None
+
         self.__sseclient = sseclient.SSEClient(data)
 
         for event in (self.__sseclient).events():
@@ -69,6 +73,7 @@ class ArloBaseStation(object):
                 elif action == "is" and "subscriptions/" not in resource:
                     self.__events.append(data)
                     self.__event_handle.set()
+        return True
 
     def _get_event_stream(self):
         """Spawn a thread and monitor the Arlo Event Stream."""
@@ -277,13 +282,16 @@ class ArloBaseStation(object):
             all_modes = FIXED_MODES.copy()
             self._available_mode_ids = all_modes
             modes = self.get_available_modes()
-            if modes:
-                simple_modes = dict(
-                    [(m.get("type", m.get("name")), m.get("id"))
-                     for m in modes]
-                )
-                all_modes.update(simple_modes)
-                self._available_mode_ids = all_modes
+            try:
+                if modes:
+                    simple_modes = dict(
+                        [(m.get("type", m.get("name")), m.get("id"))
+                         for m in modes]
+                    )
+                    all_modes.update(simple_modes)
+                    self._available_mode_ids = all_modes
+            except TypeError:
+                _LOGGER.debug("Did not receive a valid response. Passing..")
         return self._available_mode_ids
 
     @property
