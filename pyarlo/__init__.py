@@ -203,8 +203,12 @@ class PyArlo(object):
     def refresh_attributes(self, name):
         """Refresh attributes from a given Arlo object."""
         url = DEVICES_ENDPOINT
-        data = self.query(url).get('data')
-        for device in data:
+        response = self.query(url)
+
+        if not response or not isinstance(response, dict):
+            return None
+
+        for device in response.get('data'):
             if device.get('deviceName') == name:
                 return device
         return None
@@ -244,9 +248,12 @@ class PyArlo(object):
         # update attributes in all cameras to avoid duped queries
         if update_cameras:
             url = DEVICES_ENDPOINT
-            data = self.query(url).get('data')
+            response = self.query(url)
+            if not response or not isinstance(response, dict):
+                return
+
             for camera in self.cameras:
-                for dev_info in data:
+                for dev_info in response.get('data'):
                     if dev_info.get('deviceName') == camera.name:
                         _LOGGER.debug("Refreshing %s attributes", camera.name)
                         camera.attrs = dev_info
