@@ -57,22 +57,28 @@ class ArloBaseStation(object):
 
         self.__sseclient = sseclient.SSEClient(data)
 
-        for event in (self.__sseclient).events():
-            if not self.__subscribed:
-                break
-            data = json.loads(event.data)
-            if data.get('status') == "connected":
-                _LOGGER.debug("Successfully subscribed this base station")
-            elif data.get('action'):
-                action = data.get('action')
-                resource = data.get('resource')
-                if action == "logout":
-                    _LOGGER.debug("Logged out by some other entity")
-                    self.__subscribed = False
+        try:
+            for event in (self.__sseclient).events():
+                if not self.__subscribed:
                     break
-                elif action == "is" and "subscriptions/" not in resource:
-                    self.__events.append(data)
-                    self.__event_handle.set()
+                data = json.loads(event.data)
+                if data.get('status') == "connected":
+                    _LOGGER.debug("Successfully subscribed this base station")
+                elif data.get('action'):
+                    action = data.get('action')
+                    resource = data.get('resource')
+                    if action == "logout":
+                        _LOGGER.debug("Logged out by some other entity")
+                        self.__subscribed = False
+                        break
+                    elif action == "is" and "subscriptions/" not in resource:
+                        self.__events.append(data)
+                        self.__event_handle.set()
+
+        except TypeError as error:
+            _LOGGER.debug("Got unexpected error: %s", error)
+            return None
+
         return True
 
     def _get_event_stream(self):
