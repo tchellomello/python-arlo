@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 from datetime import timedelta
 from pyarlo.const import LIBRARY_ENDPOINT, PRELOAD_DAYS
-from pyarlo.utils import http_get, http_stream, pretty_timestamp
+from pyarlo.utils import http_get, http_stream, to_datetime, pretty_timestamp
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -127,6 +127,18 @@ class ArloVideo(object):
         if date_format:
             return pretty_timestamp(self.created_at, date_format=date_format)
         return pretty_timestamp(self.created_at)
+
+    @property
+    def created_today(self):
+        """Return True if created today."""
+        if self.datetime.date() == datetime.today().date():
+            return True
+        return False
+
+    @property
+    def datetime(self):
+        """Return datetime when video was created."""
+        return to_datetime(self.created_at)
 
     @property
     def content_type(self):

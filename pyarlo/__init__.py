@@ -237,8 +237,28 @@ class PyArlo(object):
         """Connection status of client with Arlo system."""
         return bool(self.authenticated)
 
-    def update(self):
+    def update(self, update_cameras=False, update_base_station=False):
         """Refresh object."""
         self._authenticate()
+
+        # update attributes in all cameras to avoid duped queries
+        if update_cameras:
+            url = DEVICES_ENDPOINT
+            data = self.query(url).get('data')
+            for camera in self.cameras:
+                for dev_info in data:
+                    if dev_info.get('deviceName') == camera.name:
+                        _LOGGER.debug("Refreshing %s attributes", camera.name)
+                        camera.attrs = dev_info
+
+                # preload cached videos
+                # the user is still able to force a new query by
+                # calling the Arlo.video()
+                camera.make_video_cache()
+
+        # force update base_station
+        if update_base_station:
+            for base in self.base_stations:
+                base.update()
 
 # vim:sw=4:ts=4:et:

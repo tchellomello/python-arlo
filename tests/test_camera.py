@@ -62,7 +62,7 @@ class TestArloCamera(unittest.TestCase):
             self.assertEqual(camera.hw_version, "H7")
             self.assertEqual(camera.timezone, "America/New_York")
             self.assertEqual(camera.user_role, "ADMIN")
-            self.assertTrue(len(camera.captured_today), 1)
+            self.assertEqual(len(camera.captured_today), 0)
             self.assertIsNotNone(camera.properties)
             self.assertEqual(camera.base_station, basestation)
 
