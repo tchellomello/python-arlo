@@ -4,7 +4,9 @@ import logging
 from datetime import datetime
 from datetime import timedelta
 from pyarlo.const import LIBRARY_ENDPOINT, PRELOAD_DAYS
-from pyarlo.utils import http_get, http_stream, to_datetime, pretty_timestamp
+from pyarlo.utils import (
+    http_get, http_stream, to_datetime, pretty_timestamp,
+    assert_is_dict)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -96,6 +98,7 @@ class ArloVideo(object):
         :param arlo_session: Arlo shared session
         """
         self._attrs = attrs
+        self._attrs = assert_is_dict(self._attrs)
         self._camera = camera
         self._session = arlo_session
 

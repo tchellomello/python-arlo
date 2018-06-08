@@ -43,4 +43,10 @@ def http_stream(url, chunk=4096):
         yield data
 
 
+def assert_is_dict(var):
+    """Assert variable is from the type dictionary."""
+    if var is None or not isinstance(var, dict):
+        return {}
+    return var
+
 # vim:sw=4:ts=4:et:

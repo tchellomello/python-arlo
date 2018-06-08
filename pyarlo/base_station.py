@@ -8,6 +8,8 @@ import sseclient
 from pyarlo.const import (
     ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT,
     FIXED_MODES, NOTIFY_ENDPOINT, RESOURCES)
+from pyarlo.utils import assert_is_dict
+
 _LOGGER = logging.getLogger(__name__)
 
 REFRESH_RATE = 15
@@ -39,6 +41,8 @@ class ArloBaseStation(object):
         self.__subscribed = False
         self.__events = []
         self.__event_handle = None
+
+        self._attrs = assert_is_dict(self._attrs)
 
     def __repr__(self):
         """Representation string of object."""
@@ -469,6 +473,7 @@ class ArloBaseStation(object):
         if current_time >= (last_refresh + self._refresh_rate):
             self.get_cameras_properties()
             self._attrs = self._session.refresh_attributes(self.name)
+            self._attrs = assert_is_dict(self._attrs)
             _LOGGER.debug("Called base station update of camera properties: "
                           "Scan Interval: %s, New Properties: %s",
                           self._refresh_rate, self.camera_properties)

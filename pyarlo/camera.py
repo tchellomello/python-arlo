@@ -6,6 +6,7 @@ from pyarlo.const import (
     SNAPSHOTS_ENDPOINT, SNAPSHOTS_BODY, PRELOAD_DAYS)
 from pyarlo.media import ArloMediaLibrary
 from pyarlo.utils import http_get
+from pyarlo.utils import assert_is_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,6 +28,9 @@ class ArloCamera(object):
         self._session = arlo_session
         self._cached_videos = None
         self._min_days_vdo_cache = min_days_vdo_cache
+
+        # make sure self._attrs is a dict
+        self._attrs = assert_is_dict(self._attrs)
 
     def __repr__(self):
         """Representation string of object."""
@@ -379,6 +383,7 @@ class ArloCamera(object):
     def update(self):
         """Update object properties."""
         self._attrs = self._session.refresh_attributes(self.name)
+        self._attrs = assert_is_dict(self._attrs)
 
         # force base_state to update properties
         if self.base_station:
