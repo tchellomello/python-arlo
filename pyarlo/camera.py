@@ -194,7 +194,7 @@ class ArloCamera(object):
         try:
             return list(filter(lambda x: x.device_id == self.parent_id,
                                self._session.base_stations))[0]
-        except IndexError:
+        except (IndexError, AttributeError):
             return None
 
     def _get_camera_properties(self):
