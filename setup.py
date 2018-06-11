@@ -5,7 +5,7 @@ from setuptools import setup
 setup(
     name='pyarlo',
     packages=['pyarlo'],
-    version='0.1.6',
+    version='0.1.7',
     description='Python Arlo is a library written in Python 2.7/3x ' +
                 'that exposes the Netgear Arlo cameras as Python objects.',
     long_description='Python Arlo is a library written in Python 2.7/3x ' +
