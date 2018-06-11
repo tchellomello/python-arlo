@@ -6,6 +6,7 @@ from pyarlo.const import (
     SNAPSHOTS_ENDPOINT, SNAPSHOTS_BODY, PRELOAD_DAYS)
 from pyarlo.media import ArloMediaLibrary
 from pyarlo.utils import http_get
+from pyarlo.utils import assert_is_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,6 +28,9 @@ class ArloCamera(object):
         self._session = arlo_session
         self._cached_videos = None
         self._min_days_vdo_cache = min_days_vdo_cache
+
+        # make sure self._attrs is a dict
+        self._attrs = assert_is_dict(self._attrs)
 
     def __repr__(self):
         """Representation string of object."""
@@ -56,7 +60,9 @@ class ArloCamera(object):
     @property
     def device_id(self):
         """Return device_id."""
-        return self._attrs.get('deviceId')
+        if self._attrs is not None:
+            return self._attrs.get('deviceId')
+        return None
 
     @property
     def serial_number(self):
@@ -66,42 +72,58 @@ class ArloCamera(object):
     @property
     def device_type(self):
         """Return device_type."""
-        return self._attrs.get('deviceType')
+        if self._attrs is not None:
+            return self._attrs.get('deviceType')
+        return None
 
     @property
     def model_id(self):
         """Return model_id."""
-        return self._attrs.get('modelId')
+        if self._attrs is not None:
+            return self._attrs.get('modelId')
+        return None
 
     @property
     def hw_version(self):
         """Return hardware version."""
-        return self._attrs.get('properties').get('hwVersion')
+        if self._attrs is not None:
+            return self._attrs.get('properties').get('hwVersion')
+        return None
 
     @property
     def parent_id(self):
         """Return camera parentID."""
-        return self._attrs.get('parentId')
+        if self._attrs is not None:
+            return self._attrs.get('parentId')
+        return None
 
     @property
     def timezone(self):
         """Return timezone."""
-        return self._attrs.get('properties').get('olsonTimeZone')
+        if self._attrs is not None:
+            return self._attrs.get('properties').get('olsonTimeZone')
+        return None
 
     @property
     def unique_id(self):
         """Return unique_id."""
-        return self._attrs.get('uniqueId')
+        if self._attrs is not None:
+            return self._attrs.get('uniqueId')
+        return None
 
     @property
     def user_id(self):
         """Return userID."""
-        return self._attrs.get('userId')
+        if self._attrs is not None:
+            return self._attrs.get('userId')
+        return None
 
     @property
     def unseen_videos(self):
         """Return number of unseen videos."""
-        return self._attrs.get('mediaObjectCount')
+        if self._attrs is not None:
+            return self._attrs.get('mediaObjectCount')
+        return None
 
     def unseen_videos_reset(self):
         """Reset the unseen videos counter."""
@@ -112,12 +134,16 @@ class ArloCamera(object):
     @property
     def user_role(self):
         """Return userRole."""
-        return self._attrs.get('userRole')
+        if self._attrs is not None:
+            return self._attrs.get('userRole')
+        return None
 
     @property
     def last_image(self):
         """Return last image captured by camera."""
-        return http_get(self._attrs.get('presignedLastImageUrl'))
+        if self._attrs is not None:
+            return http_get(self._attrs.get('presignedLastImageUrl'))
+        return None
 
     @property
     def last_image_from_cache(self):
@@ -182,7 +208,9 @@ class ArloCamera(object):
     @property
     def xcloud_id(self):
         """Return X-Cloud-ID attribute."""
-        return self._attrs.get('xCloudId')
+        if self._attrs is not None:
+            return self._attrs.get('xCloudId')
+        return None
 
     @property
     def base_station(self):
@@ -190,7 +218,7 @@ class ArloCamera(object):
         try:
             return list(filter(lambda x: x.device_id == self.parent_id,
                                self._session.base_stations))[0]
-        except IndexError:
+        except (IndexError, AttributeError):
             return None
 
     def _get_camera_properties(self):
@@ -379,6 +407,7 @@ class ArloCamera(object):
     def update(self):
         """Update object properties."""
         self._attrs = self._session.refresh_attributes(self.name)
+        self._attrs = assert_is_dict(self._attrs)
 
         # force base_state to update properties
         if self.base_station:

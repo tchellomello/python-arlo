@@ -8,6 +8,8 @@ import sseclient
 from pyarlo.const import (
     ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT,
     FIXED_MODES, NOTIFY_ENDPOINT, RESOURCES)
+from pyarlo.utils import assert_is_dict
+
 _LOGGER = logging.getLogger(__name__)
 
 REFRESH_RATE = 15
@@ -39,6 +41,8 @@ class ArloBaseStation(object):
         self.__subscribed = False
         self.__events = []
         self.__event_handle = None
+
+        self._attrs = assert_is_dict(self._attrs)
 
     def __repr__(self):
         """Representation string of object."""
@@ -208,52 +212,72 @@ class ArloBaseStation(object):
     @property
     def device_id(self):
         """Return device_id."""
-        return self._attrs.get('deviceId')
+        if self._attrs is not None:
+            return self._attrs.get('deviceId')
+        return None
 
     @property
     def device_type(self):
         """Return device_type."""
-        return self._attrs.get('deviceType')
+        if self._attrs is not None:
+            return self._attrs.get('deviceType')
+        return None
 
     @property
     def model_id(self):
         """Return model_id."""
-        return self._attrs.get('modelId')
+        if self._attrs is not None:
+            return self._attrs.get('modelId')
+        return None
 
     @property
     def hw_version(self):
         """Return hardware version."""
-        return self._attrs.get('properties').get('hwVersion')
+        if self._attrs is not None:
+            return self._attrs.get('properties').get('hwVersion')
+        return None
 
     @property
     def timezone(self):
         """Return timezone."""
-        return self._attrs.get('properties').get('olsonTimeZone')
+        if self._attrs is not None:
+            return self._attrs.get('properties').get('olsonTimeZone')
+        return None
 
     @property
     def unique_id(self):
         """Return unique_id."""
-        return self._attrs.get('uniqueId')
+        if self._attrs is not None:
+            return self._attrs.get('uniqueId')
+        return None
 
     @property
     def serial_number(self):
         """Return serial number."""
-        return self._attrs.get('properties').get('serialNumber')
+        if self._attrs is not None:
+            return self._attrs.get('properties').get('serialNumber')
+        return None
 
     @property
     def user_id(self):
         """Return userID."""
-        return self._attrs.get('userId')
+        if self._attrs is not None:
+            return self._attrs.get('userId')
+        return None
 
     @property
     def user_role(self):
         """Return userRole."""
-        return self._attrs.get('userRole')
+        if self._attrs is not None:
+            return self._attrs.get('userRole')
+        return None
 
     @property
     def xcloud_id(self):
         """Return X-Cloud-ID attribute."""
-        return self._attrs.get('xCloudId')
+        if self._attrs is not None:
+            return self._attrs.get('xCloudId')
+        return None
 
     @property
     def last_refresh(self):
@@ -469,6 +493,7 @@ class ArloBaseStation(object):
         if current_time >= (last_refresh + self._refresh_rate):
             self.get_cameras_properties()
             self._attrs = self._session.refresh_attributes(self.name)
+            self._attrs = assert_is_dict(self._attrs)
             _LOGGER.debug("Called base station update of camera properties: "
                           "Scan Interval: %s, New Properties: %s",
                           self._refresh_rate, self.camera_properties)
