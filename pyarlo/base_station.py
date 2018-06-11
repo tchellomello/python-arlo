@@ -212,52 +212,72 @@ class ArloBaseStation(object):
     @property
     def device_id(self):
         """Return device_id."""
-        return self._attrs.get('deviceId')
+        if self._attrs is not None:
+            return self._attrs.get('deviceId')
+        return None
 
     @property
     def device_type(self):
         """Return device_type."""
-        return self._attrs.get('deviceType')
+        if self._attrs is not None:
+            return self._attrs.get('deviceType')
+        return None
 
     @property
     def model_id(self):
         """Return model_id."""
-        return self._attrs.get('modelId')
+        if self._attrs is not None:
+            return self._attrs.get('modelId')
+        return None
 
     @property
     def hw_version(self):
         """Return hardware version."""
-        return self._attrs.get('properties').get('hwVersion')
+        if self._attrs is not None:
+            return self._attrs.get('properties').get('hwVersion')
+        return None
 
     @property
     def timezone(self):
         """Return timezone."""
-        return self._attrs.get('properties').get('olsonTimeZone')
+        if self._attrs is not None:
+            return self._attrs.get('properties').get('olsonTimeZone')
+        return None
 
     @property
     def unique_id(self):
         """Return unique_id."""
-        return self._attrs.get('uniqueId')
+        if self._attrs is not None:
+            return self._attrs.get('uniqueId')
+        return None
 
     @property
     def serial_number(self):
         """Return serial number."""
-        return self._attrs.get('properties').get('serialNumber')
+        if self._attrs is not None:
+            return self._attrs.get('properties').get('serialNumber')
+        return None
 
     @property
     def user_id(self):
         """Return userID."""
-        return self._attrs.get('userId')
+        if self._attrs is not None:
+            return self._attrs.get('userId')
+        return None
 
     @property
     def user_role(self):
         """Return userRole."""
-        return self._attrs.get('userRole')
+        if self._attrs is not None:
+            return self._attrs.get('userRole')
+        return None
 
     @property
     def xcloud_id(self):
         """Return X-Cloud-ID attribute."""
-        return self._attrs.get('xCloudId')
+        if self._attrs is not None:
+            return self._attrs.get('xCloudId')
+        return None
 
     @property
     def last_refresh(self):

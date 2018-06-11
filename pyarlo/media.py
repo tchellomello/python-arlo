@@ -118,12 +118,16 @@ class ArloVideo(object):
     @property
     def id(self):
         """Return object id."""
-        return self._attrs.get('name')
+        if self._attrs is not None:
+            return self._attrs.get('name')
+        return None
 
     @property
     def created_at(self):
         """Return timestamp."""
-        return self._attrs.get('localCreatedDate')
+        if self._attrs is not None:
+            return self._attrs.get('localCreatedDate')
+        return None
 
     def created_at_pretty(self, date_format=None):
         """Return pretty timestamp."""
@@ -146,7 +150,9 @@ class ArloVideo(object):
     @property
     def content_type(self):
         """Return content_type."""
-        return self._attrs.get('contentType')
+        if self._attrs is not None:
+            return self._attrs.get('contentType')
+        return None
 
     @property
     def camera(self):
@@ -156,22 +162,30 @@ class ArloVideo(object):
     @property
     def media_duration_seconds(self):
         """Return media duration in seconds."""
-        return self._attrs.get('mediaDurationSecond')
+        if self._attrs is not None:
+            return self._attrs.get('mediaDurationSecond')
+        return None
 
     @property
     def triggered_by(self):
         """Return the reason why video was recorded."""
-        return self._attrs.get('reason')
+        if self._attrs is not None:
+            return self._attrs.get('reason')
+        return None
 
     @property
     def thumbnail_url(self):
         """Return thumbnail url."""
-        return self._attrs.get('presignedThumbnailUrl')
+        if self._attrs is not None:
+            return self._attrs.get('presignedThumbnailUrl')
+        return None
 
     @property
     def video_url(self):
         """Return video content url."""
-        return self._attrs.get('presignedContentUrl')
+        if self._attrs is not None:
+            return self._attrs.get('presignedContentUrl')
+        return None
 
     def download_thumbnail(self, filename=None):
         """Download JPEG thumbnail.
