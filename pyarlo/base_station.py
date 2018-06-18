@@ -483,7 +483,8 @@ class ArloBaseStation(object):
         f = properties.get('format')
 
         if f.get('encoding') == "base64" and f.get('compression') == 'zlib':
-            self._ambient_sensor_data = ArloBaseStation._decode_sensor_data(properties)
+            self._ambient_sensor_data = \
+                ArloBaseStation._decode_sensor_data(properties)
         else:
             _LOGGER.info("Unrecognized event format")
             self._ambient_sensor_data = None
@@ -502,14 +503,14 @@ class ArloBaseStation(object):
 
         while i < len(data):
             points.append({
-                'timestamp':
-                    int(1e3 * ArloBaseStation._parse_statistic(data[i:(i + 4)], 0)),
-                'temperature':
-                    ArloBaseStation._parse_statistic(data[(i + 8):(i + 10)], 1),
-                'humidity':
-                    ArloBaseStation._parse_statistic(data[(i + 14):(i + 16)], 1),
-                'airQuality':
-                    ArloBaseStation._parse_statistic(data[(i + 20):(i + 22)], 1)
+                'timestamp': int(1e3 * ArloBaseStation._parse_statistic(
+                    data[i:(i + 4)], 0)),
+                'temperature': ArloBaseStation._parse_statistic(
+                    data[(i + 8):(i + 10)], 1),
+                'humidity': ArloBaseStation._parse_statistic(
+                    data[(i + 14):(i + 16)], 1),
+                'airQuality': ArloBaseStation._parse_statistic(
+                    data[(i + 20):(i + 22)], 1)
             })
             i += 22
 
