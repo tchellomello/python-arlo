@@ -488,6 +488,8 @@ class ArloBaseStation(object):
             _LOGGER.info("Unrecognized event format")
             self._ambient_sensor_data = None
 
+        return self._ambient_sensor_data
+
     @staticmethod
     def _decode_sensor_data(properties):
         """Decode, decompress, and parse the data from the history API"""
@@ -519,7 +521,7 @@ class ArloBaseStation(object):
     def _parse_statistic(data, scale):
         """Parse binary statistics returned from the history API"""
         i = 0
-        for byte in data:
+        for byte in bytearray(data):
             i = (i << 8) + byte
 
         if i == 32768:
@@ -527,7 +529,7 @@ class ArloBaseStation(object):
         elif scale == 0:
             return i
 
-        return i / (scale * 10)
+        return float(i) / (scale * 10)
 
     def get_latest_ambient_sensor_statistic(self, statistic):
         """Gets the most recent ambient sensor history entry"""
