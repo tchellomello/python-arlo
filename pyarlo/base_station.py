@@ -156,7 +156,7 @@ class ArloBaseStation(object):
             camera_id=None,
             mode=None,
             publish_response=None,
-            properties={}):
+            properties=None):
         """Run action.
 
         :param method: Specify the method GET, POST or PUT. Default is GET.
@@ -169,6 +169,9 @@ class ArloBaseStation(object):
 
         body = ACTION_BODY.copy()
 
+        if properties is None:
+            properties = {}
+
         if resource:
             body['resource'] = resource
 
@@ -178,7 +181,7 @@ class ArloBaseStation(object):
             # TODO: consider moving property manipulation up a layer
             # TODO: consider moving resource manipulation up a layer
             if resource == 'schedule':
-                 properties.update({'active': True})
+                properties.update({'active': True})
             elif resource == 'subscribe':
                 body['resource'] = "subscriptions/" + \
                         "{0}_web".format(self.user_id)
@@ -456,12 +459,14 @@ class ArloBaseStation(object):
 
     @property
     def ambient_temperature(self):
-        """Return the temperature property of the most recent history entry (in degrees celsius)"""
+        """Return the temperature property of the most recent
+        history entry (in degrees celsius)"""
         return self.get_latest_ambient_sensor_statistic('temperature')
 
     @property
     def ambient_humidity(self):
-        """Return the humidity property of the most recent history entry (in percent)"""
+        """Return the humidity property of the most recent 
+        history entry (in percent)"""
         return self.get_latest_ambient_sensor_statistic('humidity')
 
     @property
@@ -514,8 +519,8 @@ class ArloBaseStation(object):
             return None
         elif scale == 0:
             return i
-        else:
-            return i / (scale * 10)
+
+        return i / (scale * 10)
 
     def get_latest_ambient_sensor_statistic(self, statistic):
         """Gets the statistic for the most recent ambient sensor history entry"""
@@ -534,7 +539,7 @@ class ArloBaseStation(object):
             action='playTrack',
             resource='audioPlayback/player',
             publish_response=False,
-            properties={'trackId':track_id,'position':position}
+            properties={'trackId': track_id, 'position': position}
         )
 
     def pause_track(self):
@@ -559,7 +564,7 @@ class ArloBaseStation(object):
             action='set',
             resource='audioPlayback/config',
             publish_response=False,
-            properties={'config':{'loopbackMode':'continuous'}}
+            properties={'config': {'loopbackMode': 'continuous'}}
         )
 
     def set_music_loop_mode_single(self):
@@ -568,7 +573,7 @@ class ArloBaseStation(object):
             action='set',
             resource='audioPlayback/config',
             publish_response=False,
-            properties={'config':{'loopbackMode':'singleTrack'}}
+            properties={'config': {'loopbackMode': 'singleTrack'}}
         )
 
     def set_shuffle_on(self):
@@ -577,7 +582,7 @@ class ArloBaseStation(object):
             action='set',
             resource='audioPlayback/config',
             publish_response=False,
-            properties={'config':{'shuffleActive':True}}
+            properties={'config': {'shuffleActive': True}}
         )
 
     def set_shuffle_off(self):
@@ -586,7 +591,7 @@ class ArloBaseStation(object):
             action='set',
             resource='audioPlayback/config',
             publish_response=False,
-            properties={'config':{'shuffleActive':False}}
+            properties={'config': {'shuffleActive': False}}
         )
 
     def set_volume(self, mute=False, volume=50):
@@ -595,7 +600,7 @@ class ArloBaseStation(object):
             action='set',
             resource='cameras/{}'.format(self.device_id),
             publish_response=False,
-            properties={'speaker':{'mute':mute, 'volume':volume}}
+            properties={'speaker': {'mute': mute, 'volume': volume}}
         )
 
     def set_night_light_on(self):
@@ -604,7 +609,7 @@ class ArloBaseStation(object):
             action='set',
             resource='cameras/{}'.format(self.device_id),
             publish_response=False,
-            properties={'nightLight':{'enabled':True}}
+            properties={'nightLight': {'enabled': True}}
         )
 
     def set_night_light_off(self):
@@ -613,7 +618,7 @@ class ArloBaseStation(object):
             action='set',
             resource='cameras/{}'.format(self.device_id),
             publish_response=False,
-            properties={'nightLight':{'enabled':False}}
+            properties={'nightLight': {'enabled': False}}
         )
 
     def set_night_light_brightness(self, brightness=200):
@@ -622,7 +627,7 @@ class ArloBaseStation(object):
             action='set',
             resource='cameras/{}'.format(self.device_id),
             publish_response=False,
-            properties={'nightLight':{'brightness':brightness}}
+            properties={'nightLight': {'brightness': brightness}}
         )
 
     @property
