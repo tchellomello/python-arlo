@@ -465,13 +465,14 @@ class ArloBaseStation(object):
 
     @property
     def ambient_humidity(self):
-        """Return the humidity property of the most recent 
+        """Return the humidity property of the most recent
         history entry (in percent)"""
         return self.get_latest_ambient_sensor_statistic('humidity')
 
     @property
     def ambient_air_quality(self):
-        """Return the air quality property of the most recent history entry (in VOC PPM)"""
+        """Return the air quality property of the most recent
+        history entry (in VOC PPM)"""
         return self.get_latest_ambient_sensor_statistic('airQuality')
 
     def get_ambient_sensor_data(self):
@@ -488,7 +489,7 @@ class ArloBaseStation(object):
             self._ambient_sensor_data = None
 
     def _decode_sensor_data(self, properties):
-        """Base64 decode, decompress and parse the data returned from the history API"""
+        """Decode, decompress, and parse the data from the history API"""
         b64_input = ""
         for s in properties.get('payload'):
             b64_input += s
@@ -500,16 +501,20 @@ class ArloBaseStation(object):
 
         while i < len(data):
             points.append({
-                'timestamp': int(1e3 * self._parse_binary_statistic(data[i:(i + 4)], 0)),
-                'temperature': self._parse_binary_statistic(data[(i + 8):(i + 10)], 1),
-                'humidity': self._parse_binary_statistic(data[(i + 14):(i + 16)], 1),
-                'airQuality': self._parse_binary_statistic(data[(i + 20):(i + 22)], 1)
+                'timestamp':
+                    int(1e3 * self._parse_statistic(data[i:(i + 4)], 0)),
+                'temperature':
+                    self._parse_statistic(data[(i + 8):(i + 10)], 1),
+                'humidity':
+                    self._parse_statistic(data[(i + 14):(i + 16)], 1),
+                'airQuality':
+                    self._parse_statistic(data[(i + 20):(i + 22)], 1)
             })
             i += 22
 
         return points
 
-    def _parse_binary_statistic(self, data, scale):
+    def _parse_statistic(self, data, scale):
         """Parse binary statistics returned from the history API"""
         i = 0
         for byte in data:
@@ -523,7 +528,7 @@ class ArloBaseStation(object):
         return i / (scale * 10)
 
     def get_latest_ambient_sensor_statistic(self, statistic):
-        """Gets the statistic for the most recent ambient sensor history entry"""
+        """Gets the most recent ambient sensor history entry"""
         if self._ambient_sensor_data is None:
             self.get_ambient_sensor_data()
         return self._ambient_sensor_data[-1].get(statistic)
@@ -533,8 +538,10 @@ class ArloBaseStation(object):
         resource = 'audioPlayback'
         return self.publish_and_get_event(resource)
 
-    def play_track(self, track_id='229dca67-7e3c-4a5f-8f43-90e1a9bffc38', position=0):
-        """Plays a track at the given position. Default track is Brahms Lullaby."""
+    DEFAULT_TRACK_ID = '229dca67-7e3c-4a5f-8f43-90e1a9bffc38'
+
+    def play_track(self, track_id=DEFAULT_TRACK_ID, position=0):
+        """Plays a track at the given position."""
         self.__run_action(
             action='playTrack',
             resource='audioPlayback/player',
