@@ -524,10 +524,12 @@ class ArloBaseStation(object):
         return self._ambient_sensor_data[-1].get(statistic)
 
     def get_audio_playback_status(self):
+        """Gets the current playback status and available track list"""
         resource = 'audioPlayback'
         return self.publish_and_get_event(resource)
 
     def play_track(self, track_id='229dca67-7e3c-4a5f-8f43-90e1a9bffc38', position=0):
+        """Plays a track at the given position. Default track is Brahms Lullaby."""
         self.__run_action(
             action='playTrack',
             resource='audioPlayback/player',
@@ -536,6 +538,7 @@ class ArloBaseStation(object):
         )
 
     def pause_track(self):
+        """Pauses the currently playing track."""
         self.__run_action(
             action='pause',
             resource='audioPlayback/player',
@@ -543,6 +546,7 @@ class ArloBaseStation(object):
         )
 
     def skip_track(self):
+        """Skips to the next track in the playlist."""
         self.__run_action(
             action='nextTrack',
             resource='audioPlayback/player',
@@ -550,6 +554,7 @@ class ArloBaseStation(object):
         )
 
     def set_music_loop_mode_continuous(self):
+        """Sets the music loop mode to repeat the entire playlist."""
         self.__run_action(
             action='set',
             resource='audioPlayback/config',
@@ -558,6 +563,7 @@ class ArloBaseStation(object):
         )
 
     def set_music_loop_mode_single(self):
+        """Sets the music loop mode to repeat the current track."""
         self.__run_action(
             action='set',
             resource='audioPlayback/config',
@@ -566,6 +572,7 @@ class ArloBaseStation(object):
         )
 
     def set_shuffle_on(self):
+        """Sets playback to shuffle."""
         self.__run_action(
             action='set',
             resource='audioPlayback/config',
@@ -574,6 +581,7 @@ class ArloBaseStation(object):
         )
 
     def set_shuffle_off(self):
+        """Sets playback to sequential."""
         self.__run_action(
             action='set',
             resource='audioPlayback/config',
@@ -582,14 +590,16 @@ class ArloBaseStation(object):
         )
 
     def set_volume(self, mute=False, volume=50):
+        """Sets the music volume (0-100)"""
         self.__run_action(
             action='set',
             resource='cameras/{}'.format(self.device_id),
             publish_response=False,
-            properties={'speaker':{'mute':mute,'volume':volume}}
+            properties={'speaker':{'mute':mute, 'volume':volume}}
         )
 
     def set_night_light_on(self):
+        """Turns on the night light."""
         self.__run_action(
             action='set',
             resource='cameras/{}'.format(self.device_id),
@@ -598,6 +608,7 @@ class ArloBaseStation(object):
         )
 
     def set_night_light_off(self):
+        """Turns off the night light."""
         self.__run_action(
             action='set',
             resource='cameras/{}'.format(self.device_id),
@@ -606,6 +617,7 @@ class ArloBaseStation(object):
         )
 
     def set_night_light_brightness(self, brightness=200):
+        """Sets the brightness of the night light (0-255)."""
         self.__run_action(
             action='set',
             resource='cameras/{}'.format(self.device_id),
