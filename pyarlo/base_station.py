@@ -483,12 +483,13 @@ class ArloBaseStation(object):
         f = properties.get('format')
 
         if f.get('encoding') == "base64" and f.get('compression') == 'zlib':
-            self._ambient_sensor_data = self._decode_sensor_data(properties)
+            self._ambient_sensor_data = _decode_sensor_data(properties)
         else:
             _LOGGER.info("Unrecognized event format")
             self._ambient_sensor_data = None
 
-    def _decode_sensor_data(self, properties):
+    @staticmethod
+    def _decode_sensor_data(properties):
         """Decode, decompress, and parse the data from the history API"""
         b64_input = ""
         for s in properties.get('payload'):
@@ -502,19 +503,20 @@ class ArloBaseStation(object):
         while i < len(data):
             points.append({
                 'timestamp':
-                    int(1e3 * self._parse_statistic(data[i:(i + 4)], 0)),
+                    int(1e3 * _parse_statistic(data[i:(i + 4)], 0)),
                 'temperature':
-                    self._parse_statistic(data[(i + 8):(i + 10)], 1),
+                    _parse_statistic(data[(i + 8):(i + 10)], 1),
                 'humidity':
-                    self._parse_statistic(data[(i + 14):(i + 16)], 1),
+                    _parse_statistic(data[(i + 14):(i + 16)], 1),
                 'airQuality':
-                    self._parse_statistic(data[(i + 20):(i + 22)], 1)
+                    _parse_statistic(data[(i + 20):(i + 22)], 1)
             })
             i += 22
 
         return points
 
-    def _parse_statistic(self, data, scale):
+    @staticmethod
+    def _parse_statistic(, data, scale):
         """Parse binary statistics returned from the history API"""
         i = 0
         for byte in data:
