@@ -516,7 +516,7 @@ class ArloBaseStation(object):
         return points
 
     @staticmethod
-    def _parse_statistic(, data, scale):
+    def _parse_statistic(data, scale):
         """Parse binary statistics returned from the history API"""
         i = 0
         for byte in data:
