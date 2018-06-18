@@ -178,8 +178,7 @@ class ArloBaseStation(object):
         if action == 'get':
             body['properties'] = None
         else:
-            # TODO: consider moving property manipulation up a layer
-            # TODO: consider moving resource manipulation up a layer
+            # consider moving this logic up a layer
             if resource == 'schedule':
                 properties.update({'active': True})
             elif resource == 'subscribe':
