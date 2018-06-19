@@ -96,7 +96,7 @@ class ArloBaseStation(object):
 
     def _subscribe_myself(self):
         """Subscribe this base station for all events."""
-        return self.__run_action(
+        return self.publish(
             action='set',
             resource='subscribe',
             mode=None,
@@ -123,7 +123,7 @@ class ArloBaseStation(object):
             self._subscribe_myself()
             l_subscribed = True
 
-        status = self.__run_action(
+        status = self.publish(
             action='get',
             resource=resource,
             mode=None,
@@ -149,7 +149,7 @@ class ArloBaseStation(object):
 
         return this_event
 
-    def __run_action(
+    def publish(
             self,
             action='get',
             resource=None,
@@ -481,12 +481,8 @@ class ArloBaseStation(object):
         properties = history_event.get('properties')
         f = properties.get('format')
 
-        if f.get('encoding') == "base64" and f.get('compression') == 'zlib':
-            self._ambient_sensor_data = \
-                ArloBaseStation._decode_sensor_data(properties)
-        else:
-            _LOGGER.info("Unrecognized event format")
-            self._ambient_sensor_data = None
+        self._ambient_sensor_data = \
+            ArloBaseStation._decode_sensor_data(properties)
 
         return self._ambient_sensor_data
 
@@ -546,7 +542,7 @@ class ArloBaseStation(object):
 
     def play_track(self, track_id=DEFAULT_TRACK_ID, position=0):
         """Plays a track at the given position."""
-        self.__run_action(
+        self.publish(
             action='playTrack',
             resource='audioPlayback/player',
             publish_response=False,
@@ -555,7 +551,7 @@ class ArloBaseStation(object):
 
     def pause_track(self):
         """Pauses the currently playing track."""
-        self.__run_action(
+        self.publish(
             action='pause',
             resource='audioPlayback/player',
             publish_response=False
@@ -563,7 +559,7 @@ class ArloBaseStation(object):
 
     def skip_track(self):
         """Skips to the next track in the playlist."""
-        self.__run_action(
+        self.publish(
             action='nextTrack',
             resource='audioPlayback/player',
             publish_response=False
@@ -571,7 +567,7 @@ class ArloBaseStation(object):
 
     def set_music_loop_mode_continuous(self):
         """Sets the music loop mode to repeat the entire playlist."""
-        self.__run_action(
+        self.publish(
             action='set',
             resource='audioPlayback/config',
             publish_response=False,
@@ -580,7 +576,7 @@ class ArloBaseStation(object):
 
     def set_music_loop_mode_single(self):
         """Sets the music loop mode to repeat the current track."""
-        self.__run_action(
+        self.publish(
             action='set',
             resource='audioPlayback/config',
             publish_response=False,
@@ -589,7 +585,7 @@ class ArloBaseStation(object):
 
     def set_shuffle_on(self):
         """Sets playback to shuffle."""
-        self.__run_action(
+        self.publish(
             action='set',
             resource='audioPlayback/config',
             publish_response=False,
@@ -598,7 +594,7 @@ class ArloBaseStation(object):
 
     def set_shuffle_off(self):
         """Sets playback to sequential."""
-        self.__run_action(
+        self.publish(
             action='set',
             resource='audioPlayback/config',
             publish_response=False,
@@ -607,7 +603,7 @@ class ArloBaseStation(object):
 
     def set_volume(self, mute=False, volume=50):
         """Sets the music volume (0-100)"""
-        self.__run_action(
+        self.publish(
             action='set',
             resource='cameras/{}'.format(self.device_id),
             publish_response=False,
@@ -616,7 +612,7 @@ class ArloBaseStation(object):
 
     def set_night_light_on(self):
         """Turns on the night light."""
-        self.__run_action(
+        self.publish(
             action='set',
             resource='cameras/{}'.format(self.device_id),
             publish_response=False,
@@ -625,7 +621,7 @@ class ArloBaseStation(object):
 
     def set_night_light_off(self):
         """Turns off the night light."""
-        self.__run_action(
+        self.publish(
             action='set',
             resource='cameras/{}'.format(self.device_id),
             publish_response=False,
@@ -634,7 +630,7 @@ class ArloBaseStation(object):
 
     def set_night_light_brightness(self, brightness=200):
         """Sets the brightness of the night light (0-255)."""
-        self.__run_action(
+        self.publish(
             action='set',
             resource='cameras/{}'.format(self.device_id),
             publish_response=False,
@@ -662,7 +658,7 @@ class ArloBaseStation(object):
         modes = self.available_modes
         if (not modes) or (mode not in modes):
             return
-        self.__run_action(
+        self.publish(
             action='set',
             resource='modes' if mode != 'schedule' else 'schedule',
             mode=mode,
@@ -674,7 +670,7 @@ class ArloBaseStation(object):
 
         :param mode: True, False
         """
-        self.__run_action(
+        self.publish(
             action='set',
             resource='privacy',
             camera_id=camera_id,
