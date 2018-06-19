@@ -479,7 +479,6 @@ class ArloBaseStation(object):
         resource = 'cameras/{}/ambientSensors/history'.format(self.device_id)
         history_event = self.publish_and_get_event(resource)
         properties = history_event.get('properties')
-        f = properties.get('format')
 
         self._ambient_sensor_data = \
             ArloBaseStation._decode_sensor_data(properties)
