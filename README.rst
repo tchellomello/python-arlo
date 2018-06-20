@@ -154,7 +154,7 @@ Loading Videos
 
 
 Ambient Sensors Data Usage (Arlo Baby Monitor)
----------------------------------------------
+----------------------------------------------
 
 .. code-block:: python
 
@@ -216,6 +216,7 @@ Night Light Usage (Arlo Baby Monitor)
 -------------------------------------
 
 .. code-block:: python
+
     # Turn on the night light
     base_station.set_night_light_on()
 
