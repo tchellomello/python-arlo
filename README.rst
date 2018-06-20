@@ -13,6 +13,8 @@ Python Arlo
 .. image:: https://img.shields.io/pypi/pyversions/pyarlo.svg
     :target: https://pypi.python.org/pypi/pyarlo
 
+.. _CONTRIBUTING.rst: https://raw.githubusercontent.com/tchellomello/python-arlo/master/CONTRIBUTING.rst
+
 
 Python Arlo  is a library written in Python 2.7/3x that exposes the Netgear Arlo cameras as Python objects.
 
@@ -151,7 +153,79 @@ Loading Videos
     media.download_video('/home/user/demo.mp4')
 
 
+Ambient Sensors Data Usage (Arlo Baby Monitor)
+----------------------------------------------
+
+.. code-block:: python
+
+    # Get the base_station instance corresponding to the Arlo Baby
+    base_station = arlo.base_stations[0]
+
+    # Store all ambient sensor history in self._ambient_sensor_data
+    # All of the accessor properties will call this if values are not cached.
+    base_station.get_ambient_sensor_data()
+
+    # Get cached sensor history (property)
+    base_station.ambient_sensor_data
+
+    # Get most recent temperature reading in degrees celsius (property)
+    base_station.ambient_temperature
+
+    # Get most recent humidity reading in relative humidity percentage (property)
+    base_station.ambient_humidity
+
+    # Get most recent air quality reading (property)
+    # Not 100% sure on the unit of measure, but would assume it's VOC PPM
+    base_station.ambient_air_quality
+
+Music Playback Usage (Arlo Baby Monitor)
+----------------------------------------
+
+.. code-block:: python
+
+    # Get the current playback status and available track list
+    base_station.get_audio_playback_status()
+
+    # Play a track, optionally specify the track and seek time in seconds
+    base_station.play_track(
+        track_id='229dca67-7e3c-4a5f-8f43-90e1a9bffc38',
+        position=0)
+
+    # Pause the currently playing track
+    base_station.pause_track()
+
+    # Skip to the next track in the playlist
+    base_station.skip_track()
+
+    # Set the music loop mode to repeat the entire playlist
+    base_station.set_music_loop_mode_continuous()
+
+    # Set the music loop mode to repeat the current track
+    base_station.set_music_loop_mode_single()
+
+    # Sets playback to shuffle
+    base_station.set_shuffle_on()
+
+    # Sets playback to sequential
+    base_station.set_shuffle_off()
+
+    # Change the playback volume
+    base_station.set_volume(100)
+
+Night Light Usage (Arlo Baby Monitor)
+-------------------------------------
+
+.. code-block:: python
+
+    # Turn on the night light
+    base_station.set_night_light_on()
+
+    # Turn off the night light
+    base_station.set_night_light_off()
+
+    # Set the brightness of the night light
+    base_station.set_night_light_brightness(200)
+
 Contributing
 ------------
-
-See more at CONTRIBUTING.rst
+See more at CONTRIBUTING.rst_.

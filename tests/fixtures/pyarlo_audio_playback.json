@@ -1,0 +1,94 @@
+{
+  "resource": "audioPlayback",
+  "transId": "web!e6d1b969.8aa4b!1498165992111",
+  "action": "is",
+  "from": "4R03757BA387F",
+  "to": "FQ8QKG-336-14182007_web",
+  "properties": {
+    "playlist": [{
+      "duration": 83,
+      "size": 1360153,
+      "md5sum": "c5ad863471bb3d7c82c96eb9fc10486a",
+      "genre": "Lullaby",
+      "id": "229dca67-7e3c-4a5f-8f43-90e1a9bffc38",
+      "title": "Brahms Lullaby"
+    }, {
+      "duration": 136,
+      "size": 2207318,
+      "md5sum": "01d2bf7dbedd7ef45028ed9294a7b888",
+      "genre": "Lullaby",
+      "id": "2391d620-e491-4412-99f6-e9a40d6046ed",
+      "title": "Hush Little Baby"
+    }, {
+      "duration": 74,
+      "size": 1202795,
+      "md5sum": "32befdf04af177751ccc110f4375a04c",
+      "genre": "Lullaby",
+      "id": "0322beee-759f-425f-ae96-fa3f16ca3fcf",
+      "title": "Rock-a-Bye Baby (Music Box)"
+    }, {
+      "duration": 179,
+      "size": 2915179,
+      "md5sum": "67e004b4301af5da2955a3fa8a5e56f7",
+      "genre": "Lullaby",
+      "id": "5bda2d80-e668-4cc0-8cec-39f9daafc96b",
+      "title": "Twinkle Twinkle Little Star"
+    }, {
+      "duration": 97,
+      "size": 1586588,
+      "md5sum": "f7513c2ac11219fd44211e4ee518b818",
+      "genre": "Lullaby",
+      "id": "2c99010c-3eb3-4e38-baa6-067924fba34a",
+      "title": "Wind Up Lullaby"
+    }, {
+      "duration": 49,
+      "size": 799475,
+      "md5sum": "1ce4ba4ecdaad22cb26b4efd2d469441",
+      "genre": "Lullaby",
+      "id": "9e268e44-7453-4ab2-bcb1-3f3b605bdc22",
+      "title": "Baa Baa Black Sheep"
+    }, {
+      "duration": 67,
+      "size": 1085261,
+      "md5sum": "23e5b01e405ebd4d9a1ae09bbb6e0b66",
+      "genre": "Lullaby",
+      "id": "5536dbcd-c8a0-4089-bd6a-10ab4e93ea5f",
+      "title": "Orpheas Lullaby"
+    }, {
+      "duration": 165,
+      "size": 2669215,
+      "md5sum": "30b64b83908e2b9fa8afd4fb0542d5fa",
+      "genre": "Lullaby",
+      "id": "e09b6abe-91bc-4cf5-b420-323620c3d947",
+      "title": "All the Pretty Little Horses"
+    }, {
+      "duration": 131,
+      "size": 2116048,
+      "md5sum": "67fbf81b5a10ca78b813e0ab10320594",
+      "genre": "Lullaby",
+      "id": "fc546c13-0233-4504-896c-f02c1730c8a5",
+      "title": "Cloud Lullaby"
+    }, {
+      "duration": 128,
+      "size": 2080013,
+      "md5sum": "34366202f66be17977b8b63bf215124a",
+      "genre": "Lullaby",
+      "id": "42046742-346f-44e1-88a2-2b1d8fa6fc2c",
+      "title": "Lullaby to a Firefly",
+      "url": "https://arlostatic-z2.s3.amazonaws.com/musicPLM/LullabytoaFirefly.m4a?AWSAccessKeyId=AKIAICS2UAC4WFSD6C2A&Expires=1529294758&Signature=RrKWZxS%2Fq1%2BrkXJDNP02v0fQaIA%3D"
+    }],
+    "config": {
+      "shuffleActive": false,
+      "loopbackMode": "continuous",
+      "sleepTimeRel": 0,
+      "sleepTime": 0,
+      "playing": false,
+      "storageLimit": 20971520
+    },
+    "status": {
+      "trackId": "42046742-346f-44e1-88a2-2b1d8fa6fc2c",
+      "position": 0,
+      "status": "paused"
+    }
+  }
+}
