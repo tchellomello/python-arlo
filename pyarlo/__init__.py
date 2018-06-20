@@ -185,8 +185,9 @@ class PyArlo(object):
                 camera = ArloCamera(name, device, self)
                 self._all_devices['cameras'].append(camera)
 
-            if device.get('deviceType') == 'basestation' and \
-               device.get('state') == 'provisioned':
+            if (device.get('state') == 'provisioned' and
+                    (device.get('deviceType') == 'basestation' or
+                     device.get('modelId') == 'ABC1000')):
                 base = ArloBaseStation(name, device, self.__token, self)
                 self._all_devices['base_station'].append(base)
 

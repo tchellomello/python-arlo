@@ -1,19 +1,25 @@
 """The tests for the PyArlo platform."""
 import unittest
-from mock import Mock, patch
+from mock import Mock, patch, MagicMock
 from pyarlo import ArloBaseStation, PyArlo
 from tests.common import (
     load_fixture,
     load_base_properties as load_base_props,
     load_camera_properties as load_camera_props,
     load_camera_rules,
-    load_camera_schedule
+    load_camera_schedule,
+    load_ambient_sensor_data,
+    load_audio_playback_status
 )
 
 import requests_mock
 
 from pyarlo.const import (
-    DEVICES_ENDPOINT, LIBRARY_ENDPOINT, LOGIN_ENDPOINT, RESOURCES
+    DEVICES_ENDPOINT,
+    LIBRARY_ENDPOINT,
+    LOGIN_ENDPOINT,
+    RESOURCES,
+    NOTIFY_ENDPOINT
 )
 
 USERNAME = "foo"
@@ -30,7 +36,10 @@ class TestArloBaseStation(unittest.TestCase):
         mock.get(DEVICES_ENDPOINT, text=load_fixture("pyarlo_devices.json"))
         mock.post(LIBRARY_ENDPOINT, text=load_fixture("pyarlo_videos.json"))
         arlo = PyArlo(USERNAME, PASSWORD, days=1)
-        return arlo.base_stations[0]
+        base_station = arlo.base_stations[0]
+        mock.post(NOTIFY_ENDPOINT.format(base_station.device_id),
+                  text=load_fixture("pyarlo_success.json"))
+        return base_station
 
     @requests_mock.Mocker()
     def test_properties(self, mock):
@@ -119,3 +128,204 @@ class TestArloBaseStation(unittest.TestCase):
         camera_schedule = base.get_cameras_schedule()
         mocked_schedules = load_camera_schedule()
         self.assertEqual(camera_schedule, mocked_schedules["properties"])
+
+    @requests_mock.Mocker()
+    @patch.object(
+        ArloBaseStation, "publish_and_get_event", load_ambient_sensor_data)
+    def test_ambient_sensor_data(self, mock):
+        """Test ArloBaseStation.ambient_sensor_data."""
+        base = self.load_base_station(mock)
+        sensor_data = base.ambient_sensor_data
+        self.assertEqual(len(sensor_data), 2010)
+        self.assertEqual(base.ambient_temperature, 24.6)
+        self.assertEqual(base.ambient_humidity, 37.2)
+        self.assertEqual(base.ambient_air_quality, 11.2)
+
+    @requests_mock.Mocker()
+    @patch.object(
+        ArloBaseStation, "publish_and_get_event", load_ambient_sensor_data)
+    def test_latest_sensor_statistic(self, mock):
+        """Test ArloBaseStation.get_latest_ambient_sensor_statistic."""
+        base = self.load_base_station(mock)
+        temperature = base.get_latest_ambient_sensor_statistic("temperature")
+        self.assertEqual(temperature, 24.6)
+
+    @requests_mock.Mocker()
+    @patch.object(
+        ArloBaseStation, "publish_and_get_event", load_audio_playback_status)
+    def test_audio_playback_status(self, mock):
+        """Test ArloBaseStation.get_audio_playback_status."""
+        base = self.load_base_station(mock)
+        expected = load_audio_playback_status()
+        actual = base.get_audio_playback_status()
+        self.assertEqual(expected, actual)
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    def test_play_track(self, mock):
+        """Test ArloBaseStation.play_track."""
+        base = self.load_base_station(mock)
+        base.play_track()
+        base.publish.assert_called_once_with(
+            action='playTrack',
+            resource='audioPlayback/player',
+            publish_response=False,
+            properties={
+                'trackId': '229dca67-7e3c-4a5f-8f43-90e1a9bffc38',
+                'position': 0
+            }
+        )
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    def test_pause_track(self, mock):
+        """Test ArloBaseStation.pause_track."""
+        base = self.load_base_station(mock)
+        base.pause_track()
+        base.publish.assert_called_once_with(
+            action='pause',
+            resource='audioPlayback/player',
+            publish_response=False
+        )
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    def test_skip_track(self, mock):
+        """Test ArloBaseStation.skip_track."""
+        base = self.load_base_station(mock)
+        base.skip_track()
+        base.publish.assert_called_once_with(
+            action='nextTrack',
+            resource='audioPlayback/player',
+            publish_response=False
+        )
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    def test_set_music_mode_continuous(self, mock):
+        """Test ArloBaseStation.set_music_loop_mode_continuous."""
+        base = self.load_base_station(mock)
+        base.set_music_loop_mode_continuous()
+        base.publish.assert_called_once_with(
+            action='set',
+            resource='audioPlayback/config',
+            publish_response=False,
+            properties={'config': {'loopbackMode': 'continuous'}}
+        )
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    def test_set_music_mode_single(self, mock):
+        """Test ArloBaseStation.set_music_loop_mode_single."""
+        base = self.load_base_station(mock)
+        base.set_music_loop_mode_single()
+        base.publish.assert_called_once_with(
+            action='set',
+            resource='audioPlayback/config',
+            publish_response=False,
+            properties={'config': {'loopbackMode': 'singleTrack'}}
+        )
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    def test_shuffle_on(self, mock):
+        """Test ArloBaseStation.set_shuffle_on."""
+        base = self.load_base_station(mock)
+        base.set_shuffle_on()
+        base.publish.assert_called_once_with(
+            action='set',
+            resource='audioPlayback/config',
+            publish_response=False,
+            properties={'config': {'shuffleActive': True}}
+        )
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    def test_shuffle_off(self, mock):
+        """Test ArloBaseStation.set_shuffle_off."""
+        base = self.load_base_station(mock)
+        base.set_shuffle_off()
+        base.publish.assert_called_with(
+            action='set',
+            resource='audioPlayback/config',
+            publish_response=False,
+            properties={'config': {'shuffleActive': False}}
+        )
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    def test_set_volume(self, mock):
+        """Test ArloBaseStation.set_volume."""
+        base = self.load_base_station(mock)
+        base.set_volume(mute=False, volume=100)
+        base.publish.assert_called_once_with(
+            action='set',
+            resource='cameras/48B14CBBBBBBB',
+            publish_response=False,
+            properties={'speaker': {'mute': False, 'volume': 100}}
+        )
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    def test_night_light_on(self, mock):
+        """Test ArloBaseStation.set_night_light_on."""
+        base = self.load_base_station(mock)
+        base.set_night_light_on()
+        base.publish.assert_called_once_with(
+            action='set',
+            resource='cameras/48B14CBBBBBBB',
+            publish_response=False,
+            properties={'nightLight': {'enabled': True}}
+        )
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    def test_night_light_off(self, mock):
+        """Test ArloBaseStation.set_night_light_off."""
+        base = self.load_base_station(mock)
+        base.set_night_light_off()
+        base.publish.assert_called_once_with(
+            action='set',
+            resource='cameras/48B14CBBBBBBB',
+            publish_response=False,
+            properties={'nightLight': {'enabled': False}}
+        )
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    def test_night_light_brightness(self, mock):
+        """Test ArloBaseStation.set_night_light_brightness."""
+        base = self.load_base_station(mock)
+        base.set_night_light_brightness(100)
+        base.publish.assert_called_once_with(
+            action='set',
+            resource='cameras/48B14CBBBBBBB',
+            publish_response=False,
+            properties={'nightLight': {'brightness': 100}}
+        )
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish", MagicMock())
+    @patch.object(ArloBaseStation, "update", MagicMock())
+    def test_camera_enabled(self, mock):
+        """Test ArloBaseStation.set_camera_enabled."""
+        base = self.load_base_station(mock)
+        base.set_camera_enabled("48B14CBBBBBBB", True)
+        base.publish.assert_called_once_with(
+            action='set',
+            resource='privacy',
+            camera_id='48B14CBBBBBBB',
+            mode=True,
+            publish_response=True
+        )
+        base.update.assert_called_once_with()
+
+    @requests_mock.Mocker()
+    def test_parse_statistic(self, mock):
+        """Test ArloBaseStation._parse_statistic"""
+        base = self.load_base_station(mock)
+        data = b'\x80\x00'
+        # pylint: disable=W0212
+        result = base._parse_statistic(data, 0)
+        # pylint: enable=W0212
+        self.assertEqual(result, None)

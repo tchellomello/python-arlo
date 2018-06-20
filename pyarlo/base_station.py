@@ -4,6 +4,8 @@ import json
 import threading
 import logging
 import time
+import base64
+import zlib
 import sseclient
 from pyarlo.const import (
     ACTION_BODY, SUBSCRIBE_ENDPOINT, UNSUBSCRIBE_ENDPOINT,
@@ -35,6 +37,7 @@ class ArloBaseStation(object):
         self._available_modes = None
         self._available_mode_ids = None
         self._camera_properties = None
+        self._ambient_sensor_data = None
         self._last_refresh = None
         self._refresh_rate = refresh_rate
         self.__sseclient = None
@@ -93,8 +96,8 @@ class ArloBaseStation(object):
 
     def _subscribe_myself(self):
         """Subscribe this base station for all events."""
-        return self.__run_action(
-            method='SET',
+        return self.publish(
+            action='set',
             resource='subscribe',
             mode=None,
             publish_response=False)
@@ -120,8 +123,8 @@ class ArloBaseStation(object):
             self._subscribe_myself()
             l_subscribed = True
 
-        status = self.__run_action(
-            method='GET',
+        status = self.publish(
+            action='get',
             resource=resource,
             mode=None,
             publish_response=False)
@@ -146,13 +149,14 @@ class ArloBaseStation(object):
 
         return this_event
 
-    def __run_action(
+    def publish(
             self,
-            method='GET',
+            action='get',
             resource=None,
             camera_id=None,
             mode=None,
-            publish_response=None):
+            publish_response=None,
+            properties=None):
         """Run action.
 
         :param method: Specify the method GET, POST or PUT. Default is GET.
@@ -165,32 +169,33 @@ class ArloBaseStation(object):
 
         body = ACTION_BODY.copy()
 
+        if properties is None:
+            properties = {}
+
         if resource:
             body['resource'] = resource
 
-        if method == 'GET':
-            body['action'] = "get"
+        if action == 'get':
             body['properties'] = None
-        elif method == 'SET':
-            body['action'] = "set"
+        else:
+            # consider moving this logic up a layer
             if resource == 'schedule':
-                body['properties'] = {'active': True}
+                properties.update({'active': True})
             elif resource == 'subscribe':
                 body['resource'] = "subscriptions/" + \
                         "{0}_web".format(self.user_id)
                 dev = []
                 dev.append(self.device_id)
-                body['properties'] = {'devices': dev}
+                properties.update({'devices': dev})
             elif resource == 'modes':
                 available_modes = self.available_modes_with_ids
-                body['properties'] = {'active': available_modes.get(mode)}
+                properties.update({'active': available_modes.get(mode)})
             elif resource == 'privacy':
-                body['properties'] = {'privacyActive': not mode}
+                properties.update({'privacyActive': not mode})
                 body['resource'] = "cameras/{0}".format(camera_id)
-        else:
-            _LOGGER.info("Invalid method requested")
-            return None
 
+        body['action'] = action
+        body['properties'] = properties
         body['publishResponse'] = publish_response
 
         body['from'] = "{0}_web".format(self.user_id)
@@ -445,6 +450,193 @@ class ArloBaseStation(object):
         return self.mode == "armed"
 
     @property
+    def ambient_sensor_data(self):
+        """Return _ambient_sensor_data"""
+        if self._ambient_sensor_data is None:
+            self.get_ambient_sensor_data()
+        return self._ambient_sensor_data
+
+    @property
+    def ambient_temperature(self):
+        """Return the temperature property of the most recent
+        history entry (in degrees celsius)"""
+        return self.get_latest_ambient_sensor_statistic('temperature')
+
+    @property
+    def ambient_humidity(self):
+        """Return the humidity property of the most recent
+        history entry (in percent)"""
+        return self.get_latest_ambient_sensor_statistic('humidity')
+
+    @property
+    def ambient_air_quality(self):
+        """Return the air quality property of the most recent
+        history entry (in VOC PPM)"""
+        return self.get_latest_ambient_sensor_statistic('airQuality')
+
+    def get_ambient_sensor_data(self):
+        """Refresh ambient sensor history"""
+        resource = 'cameras/{}/ambientSensors/history'.format(self.device_id)
+        history_event = self.publish_and_get_event(resource)
+        properties = history_event.get('properties')
+
+        self._ambient_sensor_data = \
+            ArloBaseStation._decode_sensor_data(properties)
+
+        return self._ambient_sensor_data
+
+    @staticmethod
+    def _decode_sensor_data(properties):
+        """Decode, decompress, and parse the data from the history API"""
+        b64_input = ""
+        for s in properties.get('payload'):
+            b64_input += s
+
+        decoded = base64.b64decode(b64_input)
+        data = zlib.decompress(decoded)
+        points = []
+        i = 0
+
+        while i < len(data):
+            points.append({
+                'timestamp': int(1e3 * ArloBaseStation._parse_statistic(
+                    data[i:(i + 4)], 0)),
+                'temperature': ArloBaseStation._parse_statistic(
+                    data[(i + 8):(i + 10)], 1),
+                'humidity': ArloBaseStation._parse_statistic(
+                    data[(i + 14):(i + 16)], 1),
+                'airQuality': ArloBaseStation._parse_statistic(
+                    data[(i + 20):(i + 22)], 1)
+            })
+            i += 22
+
+        return points
+
+    @staticmethod
+    def _parse_statistic(data, scale):
+        """Parse binary statistics returned from the history API"""
+        i = 0
+        for byte in bytearray(data):
+            i = (i << 8) + byte
+
+        if i == 32768:
+            return None
+        elif scale == 0:
+            return i
+
+        return float(i) / (scale * 10)
+
+    def get_latest_ambient_sensor_statistic(self, statistic):
+        """Gets the most recent ambient sensor history entry"""
+        if self._ambient_sensor_data is None:
+            self.get_ambient_sensor_data()
+        return self._ambient_sensor_data[-1].get(statistic)
+
+    def get_audio_playback_status(self):
+        """Gets the current playback status and available track list"""
+        resource = 'audioPlayback'
+        return self.publish_and_get_event(resource)
+
+    DEFAULT_TRACK_ID = '229dca67-7e3c-4a5f-8f43-90e1a9bffc38'
+
+    def play_track(self, track_id=DEFAULT_TRACK_ID, position=0):
+        """Plays a track at the given position."""
+        self.publish(
+            action='playTrack',
+            resource='audioPlayback/player',
+            publish_response=False,
+            properties={'trackId': track_id, 'position': position}
+        )
+
+    def pause_track(self):
+        """Pauses the currently playing track."""
+        self.publish(
+            action='pause',
+            resource='audioPlayback/player',
+            publish_response=False
+        )
+
+    def skip_track(self):
+        """Skips to the next track in the playlist."""
+        self.publish(
+            action='nextTrack',
+            resource='audioPlayback/player',
+            publish_response=False
+        )
+
+    def set_music_loop_mode_continuous(self):
+        """Sets the music loop mode to repeat the entire playlist."""
+        self.publish(
+            action='set',
+            resource='audioPlayback/config',
+            publish_response=False,
+            properties={'config': {'loopbackMode': 'continuous'}}
+        )
+
+    def set_music_loop_mode_single(self):
+        """Sets the music loop mode to repeat the current track."""
+        self.publish(
+            action='set',
+            resource='audioPlayback/config',
+            publish_response=False,
+            properties={'config': {'loopbackMode': 'singleTrack'}}
+        )
+
+    def set_shuffle_on(self):
+        """Sets playback to shuffle."""
+        self.publish(
+            action='set',
+            resource='audioPlayback/config',
+            publish_response=False,
+            properties={'config': {'shuffleActive': True}}
+        )
+
+    def set_shuffle_off(self):
+        """Sets playback to sequential."""
+        self.publish(
+            action='set',
+            resource='audioPlayback/config',
+            publish_response=False,
+            properties={'config': {'shuffleActive': False}}
+        )
+
+    def set_volume(self, mute=False, volume=50):
+        """Sets the music volume (0-100)"""
+        self.publish(
+            action='set',
+            resource='cameras/{}'.format(self.device_id),
+            publish_response=False,
+            properties={'speaker': {'mute': mute, 'volume': volume}}
+        )
+
+    def set_night_light_on(self):
+        """Turns on the night light."""
+        self.publish(
+            action='set',
+            resource='cameras/{}'.format(self.device_id),
+            publish_response=False,
+            properties={'nightLight': {'enabled': True}}
+        )
+
+    def set_night_light_off(self):
+        """Turns off the night light."""
+        self.publish(
+            action='set',
+            resource='cameras/{}'.format(self.device_id),
+            publish_response=False,
+            properties={'nightLight': {'enabled': False}}
+        )
+
+    def set_night_light_brightness(self, brightness=200):
+        """Sets the brightness of the night light (0-255)."""
+        self.publish(
+            action='set',
+            resource='cameras/{}'.format(self.device_id),
+            publish_response=False,
+            properties={'nightLight': {'brightness': brightness}}
+        )
+
+    @property
     def subscribe(self):
         """Subscribe this session with Arlo system."""
         self._get_event_stream()
@@ -465,8 +657,8 @@ class ArloBaseStation(object):
         modes = self.available_modes
         if (not modes) or (mode not in modes):
             return
-        self.__run_action(
-            method='SET',
+        self.publish(
+            action='set',
             resource='modes' if mode != 'schedule' else 'schedule',
             mode=mode,
             publish_response=True)
@@ -477,8 +669,8 @@ class ArloBaseStation(object):
 
         :param mode: True, False
         """
-        self.__run_action(
-            method='SET',
+        self.publish(
+            action='set',
             resource='privacy',
             camera_id=camera_id,
             mode=is_enabled,
