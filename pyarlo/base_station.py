@@ -684,6 +684,7 @@ class ArloBaseStation(object):
 
         if current_time >= (last_refresh + self._refresh_rate):
             self.get_cameras_properties()
+            self.get_ambient_sensor_data()
             self._attrs = self._session.refresh_attributes(self.name)
             self._attrs = assert_is_dict(self._attrs)
             _LOGGER.debug("Called base station update of camera properties: "
