@@ -11,7 +11,7 @@ from tests.common import (
     open_fixture
 )
 
-from mock import patch
+from mock import patch, MagicMock
 from pyarlo import PyArlo, ArloBaseStation
 from pyarlo.camera import ArloCamera
 from pyarlo.const import (
@@ -43,6 +43,7 @@ class TestArloCamera(unittest.TestCase):
 
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event", load_camera_props)
+    @patch.object(ArloBaseStation, "get_ambient_sensor_data", MagicMock())
     def test_camera_properties(self, mock):
         """Test ArloCamera properties."""
         arlo = self.load_arlo(mock)

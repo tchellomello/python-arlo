@@ -1,7 +1,7 @@
 """The tests for the PyArlo platform."""
 import unittest
 from functools import partial
-from mock import patch
+from mock import patch, MagicMock
 from pyarlo import ArloBaseStation, PyArlo
 from tests.common import load_fixture, load_camera_schedule
 
@@ -84,6 +84,7 @@ class TestArloBaseStationModes(unittest.TestCase):
 
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event", load_modes)
+    @patch.object(ArloBaseStation, "get_ambient_sensor_data", MagicMock())
     def test_set_mode(self, mock):
         """Test PyArlo BaseStation.mode property."""
         notify_url = NOTIFY_ENDPOINT.format("48b14cbbbbbbb")
@@ -108,6 +109,7 @@ class TestArloBaseStationModes(unittest.TestCase):
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event",
                   partial(load_camera_schedule, active=True))
+    @patch.object(ArloBaseStation, "get_ambient_sensor_data", MagicMock)
     def test_set_schedule_mode(self, mock):
         """Test PyArlo BaseStation.mode property."""
         notify_url = NOTIFY_ENDPOINT.format("48b14cbbbbbbb")
