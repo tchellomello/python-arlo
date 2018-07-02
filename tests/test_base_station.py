@@ -83,6 +83,7 @@ class TestArloBaseStation(unittest.TestCase):
 
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish_and_get_event", load_camera_props)
+    @patch.object(ArloBaseStation, "get_ambient_sensor_data", MagicMock())
     def test_camera_properties(self, mock):
         """Test ArloBaseStation.get_cameras_properties."""
         base = self.load_base_station(mock)
