@@ -226,6 +226,20 @@ Night Light Usage (Arlo Baby Monitor)
     # Set the brightness of the night light
     base_station.set_night_light_brightness(200)
 
+
+Supported Devices
+-----------------
+If you have a different model, please feel free to contribute by reporting your results.
+
++-------------------------+---------------+------------+-----------------+
+| Model                   |  Tested by    |   Status   | Results/Issues  |
++=========================+===============+============+=================+
+| Arlo 1st Generation     | @tchellomello | working/ok |     N/A         |
++-------------------------+---------------+------------+-----------------+
+| Arlo 2st Generation     | @tchellomello | working/ok |     N/A         |
++-------------------------+---------------+------------+-----------------+
+
+
 Contributing
 ------------
 See more at CONTRIBUTING.rst_.
