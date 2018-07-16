@@ -161,6 +161,15 @@ class TestArloBaseStation(unittest.TestCase):
 
     @requests_mock.Mocker()
     @patch.object(
+        ArloBaseStation, "publish_and_get_event", lambda x, y: None)
+    def test_latest_sensor_statistic_none(self, mock):
+        """Test ArloBaseStation.get_latest_ambient_sensor_statistic None."""
+        base = self.load_base_station(mock)
+        temperature = base.get_latest_ambient_sensor_statistic("temperature")
+        self.assertEqual(temperature, None)
+
+    @requests_mock.Mocker()
+    @patch.object(
         ArloBaseStation, "publish_and_get_event", load_audio_playback_status)
     def test_audio_playback_status(self, mock):
         """Test ArloBaseStation.get_audio_playback_status."""

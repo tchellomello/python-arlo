@@ -134,7 +134,7 @@ class ArloBaseStation(object):
             while not this_event and i < 2:
                 self.__event_handle.wait(5.0)
                 self.__event_handle.clear()
-                _LOGGER.debug("Instance " + str(i) + " resource: " + resource)
+                _LOGGER.debug("Instance %s resource: %s", str(i), resource)
                 for event in self.__events:
                     if event['resource'] == resource:
                         this_event = event
@@ -390,7 +390,6 @@ class ArloBaseStation(object):
         if resource_event:
             self._last_refresh = int(time.time())
             self._camera_properties = resource_event.get('properties')
-        return
 
     def get_cameras_battery_level(self):
         """Return a list of battery levels of all cameras."""
