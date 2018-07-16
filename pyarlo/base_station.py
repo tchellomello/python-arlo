@@ -493,6 +493,7 @@ class ArloBaseStation(object):
         """Decode, decompress, and parse the data from the history API"""
         b64_input = ""
         for s in properties.get('payload'):
+            # pylint: disable=consider-using-join
             b64_input += s
 
         decoded = base64.b64decode(b64_input)
@@ -524,7 +525,8 @@ class ArloBaseStation(object):
 
         if i == 32768:
             return None
-        elif scale == 0:
+
+        if scale == 0:
             return i
 
         return float(i) / (scale * 10)
@@ -697,6 +699,5 @@ class ArloBaseStation(object):
             _LOGGER.debug("Called base station update of camera properties: "
                           "Scan Interval: %s, New Properties: %s",
                           self._refresh_rate, self.camera_properties)
-        return
 
 # vim:sw=4:ts=4:et:
