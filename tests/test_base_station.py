@@ -143,6 +143,14 @@ class TestArloBaseStation(unittest.TestCase):
         self.assertEqual(base.ambient_air_quality, 11.2)
 
     @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish_and_get_event", lambda x, y: None)
+    def test_ambient_sensor_data_none(self, mock):
+        """Test ArloBaseStation.get_ambient_sensor_data HTTP error."""
+        base = self.load_base_station(mock)
+        result = base.get_ambient_sensor_data()
+        self.assertEqual(result, None)
+
+    @requests_mock.Mocker()
     @patch.object(
         ArloBaseStation, "publish_and_get_event", load_ambient_sensor_data)
     def test_latest_sensor_statistic(self, mock):

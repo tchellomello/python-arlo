@@ -478,6 +478,10 @@ class ArloBaseStation(object):
         """Refresh ambient sensor history"""
         resource = 'cameras/{}/ambientSensors/history'.format(self.device_id)
         history_event = self.publish_and_get_event(resource)
+
+        if history_event is None:
+            return None
+
         properties = history_event.get('properties')
 
         self._ambient_sensor_data = \
@@ -530,6 +534,10 @@ class ArloBaseStation(object):
         """Gets the most recent ambient sensor history entry"""
         if self._ambient_sensor_data is None:
             self.get_ambient_sensor_data()
+
+        if self._ambient_sensor_data is None:
+            return None
+
         return self._ambient_sensor_data[-1].get(statistic)
 
     def get_audio_playback_status(self):
