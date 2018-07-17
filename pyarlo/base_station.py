@@ -319,6 +319,7 @@ class ArloBaseStation(object):
             modes = self.get_available_modes()
             try:
                 if modes:
+                    # pylint: disable=consider-using-dict-comprehension
                     simple_modes = dict(
                         [(m.get("type", m.get("name")), m.get("id"))
                          for m in modes]
