@@ -25,9 +25,9 @@ def http_get(url, filename=None):
 
     if filename is None:
         return ret.content
-    else:
-        with open(filename, 'wb') as data:
-            data.write(ret.content)
+
+    with open(filename, 'wb') as data:
+        data.write(ret.content)
     return True
 
 

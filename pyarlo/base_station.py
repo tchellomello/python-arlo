@@ -134,7 +134,7 @@ class ArloBaseStation(object):
             while not this_event and i < 2:
                 self.__event_handle.wait(5.0)
                 self.__event_handle.clear()
-                _LOGGER.debug("Instance " + str(i) + " resource: " + resource)
+                _LOGGER.debug("Instance %s resource: %s", str(i), resource)
                 for event in self.__events:
                     if event['resource'] == resource:
                         this_event = event
@@ -390,7 +390,6 @@ class ArloBaseStation(object):
         if resource_event:
             self._last_refresh = int(time.time())
             self._camera_properties = resource_event.get('properties')
-        return
 
     def get_cameras_battery_level(self):
         """Return a list of battery levels of all cameras."""
@@ -478,6 +477,10 @@ class ArloBaseStation(object):
         """Refresh ambient sensor history"""
         resource = 'cameras/{}/ambientSensors/history'.format(self.device_id)
         history_event = self.publish_and_get_event(resource)
+
+        if history_event is None:
+            return None
+
         properties = history_event.get('properties')
 
         self._ambient_sensor_data = \
@@ -490,6 +493,7 @@ class ArloBaseStation(object):
         """Decode, decompress, and parse the data from the history API"""
         b64_input = ""
         for s in properties.get('payload'):
+            # pylint: disable=consider-using-join
             b64_input += s
 
         decoded = base64.b64decode(b64_input)
@@ -521,7 +525,8 @@ class ArloBaseStation(object):
 
         if i == 32768:
             return None
-        elif scale == 0:
+
+        if scale == 0:
             return i
 
         return float(i) / (scale * 10)
@@ -530,6 +535,10 @@ class ArloBaseStation(object):
         """Gets the most recent ambient sensor history entry"""
         if self._ambient_sensor_data is None:
             self.get_ambient_sensor_data()
+
+        if self._ambient_sensor_data is None:
+            return None
+
         return self._ambient_sensor_data[-1].get(statistic)
 
     def get_audio_playback_status(self):
@@ -690,6 +699,5 @@ class ArloBaseStation(object):
             _LOGGER.debug("Called base station update of camera properties: "
                           "Scan Interval: %s, New Properties: %s",
                           self._refresh_rate, self.camera_properties)
-        return
 
 # vim:sw=4:ts=4:et:
