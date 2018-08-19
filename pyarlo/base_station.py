@@ -37,6 +37,7 @@ class ArloBaseStation(object):
         self._available_modes = None
         self._available_mode_ids = None
         self._camera_properties = None
+        self._camera_extended_properties = None
         self._ambient_sensor_data = None
         self._last_refresh = None
         self._refresh_rate = refresh_rate
@@ -417,6 +418,70 @@ class ArloBaseStation(object):
         return signal_strength
 
     @property
+    def camera_extended_properties(self):
+        """Return _camera_extended_properties."""
+        if self._camera_extended_properties is None:
+            self.get_camera_extended_properties()
+        return self._camera_extended_properties
+
+    def get_camera_extended_properties(self):
+        """Return camera extended properties."""
+        resource = 'cameras/{}'.format(self.device_id)
+        resource_event = self.publish_and_get_event(resource)
+
+        if resource_event is None:
+            return None
+
+        self._camera_extended_properties = resource_event.get('properties')
+        return self._camera_extended_properties
+
+    def get_speaker_muted(self):
+        """Return whether or not the speaker is muted."""
+        if not self.camera_extended_properties:
+            return None
+
+        speaker = self.camera_extended_properties.get('speaker')
+        if speaker is None:
+            return None
+        else:
+            return speaker.get('mute')
+
+    def get_speaker_volume(self):
+        """Return the volume setting of the speaker."""
+        if not self.camera_extended_properties:
+            return None
+
+        speaker = self.camera_extended_properties.get('speaker')
+        if speaker is None:
+            return None
+        else:
+            return speaker.get('volume')
+
+    def get_night_light_state(self):
+        """Return the state of the night light (on/off)."""
+        if not self.camera_extended_properties:
+            return None
+
+        night_light = self.camera_extended_properties.get('nightLight')
+        if night_light is None:
+            return None
+        elif night_light.get('enabled'):
+            return 'on'
+        else:
+            return 'off'
+
+    def get_night_light_brightness(self):
+        """Return the brightness (0-255) of the night light."""
+        if not self.camera_extended_properties:
+            return None
+
+        night_light = self.camera_extended_properties.get('nightLight')
+        if night_light is None:
+            return None
+        else:
+            return night_light.get('brightness')
+
+    @property
     def properties(self):
         """Return the base station info."""
         resource = "basestation"
@@ -695,6 +760,7 @@ class ArloBaseStation(object):
         if current_time >= (last_refresh + self._refresh_rate):
             self.get_cameras_properties()
             self.get_ambient_sensor_data()
+            self.get_camera_extended_properties()
             self._attrs = self._session.refresh_attributes(self.name)
             self._attrs = assert_is_dict(self._attrs)
             _LOGGER.debug("Called base station update of camera properties: "
