@@ -1,0 +1,232 @@
+{
+  "action": "is",
+  "from": "4R03757BA387F",
+  "resource": "cameras",
+  "to": "FQ8QKG-336-14182007_web",
+  "transId": "web!e6d1b969.8aa4b!1498165992111",
+  "properties": {
+    "activityState": "userStreamActive",
+    "audioAnalytics": {
+      "babyCryDetection": {
+        "enabled": true,
+        "triggered": false
+      }
+    },
+    "audioDetected": false,
+    "audioDetection": {
+      "armed": true,
+      "sensitivity": 3
+    },
+    "batteryLevel": 100,
+    "batteryTech": "Rechargeable",
+    "brightness": 2,
+    "capabilities": [
+      "H.264Streaming",
+      "JPEGSnapshot",
+      "SignalStrength",
+      "Privacy",
+      "Standby",
+      {
+        "MaxZoom": 7
+      },
+      {
+        "Resolutions": [
+          {
+            "text": "1080p",
+            "x": 1920,
+            "y": 1080
+          },
+          {
+            "text": "720p",
+            "x": 1280,
+            "y": 720
+          },
+          {
+            "text": "480p",
+            "x": 848,
+            "y": 480
+          },
+          {
+            "text": "360p",
+            "x": 640,
+            "y": 360
+          },
+          {
+            "text": "240p",
+            "x": 416,
+            "y": 240
+          }
+        ]
+      },
+      {
+        "TimedStreamDuration": {
+          "default": 10,
+          "max": 120,
+          "min": 5
+        }
+      },
+      {
+        "TriggerEndStreamDuration": {
+          "default": 300,
+          "max": 300,
+          "min": 10
+        }
+      },
+      {
+        "Triggers": [
+          {
+            "sensitivity": {
+              "default": 5,
+              "max": 9,
+              "min": 1,
+              "step": 1,
+              "type": "integer"
+            },
+            "type": "ivMotionActive"
+          },
+          {
+            "sensitivity": {
+              "default": 3,
+              "max": 5,
+              "min": 1,
+              "step": 1,
+              "type": "integer"
+            },
+            "type": "audioAmplitude"
+          }
+        ]
+      },
+      {
+        "Actions": [
+          {
+            "recordVideo": [
+              {
+                "StopActions": [
+                  "timeout",
+                  "triggerEndDetected"
+                ]
+              }
+            ]
+          },
+          "recordSnapshot",
+          "sendEmailAlert",
+          "pushNotification"
+        ]
+      },
+      {
+        "ambientSensors": [
+          {
+            "desc": "tenths of degrees celcius",
+            "name": "temperature",
+            "type": "long"
+          },
+          {
+            "desc": "tenths of percent rel. humidity",
+            "name": "humidity",
+            "type": "long"
+          },
+          {
+            "desc": "hundredths of quality",
+            "name": "airQuality",
+            "type": "long"
+          }
+        ]
+      }
+    ],
+    "chargerTech": "Regular",
+    "chargingState": "Off",
+    "connectionState": "available",
+    "continuousStreamState": "inactive",
+    "eventAction": {
+      "actionType": "recordVideo",
+      "emailNotification": {
+        "emailList": [
+          "__OWNER_EMAIL__"
+        ],
+        "enabled": false
+      },
+      "pushNotification": false,
+      "stopType": "motionStop",
+      "timeout": 15
+    },
+    "flip": false,
+    "fov": 100,
+    "hasStreamed": true,
+    "hwVersion": "6",
+    "idleLedEnable": false,
+    "lowBatteryLedEnable": true,
+    "mic": {
+      "mute": false,
+      "volume": 100
+    },
+    "mirror": false,
+    "modelId": "ABC1000",
+    "motion": {
+      "zones": [
+        {
+          "color": 45136,
+          "coords": [
+            {
+              "x": 0.164855,
+              "y": 0.091787
+            },
+            {
+              "x": 0.797101,
+              "y": 0.091787
+            },
+            {
+              "x": 0.797101,
+              "y": 0.995169
+            },
+            {
+              "x": 0.164855,
+              "y": 0.995169
+            }
+          ],
+          "id": "769355de-243f-4188-af54-245532f13b9e",
+          "name": "Zone"
+        }
+      ]
+    },
+    "motionDetected": false,
+    "motionDetection": {
+      "armed": true,
+      "sensitivity": 5,
+      "zones": []
+    },
+    "motionSetupModeEnabled": false,
+    "motionSetupModeSensitivity": 80,
+    "name": "",
+    "nightLight": {
+      "brightness": 200,
+      "enabled": false,
+      "mode": "temperature",
+      "sleepTime": 0,
+      "sleepTimeRel": 0,
+      "temperature": 2650
+    },
+    "nightVisionMode": 1,
+    "olsonTimeZone": "America/Chicago",
+    "powerSaveMode": 2,
+    "privacyActive": false,
+    "resolution": {
+      "height": 1080,
+      "width": 1920
+    },
+    "serialNumber": "48B14CAAAAAAA",
+    "signalStrength": 4,
+    "speaker": {
+      "mute": false,
+      "volume": 100
+    },
+    "standbyActive": false,
+    "streamingMode": "eventBased",
+    "swVersion": "1.8.4.5_20140",
+    "zoom": {
+      "bottomrightx": 1280,
+      "bottomrighty": 720,
+      "topleftx": 0,
+      "toplefty": 0
+    }
+  }
+}
