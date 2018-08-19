@@ -441,7 +441,7 @@ class ArloBaseStation(object):
             return None
 
         speaker = self.camera_extended_properties.get('speaker')
-        if speaker is None:
+        if not speaker:
             return None
 
         return speaker.get('mute')
@@ -452,7 +452,7 @@ class ArloBaseStation(object):
             return None
 
         speaker = self.camera_extended_properties.get('speaker')
-        if speaker is None:
+        if not speaker:
             return None
 
         return speaker.get('volume')
@@ -463,7 +463,7 @@ class ArloBaseStation(object):
             return None
 
         night_light = self.camera_extended_properties.get('nightLight')
-        if night_light is None:
+        if not night_light:
             return None
 
         if night_light.get('enabled'):
@@ -477,7 +477,7 @@ class ArloBaseStation(object):
             return None
 
         night_light = self.camera_extended_properties.get('nightLight')
-        if night_light is None:
+        if not night_light:
             return None
 
         return night_light.get('brightness')

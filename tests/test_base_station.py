@@ -344,11 +344,26 @@ class TestArloBaseStation(unittest.TestCase):
     @requests_mock.Mocker()
     @patch.object(
         ArloBaseStation, "publish_and_get_event", load_extended_properties)
-    def test_get_night_light_state(self, mock):
+    def test_get_night_light_state_off(self, mock):
         """Test ArloBaseStation.get_speaker_volume."""
         base = self.load_base_station(mock)
         result = base.get_night_light_state()
         self.assertEqual(result, 'off')
+
+    @requests_mock.Mocker()
+    @patch.object(
+        ArloBaseStation, "publish_and_get_event", lambda x, y: {
+            'properties': {
+                'nightLight': {
+                    'enabled': True
+                }
+            }
+        })
+    def test_get_night_light_state_on(self, mock):
+        """Test ArloBaseStation.get_speaker_volume."""
+        base = self.load_base_station(mock)
+        result = base.get_night_light_state()
+        self.assertEqual(result, 'on')
 
     @requests_mock.Mocker()
     @patch.object(
@@ -358,6 +373,31 @@ class TestArloBaseStation(unittest.TestCase):
         base = self.load_base_station(mock)
         result = base.get_night_light_brightness()
         self.assertEqual(result, 200)
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish_and_get_event", lambda x, y: None)
+    def test_extended_properties_none(self, mock):
+        """Test extended properties when API returns None."""
+        base = self.load_base_station(mock)
+        self.assertEqual(base.get_speaker_muted(), None)
+        self.assertEqual(base.get_speaker_volume(), None)
+        self.assertEqual(base.get_night_light_state(), None)
+        self.assertEqual(base.get_night_light_brightness(), None)
+
+    @requests_mock.Mocker()
+    @patch.object(ArloBaseStation, "publish_and_get_event", lambda x, y: {
+        'properties': {
+            'speaker': None,
+            'nightLight': None
+        }
+    })
+    def test_extended_properties_empty(self, mock):
+        """Test extended properties when API is missing dictionary keys."""
+        base = self.load_base_station(mock)
+        self.assertEqual(base.get_speaker_muted(), None)
+        self.assertEqual(base.get_speaker_volume(), None)
+        self.assertEqual(base.get_night_light_state(), None)
+        self.assertEqual(base.get_night_light_brightness(), None)
 
     @requests_mock.Mocker()
     @patch.object(ArloBaseStation, "publish", MagicMock())
