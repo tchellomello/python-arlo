@@ -65,6 +65,7 @@ def load_audio_playback_status(*args, **kwargs):
     """Load audio playback status."""
     return load_fixture_json("pyarlo_audio_playback.json")
 
+
 def load_extended_properties(*args, **kwargs):
     """Load extended camera properties."""
     return load_fixture_json("pyarlo_extended_properties.json")
