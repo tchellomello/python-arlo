@@ -11,7 +11,7 @@ def readme():
 setup(
     name='pyarlo',
     packages=['pyarlo'],
-    version='0.2.0',
+    version='0.2.1',
     description='Python Arlo is a library written in Python 2.7/3x ' +
                 'that exposes the Netgear Arlo cameras as Python objects.',
     long_description=readme(),
