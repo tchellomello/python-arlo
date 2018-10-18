@@ -64,7 +64,13 @@ class PyArlo(object):
         """Authenticate user and generate token."""
         self.cleanup_headers()
         url = LOGIN_ENDPOINT
-        data = self.query(url, method='POST')
+        data = self.query(
+            url,
+            method='POST',
+            extra_params={
+                'email': self.__username,
+                'password': self.__password
+            })
 
         if isinstance(data, dict) and data.get('success'):
             data = data.get('data')
@@ -82,9 +88,7 @@ class PyArlo(object):
         headers = {'Content-Type': 'application/json'}
         headers['Authorization'] = self.__token
         self.__headers = headers
-
-        params = {'email': self.__username, 'password': self.__password}
-        self.__params = params
+        self.__params = {}
 
     def query(self,
               url,
