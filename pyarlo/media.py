@@ -62,11 +62,14 @@ class ArloMediaLibrary(object):
 
         for video in data:
             # pylint: disable=cell-var-from-loop
-            srccam = \
-                list(filter(
-                    lambda cam: cam.device_id == video.get('deviceId'),
-                    all_cameras)
-                    )[0]
+            try:
+                srccam = \
+                    list(filter(
+                        lambda cam: cam.device_id == video.get('deviceId'),
+                        all_cameras)
+                        )[0]
+            except IndexError:
+                continue
 
             # make sure only_cameras is a list
             if only_cameras and \
