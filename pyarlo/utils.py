@@ -1,8 +1,11 @@
 # coding: utf-8
 """Implementation of Arlo utils."""
+import logging
 import time
 from datetime import datetime as dt
 import requests
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def to_datetime(timestamp):
@@ -19,7 +22,12 @@ def pretty_timestamp(timestamp, date_format='%a-%m_%d_%y:%H:%M:%S'):
 
 def http_get(url, filename=None):
     """Download HTTP data."""
-    ret = requests.get(url)
+    try:
+        ret = requests.get(url)
+    except requests.exceptions.SSLError as error:
+        _LOGGER.error(error)
+        return False
+
     if ret.status_code != 200:
         return False
 
