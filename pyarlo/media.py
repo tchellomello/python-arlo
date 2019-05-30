@@ -187,6 +187,13 @@ class ArloVideo(object):
             return self._attrs.get('presignedContentUrl')
         return None
 
+    @property
+    def motion_type(self):
+        """Returns the type of motion that triggered the camera. Requires subscription."""
+        if self._attrs is not None:
+            return self._attrs.get("objCategory")
+        return None
+
     def download_thumbnail(self, filename=None):
         """Download JPEG thumbnail.
 
