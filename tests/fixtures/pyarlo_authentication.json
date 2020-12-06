@@ -9,4 +9,5 @@
   "token": "999999999999",
   "userId": "999-123456",
   "validEmail": true},
- "success": true}
+  "meta": {"code":200}
+}

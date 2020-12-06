@@ -62,11 +62,14 @@ class ArloMediaLibrary(object):
 
         for video in data:
             # pylint: disable=cell-var-from-loop
-            srccam = \
-                list(filter(
-                    lambda cam: cam.device_id == video.get('deviceId'),
-                    all_cameras)
-                    )[0]
+            try:
+                srccam = \
+                    list(filter(
+                        lambda cam: cam.device_id == video.get('deviceId'),
+                        all_cameras)
+                        )[0]
+            except IndexError:
+                continue
 
             # make sure only_cameras is a list
             if only_cameras and \
@@ -185,6 +188,13 @@ class ArloVideo(object):
         """Return video content url."""
         if self._attrs is not None:
             return self._attrs.get('presignedContentUrl')
+        return None
+
+    @property
+    def motion_type(self):
+        """Returns the type of motion that triggered the camera. Requires subscription."""
+        if self._attrs is not None:
+            return self._attrs.get("objCategory")
         return None
 
     def download_thumbnail(self, filename=None):

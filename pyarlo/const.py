@@ -1,23 +1,23 @@
 """Constants used by Python Arlo."""
 
 # API Endpoints
-API_URL = "https://arlo.netgear.com/hmsweb"
+API_URL = "https://my.arlo.com"
 
-DEVICE_SUPPORT_ENDPOINT = API_URL + "/devicesupport/v2"
-SUBSCRIBE_ENDPOINT = API_URL + "/client/subscribe"
-UNSUBSCRIBE_ENDPOINT = API_URL + "/client/unsubscribe"
-BILLING_ENDPOINT = API_URL + "/users/serviceLevel/v2"
-DEVICES_ENDPOINT = API_URL + "/users/devices"
-FRIENDS_ENDPOINT = API_URL + "/users/friends"
-LIBRARY_ENDPOINT = API_URL + "/users/library"
-LOGIN_ENDPOINT = API_URL + "/login/v2"
-LOGOUT_ENDPOINT = API_URL + "/logout"
-NOTIFY_ENDPOINT = API_URL + "/users/devices/notify/{0}"
-PROFILE_ENDPOINT = API_URL + "/users/profile"
+DEVICE_SUPPORT_ENDPOINT = API_URL + "/hmsweb/devicesupport/v2"
+SUBSCRIBE_ENDPOINT = API_URL + "/hmsweb/client/subscribe"
+UNSUBSCRIBE_ENDPOINT = API_URL + "/hmsweb/client/unsubscribe"
+BILLING_ENDPOINT = API_URL + "/hmsweb/users/serviceLevel/v2"
+DEVICES_ENDPOINT = API_URL + "/hmsweb/users/devices"
+FRIENDS_ENDPOINT = API_URL + "/hmsweb/users/friends"
+LIBRARY_ENDPOINT = API_URL + "/hmsweb/users/library"
+LOGIN_ENDPOINT = "https://ocapi-app.arlo.com/api/auth"
+LOGOUT_ENDPOINT = API_URL + "/hmsweb/logout"
+NOTIFY_ENDPOINT = API_URL + "/hmsweb/users/devices/notify/{0}"
+PROFILE_ENDPOINT = API_URL + "/hmsweb/users/profile"
 RESET_ENDPOINT = LIBRARY_ENDPOINT + "/reset"
 RESET_CAM_ENDPOINT = RESET_ENDPOINT + "/?uniqueId={0}"
-STREAM_ENDPOINT = API_URL + "/users/devices/startStream"
-SNAPSHOTS_ENDPOINT = API_URL + "/users/devices/fullFrameSnapshot"
+STREAM_ENDPOINT = API_URL + "/hmsweb/users/devices/startStream"
+SNAPSHOTS_ENDPOINT = API_URL + "/hmsweb/users/devices/fullFrameSnapshot"
 
 # number of days to preload video
 PRELOAD_DAYS = 30

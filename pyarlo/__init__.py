@@ -2,12 +2,13 @@
 """Base Python Class file for Netgear Arlo camera module."""
 import logging
 import requests
+import base64
 
 from pyarlo.base_station import ArloBaseStation
 from pyarlo.camera import ArloCamera
 from pyarlo.media import ArloMediaLibrary
 from pyarlo.const import (
-    BILLING_ENDPOINT, DEVICES_ENDPOINT,
+    API_URL, BILLING_ENDPOINT, DEVICES_ENDPOINT,
     FRIENDS_ENDPOINT, LOGIN_ENDPOINT, PROFILE_ENDPOINT,
     PRELOAD_DAYS, RESET_ENDPOINT)
 
@@ -69,10 +70,11 @@ class PyArlo(object):
             method='POST',
             extra_params={
                 'email': self.__username,
-                'password': self.__password
-            })
+                'password': base64.b64encode(self.__password.encode()).decode()},
+            extra_headers={
+                'Referer': API_URL})
 
-        if isinstance(data, dict) and data.get('success'):
+        if isinstance(data, dict) and data.get('meta') and data['meta']['code'] == 200:
             data = data.get('data')
             self.authenticated = data.get('authenticated')
             self.country_code = data.get('countryCode')
@@ -85,7 +87,9 @@ class PyArlo(object):
 
     def cleanup_headers(self):
         """Reset the headers and params."""
-        headers = {'Content-Type': 'application/json'}
+        headers = {
+            'Content-Type': 'application/json',
+            'Auth-Version': '2'}
         headers['Authorization'] = self.__token
         self.__headers = headers
         self.__params = {}
