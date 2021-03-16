@@ -16,6 +16,10 @@ Python Arlo
 .. _CONTRIBUTING.rst: https://raw.githubusercontent.com/tchellomello/python-arlo/master/CONTRIBUTING.rst
 
 
+This project is looking for maintainers!
+---------------------------------------
+
+
 Python Arlo  is a library written in Python 2.7/3x that exposes the Netgear Arlo cameras as Python objects.
 
 Developer Documentation: `http://python-arlo.readthedocs.io/ <http://python-arlo.readthedocs.io/>`_
